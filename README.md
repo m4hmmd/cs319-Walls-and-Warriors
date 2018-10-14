@@ -22,7 +22,7 @@ This is a desktop implementation of the Walls and Warriors game using Java in. I
 * Some types of warriors can walk in a specified path
 * On harder levels, red soldiers are able to damage/break walls immediately near them
 * Immobile objects on the board that limit the placement of the walls, such as rocks or forests that should be either entirely inside or outside the walls
-* Lakes and red and blue ships on the board
+* Lakes,red and blue ships on the board
 * A limited number of chain objects to be used to provide protection of the castle from attacks from lakes
 
 ### References
