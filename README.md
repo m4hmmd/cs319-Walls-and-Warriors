@@ -1,5 +1,5 @@
 # CS319 - Walls and Warriors
-### Group 1D
+#### Group 1D
 ## Group Members
 Ahmet Malal (21502894)
 
@@ -19,8 +19,11 @@ This is a desktop implementation of the Walls and Warriors game using Java in. I
 
 ## What's new
 * Varied size of the board and shapes of walls
-* Immobile objects on the board that limit the placement of the walls, such as rocks or lakes that should be either entirely inside or outside the walls
-* New types of warriors with additional abilities, such as breaking or climbing the walls
+* Some types of warriors can walk in a specified path
+* On harder levels, red soldiers are able to damage/break walls immediately near them
+* Immobile objects on the board that limit the placement of the walls, such as rocks or forests that should be either entirely inside or outside the walls
+* Lakes and red and blue ships on the board
+* A limited number of chain objects to be used to provide protection of the castle from attacks from lakes
 
 ### References
 Game Rules - https://www.youtube.com/watch?v=kXX4OP38hYU
