@@ -18,7 +18,11 @@ public class AllyArmada extends Ally {
 
 	@Override
 	public int getWholeMapIndex() {
-		// TODO Auto-generated method stub
 		return Model.ALLY_ARMADA;
+	}
+
+	@Override
+	public boolean isArmada() {
+		return true;
 	}
 }
