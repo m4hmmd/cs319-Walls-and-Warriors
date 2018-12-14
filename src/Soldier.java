@@ -1,16 +1,18 @@
 import java.awt.*;
 
-public class Soldier extends GameObject {
+public abstract class Soldier extends GameObject {
 
-    Soldier(int x, int y, Color c) {
-        super(x, y, c);
-    }
+	boolean movable;
 
-    @Override
-    void draw(Graphics g, int initialXShift, int initialYShift, int squareHeight, int squareWidth) {
-        g.setColor(getColor());
-        g.fillOval(initialXShift + squareWidth * getX() + squareWidth / 3,
-                initialYShift + squareHeight * getY() + squareHeight / 3,
-                squareWidth / 3, squareHeight / 3);
-    }
+	Soldier(boolean movable, int x, int y, Color c) {
+		super(x, y, c);
+		this.movable = movable;
+	}
+
+	@Override
+	public abstract void draw(Graphics g, int initialXShift, int initialYShift, int squareHeight, int squareWidth);
+
+	@Override
+	public abstract int getWholeMapIndex();
+
 }
