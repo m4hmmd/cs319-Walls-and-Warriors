@@ -17,12 +17,14 @@ public class GameView extends JFrame implements ActionListener {
 	static int lastCompletedLevel = 0;
 	int currentLevelIndex = 0;
 
+	int btnSizeL = 40, btnSizeScaledL = 50, btnSizeS = 25, btnSizeScaledS = 30;
+
 	CardLayout cardLayout;
 	JPanel card = new JPanel();
 	GameManager managers[] = new GameManager[5];
-	MyButton[] levelButtons = { new MyButton("Level 1", "Level 1", this), new MyButton("Level 2", "Level 2", this),
-			new MyButton("Level 3", "Level 3", this), new MyButton("Level 4", "Level 4", this),
-			new MyButton("Level 5", "Level 5", this) };
+	MyButton[] levelButtons = { new MyButton("Level 1", "Level 1", btnSizeL, btnSizeScaledL,this), new MyButton("Level 2", "Level 2", btnSizeL, btnSizeScaledL,this),
+			new MyButton("Level 3", "Level 3", btnSizeL, btnSizeScaledL, this), new MyButton("Level 4", "Level 4", btnSizeL, btnSizeScaledL, this),
+			new MyButton("Level 5", "Level 5", btnSizeL, btnSizeScaledL, this) };
 
 	public GameView() throws IOException {
 		card.setLayout(cardLayout = new CardLayout());
@@ -37,7 +39,7 @@ public class GameView extends JFrame implements ActionListener {
 			levelButtons[i].setEnabled(false);
 			try {
 				Image img = ImageIO.read(new File("src/img/locked.png"));
-				Image newimg = img.getScaledInstance(50, 50,  java.awt.Image.SCALE_SMOOTH); // scale it the smooth way  
+				Image newimg = img.getScaledInstance(50, 50,  Image.SCALE_SMOOTH); // scale it the smooth way
 				levelButtons[i].setIcon(new ImageIcon(newimg));
 			} catch (Exception ex) {
 				System.out.println(ex);
@@ -78,7 +80,7 @@ public class GameView extends JFrame implements ActionListener {
 		creditsPanel.addLabel(new JLabel("Mahammad Shirinov"));
 		creditsPanel.addLabel(new JLabel("Samet Demir"));
 
-		MyButton back = new MyButton("Back", "Game Menu", this);
+		MyButton back = new MyButton("Back", "Game Menu", btnSizeS, btnSizeScaledS,this);
 		creditsPanel.addBackButton(back);
 
 		card.add("Credits", creditsPanel);
@@ -87,12 +89,12 @@ public class GameView extends JFrame implements ActionListener {
 	private void createHowToPanel() throws IOException {
 		MyPanel howToPanel = new MyPanel("How To Play", "src/img/img1.jpeg");
 
-		JLabel howToPlay = new JLabel("<html><center><b>HOW TO PLAY</b></center><br>" + "<u>Description of the Game</u><br><br>"
+		JLabel howToPlay = new JLabel("<html><center><h1>HOW TO PLAY</h1></center><br>" + "<u><h2>Description of the Game</h2></u><br>"
 				+ "Walls & Warriors is a board game played with warrior figures <br>"
 				+ "and walls placed under specific rules. The goal of this game place the <br>"
 				+ "four walls on the game board so that all the blue knights are inside the <br>"
 				+ "enclosure and all the red knights are on the outside to defend the castle <br>"
-				+ "to be left inside the walls.<br><br>" + "<u>Gameplay</u><br><br>"
+				+ "to be left inside the walls.<br><br>" + "<u><h2>Gameplay</h2></u><br>"
 				+ "Given a board with red and blue soldiers and, on higher levels, lakes and <br>"
 				+ "special soldiers, the player needs to select one of the provided wall shapes, <br>"
 				+ "rotate it as needed and put onto the board, so as to complete the castle <br>"
@@ -103,7 +105,10 @@ public class GameView extends JFrame implements ActionListener {
 		howToPlay.setVisible(true);
 		howToPanel.addOnlyOneLabel(howToPlay);
 
-		MyButton back = new MyButton("Back", "Game Menu", this);
+		MyButton back = new MyButton("Back", "Game Menu", btnSizeS, btnSizeScaledS, this);
+
+//		back.setPreferredSize(new Dimension(20, 20));
+
 		howToPanel.addBackButton(back);
 
 		card.add("How To Play", howToPanel);
@@ -113,14 +118,12 @@ public class GameView extends JFrame implements ActionListener {
 	private void createLevelMenu() {
 		try {
 
-			MyButton back = new MyButton("Back", "Game Menu", this);
+			MyButton back = new MyButton("Back", "Game Menu", btnSizeS, btnSizeScaledS, this);
 			MyPanel levelMenu = new MyPanel("Game Menu", "src/img/img1.jpeg");
 
-			levelMenu.addButton(levelButtons[0]);
-			levelMenu.addButton(levelButtons[1]);
-			levelMenu.addButton(levelButtons[2]);
-			levelMenu.addButton(levelButtons[3]);
-			levelMenu.addButton(levelButtons[4]);
+			for (int i = 0; i < levelButtons.length; i++) {
+				levelMenu.addButton(levelButtons[i]);
+			}
 
 			levelMenu.addBackButton(back);
 			card.add("Level Menu", levelMenu);
@@ -131,13 +134,12 @@ public class GameView extends JFrame implements ActionListener {
 	}
 
 	private void createGameMenu() {
-
 		try {
-			MyButton play = new MyButton("Play", "Level Menu", this);
-			MyButton settings = new MyButton("Settings", "Settings", this);
-			MyButton howToPlay = new MyButton("How To Play", "How To Play", this);
-			MyButton credits = new MyButton("Credits", "Credits", this);
-			MyButton quit = new MyButton("Quit", "Quit", this);
+			MyButton play = new MyButton("Play", "Level Menu", btnSizeL, btnSizeScaledL,this);
+			MyButton settings = new MyButton("Settings", "Settings", btnSizeL, btnSizeScaledL, this);
+			MyButton howToPlay = new MyButton("How To Play", "How To Play", btnSizeL, btnSizeScaledL, this);
+			MyButton credits = new MyButton("Credits", "Credits", btnSizeL, btnSizeScaledL, this);
+			MyButton quit = new MyButton("Quit", "Quit", btnSizeL, btnSizeScaledL, this);
 
 			MyPanel gameMenu = new MyPanel("Game Menu", "src/img/img1.jpeg");
 

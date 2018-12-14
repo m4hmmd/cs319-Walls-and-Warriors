@@ -40,15 +40,27 @@ public class MyComponents extends JComponent {
 		this.levelNo = levelNo;
 		this.gv = gv;
 		timer = new TimerActionListener();
-		backButton = new JButton("Home");
+//		backButton = new JButton("Home");
+		backButton = new MyButton("Home", "Game Menu", 30, 40,new ActionListener() {
 
-		backButton.setForeground(Color.WHITE);
-		backButton.setFont(new Font("Arial", Font.PLAIN, 30));
-		backButton.setOpaque(false);
-		backButton.setContentAreaFilled(false);
-		backButton.setBorderPainted(false);
-		// backButton.setHorizontalAlignment(SwingConstants.LEFT);
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				cardLayout.show(card, "Game Menu");
+				model.reset();
+				selectedKey = null;
+				selectedMouse = null;
+				timer.stop();
+			}
+		});
+		// back = new MyButton("Back", "Game Menu", btnSizeS, btnSizeScaledS,this);
 
+//		backButton.setForeground(Color.WHITE);
+//		backButton.setFont(new Font("Arial", Font.PLAIN, 30));
+//		backButton.setOpaque(false);
+//		backButton.setContentAreaFilled(false);
+//		backButton.setBorderPainted(false);
+//		// backButton.setHorizontalAlignment(SwingConstants.LEFT);
+//
 		backButton.addMouseListener(new MouseAdapter() {
 			public void mouseExited(MouseEvent e) {
 				((JButton) (e.getSource())).setFont(new Font("Arial", Font.PLAIN, 30));
@@ -61,17 +73,17 @@ public class MyComponents extends JComponent {
 			}
 
 		});
-		backButton.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				cardLayout.show(card, "Game Menu");
-				model.reset();
-				selectedKey = null;
-				selectedMouse = null;
-				timer.stop();
-			}
-		});
+//		backButton.addActionListener(new ActionListener() {
+//
+//			@Override
+//			public void actionPerformed(ActionEvent e) {
+//				cardLayout.show(card, "Game Menu");
+//				model.reset();
+//				selectedKey = null;
+//				selectedMouse = null;
+//				timer.stop();
+//			}
+//		});
 
 		add(backButton);
 		Listeners listener = new Listeners();

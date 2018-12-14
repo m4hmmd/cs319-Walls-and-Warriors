@@ -25,6 +25,9 @@ public class MyPanel extends JPanel implements MouseMotionListener, MouseListene
 	boolean one = false;
 	int buttonHeight;
 	int buttonWidth;
+	int buttonDefaultSize = 20;
+	int buttonScaledSize = 25;
+
 
 	public MyPanel(String name, String path) throws IOException {
 		setLayout(null);
@@ -79,14 +82,7 @@ public class MyPanel extends JPanel implements MouseMotionListener, MouseListene
 
 	public void addButton(MyButton btn) {
 		buttons.add(btn);
-		btn.setForeground(Color.WHITE);
-		btn.setFont(new Font("Arial", Font.PLAIN, 40));
-		btn.setOpaque(false);
-		btn.setContentAreaFilled(false);
-		btn.setBorderPainted(false);
 		setSizesOfButtons(getGraphics());
-		btn.addMouseMotionListener(this);
-		btn.addMouseListener(this);
 		add(btn);
 	}
 
@@ -118,15 +114,7 @@ public class MyPanel extends JPanel implements MouseMotionListener, MouseListene
 	public void addBackButton(MyButton back) {
 		if (backButton == null) {
 			backButton = back;
-			back.setForeground(Color.WHITE);
-			back.setFont(new Font("Arial", Font.PLAIN, 40));
-			back.setOpaque(false);
-			back.setContentAreaFilled(false);
-			back.setBorderPainted(false);
 			backButton.setBounds(0, (int) (getHeight() / 10 * 8), buttonWidth / 2, getHeight() / 5);
-			setSizesOfButtons(getGraphics());
-			back.addMouseMotionListener(this);
-			back.addMouseListener(this);
 			add(back);
 		}
 	}
@@ -139,9 +127,9 @@ public class MyPanel extends JPanel implements MouseMotionListener, MouseListene
 	public void mouseMoved(MouseEvent e) {
 		if (e.getSource() instanceof MyButton)
 			if (((MyButton) (e.getSource())).isEnabled())
-				((MyButton) (e.getSource())).setFont(new Font("Arial", Font.PLAIN, 50));
-			else if (e.getSource() instanceof JLabel)
-				((JLabel) (e.getSource())).setFont(new Font("Arial", Font.PLAIN, 50));
+				((MyButton) (e.getSource())).setFont(new Font("Arial", Font.PLAIN, ((MyButton) e.getSource()).getSizeScaledize()));
+//			else if (e.getSource() instanceof JLabel)
+//				((JLabel) (e.getSource())).setFont(new Font("Arial", Font.PLAIN, 50));
 	}
 
 	@Override
@@ -157,9 +145,9 @@ public class MyPanel extends JPanel implements MouseMotionListener, MouseListene
 	@Override
 	public void mouseExited(MouseEvent e) {
 		if (e.getSource() instanceof MyButton)
-			((MyButton) (e.getSource())).setFont(new Font("Arial", Font.PLAIN, 40));
-		else if (e.getSource() instanceof JLabel)
-			((JLabel) (e.getSource())).setFont(new Font("Arial", Font.PLAIN, 40));
+			((MyButton) (e.getSource())).setFont(new Font("Arial", Font.PLAIN, ((MyButton) e.getSource()).getDefaultSize()));
+//		else if (e.getSource() instanceof JLabel)
+//			((JLabel) (e.getSource())).setFont(new Font("Arial", Font.PLAIN, 40));
 	}
 
 	@Override
