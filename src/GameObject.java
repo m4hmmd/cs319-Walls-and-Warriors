@@ -31,5 +31,7 @@ public abstract class GameObject {
 
     int getY() {
         return y;
-    }
+	}
+
+	public abstract int getWholeMapIndex();
 }
