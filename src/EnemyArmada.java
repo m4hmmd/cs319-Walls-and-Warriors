@@ -18,8 +18,11 @@ public class EnemyArmada extends Enemy {
 
 	@Override
 	public int getWholeMapIndex() {
-		// TODO Auto-generated method stub
 		return Model.ENEMY_ARMADA;
 	}
 
+	@Override
+	public boolean isArmada() {
+		return true;
+	}
 }
