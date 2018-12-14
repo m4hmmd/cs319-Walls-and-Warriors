@@ -724,7 +724,6 @@ public class MyComponents extends JComponent {
 					dirs.add(Model.RIGHT);
 				}
 
-				System.out.println(dirs);
 				if (!dirs.isEmpty()) {
 					int dir = (int) (Math.random() * dirs.size());
 
@@ -780,8 +779,6 @@ public class MyComponents extends JComponent {
 				mapY = 2 * nextY + 2;
 				nextY++;
 			}
-
-			System.out.println(nextX + ", " + nextY);
 
 			if (!outOfScreen(nextX, nextY) && model.map[mapX][mapY] != Model.WALL_OR_CHAIN) {
 				if (s instanceof AllyArmada || s instanceof EnemyArmada)
