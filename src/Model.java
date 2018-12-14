@@ -94,9 +94,9 @@ public class Model {
 		walls = new WallOrChain[0];
 	}
 
-	void reset() {
+	void reset() { ///////
 		map = new int[2 * mapWidth + 1][2 * mapLength + 1];
-
+		soldiers.clear();
 		gameFinished = false;
 
 		for (int i = 0; i < map.length; i++) {
@@ -124,13 +124,9 @@ public class Model {
 
 		map[castle.getX() * 2 + 1][castle.getY() * 2 + 1] = CASTLE;
 		map[castle.getX1() * 2 + 1][castle.getY1() * 2 + 1] = CASTLE;
-
-		for (Soldier s : soldiers) {
-			if (s.getColor() == Color.RED)
-				map[s.getX() * 2 + 1][s.getY() * 2 + 1] = ENEMY;
-			if (s.getColor() == Color.BLUE)
-				map[s.getX() * 2 + 1][s.getY() * 2 + 1] = ALLY;
-		}
+		
+		resetMovableSoldiers();
+		movables.clear();
 
 		// invalidate the line segment occupied by the castle
 		int leftOne = (castle.x == castle.x1) ? castle.x : ((castle.x > castle.x1) ? castle.x1 : castle.x);
@@ -147,6 +143,21 @@ public class Model {
 		resetWholeMapWithRespectToMap();
 	}
 
+	private void resetMovableSoldiers() {
+		for (Soldier s : movables) {
+			if(s.isArmada() && !s.isInInitialPosition()) {
+				gameObjects[s.getX()][s.getY()] = new Lake(s.getX(), s.getY());
+				s.sendToInitialPosition();
+				gameObjects[s.getX()][s.getY()] = s;
+			}
+			else {
+				gameObjects[s.getX()][s.getY()] = null;
+				s.sendToInitialPosition();
+				gameObjects[s.getX()][s.getY()] = s;
+			}
+		}
+	}
+	
 	public void addSoldier(boolean ally, boolean movable, int i, int j) {
 		Soldier s = null;
 		if (ally)
@@ -171,6 +182,18 @@ public class Model {
 				} else if (gameObjects[i][j] instanceof Forest) {
 					gameObjects[i][j] = null;
 					addForest(i, j);
+				} else if (gameObjects[i][j] instanceof AllyArmada) {
+					Soldier s = (Soldier)(gameObjects[i][j]);
+					gameObjects[i][j] = null;
+					addAllyArmada(i,j,s.movable);
+				} else if (gameObjects[i][j] instanceof EnemyArmada) {
+					Soldier s = (Soldier)(gameObjects[i][j]);
+					gameObjects[i][j] = null;
+					addEnemyArmada(i,j,s.movable);
+				} else if (gameObjects[i][j] instanceof Soldier) {
+					Soldier s = (Soldier)(gameObjects[i][j]);
+					gameObjects[i][j] = null;
+					addSoldier(s instanceof Ally, s.movable, i, j);
 				}
 			}
 		}
@@ -609,7 +632,8 @@ public class Model {
 
 		if (movable)
 			movables.add((Soldier) gameObjects[i][j]);
-
+		soldiers.add((Soldier) gameObjects[i][j]);
+		
 		boolean up = false;
 		boolean down = false;
 		boolean right = false;
@@ -664,7 +688,8 @@ public class Model {
 
 		if (movable)
 			movables.add((Soldier) gameObjects[i][j]);
-
+		soldiers.add((Soldier) gameObjects[i][j]);
+		
 		boolean up = false;
 		boolean down = false;
 		boolean right = false;
