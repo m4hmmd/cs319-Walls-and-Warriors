@@ -121,9 +121,7 @@ public class MyComponents extends JComponent {
 
 		drawGrid(g);
 		drawGameObjects(g);
-		drawSoldiers(g);
-		model.getCastle().draw(g, model.getInitialXShift(), model.getInitialYShift(), model.getSquareHeight(),
-				model.getSquareWidth());
+		
 		drawWallOptions(g);
 		drawWalls(g);
 
