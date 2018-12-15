@@ -129,6 +129,16 @@ public class GameManager {
 	void reset() {
 		model.reset();
 	}
+
+	public void startTimers() {
+		model.startTimers();
+		myComponents.startTimer();
+	}
+
+	public void stopTimers() {
+		myComponents.stopTimer();
+		model.stopTimers();
+	}
 }
 
 // void occupiedLine(int xInd, int yInd, int x1, int y1, int x2, int y2) {
