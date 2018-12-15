@@ -175,7 +175,7 @@ public class MyComponents extends JComponent {
 		drawWalls(g);
 
 		backButton.setBounds(0, (int) (getHeight() / 10 * 0.5), getWidth() / 5, getHeight() / 10);
-		restartButton.setBounds((int) (getHeight() / 10 * 10.5), (int) (getHeight() / 10 * 0.5), getWidth() / 4, getHeight() / 10);
+		restartButton.setBounds((int) (getWidth() / 10 * 7.5), (int) (getHeight() / 10 * 0.5), getWidth() / 4, getHeight() / 10);
 		pWidth = getWidth();
 		pHeight = getHeight();
 	}
