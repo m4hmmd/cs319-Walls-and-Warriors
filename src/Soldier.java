@@ -1,16 +1,34 @@
 import java.awt.*;
+import java.awt.event.ActionListener;
+
+import javax.swing.Timer;
 
 public abstract class Soldier extends GameObject {
 
+	int power = 2;
 	boolean movable;
 	Point initialPoint;
+	Timer t ;
 
 	Soldier(boolean movable, int x, int y, Color c) {
 		super(x, y, c);
 		this.movable = movable;
 		initialPoint = new Point(x, y);
+		t = new Timer(3000, null);
 	}
 
+	public void addActionListener(ActionListener aL) {
+		t.addActionListener(aL);
+	}
+
+	public void start() {
+		t.start();
+	}
+
+	public void stop() {
+		t.stop();
+	}
+	
 	@Override
 	public abstract void draw(Graphics g, int initialXShift, int initialYShift, int squareHeight, int squareWidth);
 
@@ -18,13 +36,13 @@ public abstract class Soldier extends GameObject {
 	public abstract int getWholeMapIndex();
 
 	public void sendToInitialPosition() {
-		x = initialPoint.x;
-		y = initialPoint.y;
+		x = initialPoint.x; 
+		y = initialPoint.y; 
 	}
 
-	public abstract boolean isArmada();
+	public abstract boolean isArmada(); 
 
-	public boolean isInInitialPosition() {
+	public boolean isInInitialPosition() { 
 		return initialPoint.x == x && initialPoint.y == y;
 	}
 }
