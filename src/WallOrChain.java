@@ -3,9 +3,13 @@ import java.util.ArrayList;
 
 public abstract class WallOrChain {
 
+	private static final double MIN_ALPHA = 75;
+
 	int lineWidthOnGreenSquare = 4, squareWidthOnGreenSquare = 20, squareHeightOnGreenSquare = 20;
 
 	int index;
+	int health;
+	int initialHealth;
 	Color c;
 	Color originalColor;
 	int xInd, yInd, xCoor, yCoor, turn;
@@ -17,15 +21,17 @@ public abstract class WallOrChain {
 	ArrayList<Point> points = new ArrayList<Point>();
 	ArrayList<Rectangle> rects = new ArrayList<Rectangle>();
 	ArrayList<Rectangle> rectsOnGreenSquare = new ArrayList<Rectangle>();
+	Rectangle nearestRectToCenter;
 	Rectangle wallContainer = new Rectangle(0, 0, 0, 0);
 	int lineWidth;
 	int mapWidth;
 	int mapHeight;
-	boolean transparency;
+	boolean collapsed = false;
 
 	public WallOrChain(int x_Ind, int y_Ind, int[] xCoors, int[] yCoors, Color c, int index, int initialXShift,
 			int initialYShift, int squareHeight, int squareWidth, int mapHeight, int mapWidth) {
-
+		initialHealth = 2000;
+		health = initialHealth;
 		initialXCoors = new int[xCoors.length];
 		for (int i = 0; i < xCoors.length; i++)
 			initialXCoors[i] = xCoors[i];
@@ -37,19 +43,25 @@ public abstract class WallOrChain {
 		edgesX = new int[xCoors.length - 1 >= 0 ? xCoors.length - 2 : 0];
 		edgesY = new int[xCoors.length - 1 >= 0 ? xCoors.length - 2 : 0];
 
-		double totalX = 0;
-		double totalY = 0;
+		double totalX = xCoors[0] / 2.0;
+		double totalY = yCoors[0] / 2.0;
+		points.add(new Point(xCoors[0], yCoors[0]));
 		lineWidth = squareWidth / 10;
 
-		for (int i = 0; i < xCoors.length; i++) {
+		for (int i = 1; i < xCoors.length - 1; i++) {
 			totalX += xCoors[i];
 			totalY += yCoors[i];
 			points.add(new Point(xCoors[i], yCoors[i]));
 		}
+		totalX += xCoors[xCoors.length - 1] / 2.0;
+		totalY += yCoors[yCoors.length - 1] / 2.0;
+		
+		points.add(new Point(xCoors[xCoors.length - 1], yCoors[yCoors.length - 1]));
+		
 
 		setEdges();
-		centerX = totalX / xCoors.length;
-		centerY = totalY / yCoors.length;
+		centerX = totalX / (xCoors.length - 1);
+		centerY = totalY / (yCoors.length - 1);
 
 		xInd = x_Ind;
 		yInd = y_Ind;
@@ -101,6 +113,12 @@ public abstract class WallOrChain {
 		this.index = index;
 		this.mapWidth = mapWidth;
 		this.mapHeight = mapHeight;
+		
+		nearestRectToCenter = getNearestRectangleToCenter(squareWidth, squareHeight);
+	}
+
+	public Rectangle getNearestRectToCenter() {
+		return nearestRectToCenter;
 	}
 
 	private void setEdges() {
@@ -323,7 +341,8 @@ public abstract class WallOrChain {
 	void remove() {
 		visible = false;
 		setColorToOriginal();
-		setIndexes(-1, -1);
+		updateColor();
+		setIndexes(-10, -10);
 	}
 
 	void appear() {
@@ -339,11 +358,22 @@ public abstract class WallOrChain {
 		return false;
 	}
 
+	boolean containsEdge(int x, int y) {
+		for (int i = 0; i < points.size(); i++) {
+			if (this.xInd + points.get(i).x == x && this.yInd + points.get(i).y == y) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	void setWallContainer(Rectangle r) {
 		wallContainer = r;
 	}
 
 	void reset(int initialXShift, int initialYShift, int squareHeight, int squareWidth) {
+		collapsed = false;
+		health = initialHealth;
 		lineWidth = squareWidth / 10;
 
 		setTurn(0);
@@ -386,10 +416,12 @@ public abstract class WallOrChain {
 
 	public void setColor(Color color) {
 		c = color;
+		updateColor();
 	}
 
 	public void setColorToOriginal() {
 		c = originalColor;
+		updateColor();
 	}
 
 	public void goLeft() {
@@ -421,4 +453,38 @@ public abstract class WallOrChain {
 		xInd = x;
 		yInd = y;
 	}
+
+	public int damaged(int damageAmount) {
+		health -= damageAmount;
+		return health;
+	}
+
+	public void updateColor() {
+		int r = c.getRed();
+		int g = c.getGreen();
+		int b = c.getBlue();
+		int alpha = (int) (MIN_ALPHA + (255 - MIN_ALPHA) * (health * 1.0 / initialHealth));
+		if (alpha > 0)
+			c = new Color(r, g, b, alpha);
+	}
+
+	private Rectangle getNearestRectangleToCenter(int squareWidth, int squareHeight) {
+		double min = calculateDistanceBetweenPoints(xCoor + centerX * squareWidth, yCoor + centerY * squareHeight,
+				rects.get(0).getCenterX(), rects.get(0).getCenterY());
+		Rectangle nearest = rects.get(0);
+		for (int i = 1; i < rects.size(); i++) {
+			double length = calculateDistanceBetweenPoints(xCoor + centerX * squareWidth,
+					yCoor + centerY * squareHeight, rects.get(i).getCenterX(), rects.get(i).getCenterY());
+			if (min > length) {
+				min = length;
+				nearest = rects.get(i);
+			}
+		}
+		return nearest;
+	}
+
+	public double calculateDistanceBetweenPoints(double x1, double y1, double x2, double y2) {
+		return Math.sqrt((y2 - y1) * (y2 - y1) + (x2 - x1) * (x2 - x1));
+	}
+
 }
