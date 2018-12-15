@@ -282,6 +282,11 @@ public class Model {
 				return false;
 			}
 		}
+		for (int i = 0; i < w.edgesX.length; i++) {
+			if (map[(w.xInd + w.edgesX[i]) * 2][(w.yInd + w.edgesY[i]) * 2] == WALL_OR_CHAIN) {
+				return false;
+			}
+		}
 		return true;
 	}
 
@@ -813,7 +818,7 @@ public class Model {
 
 	public void rearrangeTimers() {
 		for (Soldier m : movables) {
-			if(thereIsWallNearBy(m)) {
+			if (thereIsWallNearBy(m) != -1) {
 				if (m.t.isRunning())
 					m.stop();
 				continue;
@@ -916,7 +921,7 @@ public class Model {
 	private boolean outOfScreenMap(int x, int y) {
 		return !(x >= 0 && x < map.length && y >= 0 && y < map[0].length);
 	}
-	
+
 	class MovableTimerActionListener implements ActionListener {
 		Soldier s;
 
@@ -957,8 +962,9 @@ public class Model {
 	private boolean updateHealthes() {
 		for (Soldier s : soldiers) {
 			if (s instanceof Enemy) {
-				if (thereIsWallNearBy(s)) {
-					WallOrChain w = wallNearBy(s);
+				int dir = thereIsWallNearBy(s);
+				if (dir != -1) {
+					WallOrChain w = wallNearBy(s, dir);
 					int health = w.damaged(s.power);
 
 					if (health <= 0) {
@@ -974,42 +980,35 @@ public class Model {
 		return true;
 	}
 
-	private WallOrChain wallNearBy(Soldier s) {
+	private WallOrChain wallNearBy(Soldier s, int dir) {
 		for (WallOrChain w : walls) {
-			if (isNextTo(w, s))
+			if (isNextTo(w, s, dir))
 				return w;
 		}
 		return null;
 	}
 
-	private boolean isNextTo(WallOrChain w, Soldier s) {
-		int count = 0;
+	private boolean isNextTo(WallOrChain w, Soldier s, int dir) {
 		if (w.visible) {
-			if (w.containsEdge(s.getX(), s.getY()))
-				count++;
-			if (w.containsEdge(s.getX() + 1, s.getY()))
-				count++;
-			if (w.containsEdge(s.getX(), s.getY() + 1))
-				count++;
-			if (w.containsEdge(s.getX() + 1, s.getY() + 1))
-				count++;
+			if (w.containsLine(s, dir))
+				return true;
 		}
-		return count >= 2;
+		return false;
 	}
 
-	private boolean thereIsWallNearBy(Soldier s) {
+	private int thereIsWallNearBy(Soldier s) {
 		int mapX = s.getX() * 2 + 1;
 		int mapY = s.getY() * 2 + 1;
 
 		if (!outOfScreenMap(mapX + 1, mapY) && map[mapX + 1][mapY] == WALL_OR_CHAIN)
-			return true;
+			return Model.RIGHT;
 		if (!outOfScreenMap(mapX - 1, mapY) && map[mapX - 1][mapY] == WALL_OR_CHAIN)
-			return true;
+			return Model.LEFT;
 		if (!outOfScreenMap(mapX, mapY + 1) && map[mapX][mapY + 1] == WALL_OR_CHAIN)
-			return true;
+			return Model.DOWN;
 		if (!outOfScreenMap(mapX, mapY - 1) && map[mapX][mapY - 1] == WALL_OR_CHAIN)
-			return true;
-		return false;
+			return Model.UP;
+		return -1;
 	}
 
 	public void pause() {
