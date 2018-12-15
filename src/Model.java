@@ -4,6 +4,7 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import javax.swing.JOptionPane;
 import javax.swing.Timer;
 
 public class Model {
@@ -98,6 +99,7 @@ public class Model {
 		map = new int[2 * mapWidth + 1][2 * mapLength + 1];
 		soldiers.clear();
 		gameFinished = false;
+		noOfEnemies = 0;
 
 		for (int i = 0; i < map.length; i++) {
 			for (int j = 0; j < map[0].length; j++) {
@@ -124,8 +126,9 @@ public class Model {
 
 		map[castle.getX() * 2 + 1][castle.getY() * 2 + 1] = CASTLE;
 		map[castle.getX1() * 2 + 1][castle.getY1() * 2 + 1] = CASTLE;
-		
+
 		resetMovableSoldiers();
+		stopTimers();
 		movables.clear();
 
 		// invalidate the line segment occupied by the castle
@@ -145,19 +148,18 @@ public class Model {
 
 	private void resetMovableSoldiers() {
 		for (Soldier s : movables) {
-			if(s.isArmada() && !s.isInInitialPosition()) {
+			if (s.isArmada() && !s.isInInitialPosition()) {
 				gameObjects[s.getX()][s.getY()] = new Lake(s.getX(), s.getY());
 				s.sendToInitialPosition();
 				gameObjects[s.getX()][s.getY()] = s;
-			}
-			else {
+			} else {
 				gameObjects[s.getX()][s.getY()] = null;
 				s.sendToInitialPosition();
 				gameObjects[s.getX()][s.getY()] = s;
 			}
 		}
 	}
-	
+
 	public void addSoldier(boolean ally, boolean movable, int i, int j) {
 		Soldier s = null;
 		if (ally)
@@ -166,8 +168,10 @@ public class Model {
 			s = new Enemy(movable, i, j);
 			noOfEnemies++;
 		}
-		if (movable)
+		if (movable) {
 			movables.add(s);
+			s.addActionListener(new MovableTimerActionListener(s));
+		}
 		soldiers.add(s);
 		gameObjects[i][j] = s;
 		map[s.getX() * 2 + 1][s.getY() * 2 + 1] = s.getWholeMapIndex();
@@ -183,15 +187,15 @@ public class Model {
 					gameObjects[i][j] = null;
 					addForest(i, j);
 				} else if (gameObjects[i][j] instanceof AllyArmada) {
-					Soldier s = (Soldier)(gameObjects[i][j]);
+					Soldier s = (Soldier) (gameObjects[i][j]);
 					gameObjects[i][j] = null;
-					addAllyArmada(i,j,s.movable);
+					addAllyArmada(i, j, s.movable);
 				} else if (gameObjects[i][j] instanceof EnemyArmada) {
-					Soldier s = (Soldier)(gameObjects[i][j]);
+					Soldier s = (Soldier) (gameObjects[i][j]);
 					gameObjects[i][j] = null;
-					addEnemyArmada(i,j,s.movable);
+					addEnemyArmada(i, j, s.movable);
 				} else if (gameObjects[i][j] instanceof Soldier) {
-					Soldier s = (Soldier)(gameObjects[i][j]);
+					Soldier s = (Soldier) (gameObjects[i][j]);
 					gameObjects[i][j] = null;
 					addSoldier(s instanceof Ally, s.movable, i, j);
 				}
@@ -365,7 +369,7 @@ public class Model {
 
 	public void printWholeMap() {
 
-		int[][] array = Model.transpose(map);
+		int[][] array = transpose(map);
 
 		System.out.println("---------------------------------------------------");
 
@@ -470,13 +474,13 @@ public class Model {
 		for (int p : points) {
 			xCoors[i] = currentX;
 			yCoors[i] = currentY;
-			if (p == Model.UP) {
+			if (p == UP) {
 				currentY--;
-			} else if (p == Model.DOWN) {
+			} else if (p == DOWN) {
 				currentY++;
-			} else if (p == Model.LEFT) {
+			} else if (p == LEFT) {
 				currentX--;
-			} else if (p == Model.RIGHT) {
+			} else if (p == RIGHT) {
 				currentX++;
 			}
 			i++;
@@ -630,10 +634,13 @@ public class Model {
 		gameObjects[i][j] = new AllyArmada(movable, i, j);
 		map[2 * i + 1][2 * j + 1] = ALLY_ARMADA;
 
-		if (movable)
+		if (movable) {
 			movables.add((Soldier) gameObjects[i][j]);
+			((Soldier) gameObjects[i][j])
+					.addActionListener(new MovableTimerActionListener((Soldier) gameObjects[i][j]));
+		}
 		soldiers.add((Soldier) gameObjects[i][j]);
-		
+
 		boolean up = false;
 		boolean down = false;
 		boolean right = false;
@@ -686,10 +693,13 @@ public class Model {
 		noOfEnemies++;
 		map[2 * i + 1][2 * j + 1] = ENEMY_ARMADA;
 
-		if (movable)
+		if (movable) {
 			movables.add((Soldier) gameObjects[i][j]);
+			((Soldier) gameObjects[i][j])
+					.addActionListener(new MovableTimerActionListener((Soldier) gameObjects[i][j]));
+		}
 		soldiers.add((Soldier) gameObjects[i][j]);
-		
+
 		boolean up = false;
 		boolean down = false;
 		boolean right = false;
@@ -785,5 +795,228 @@ public class Model {
 
 		setSizesOfObjects();
 		rearrangeWalls();
+	}
+
+	public void stopTimers() {
+		for (Soldier m : movables) {
+			if (m.t.isRunning())
+				m.stop();
+		}
+	}
+
+	public void startTimers() {
+		for (Soldier m : movables) {
+			if (canMove(m))
+				m.start();
+		}
+	}
+
+	public void rearrangeTimers() {
+		for (Soldier m : movables) {
+			if(thereIsWallNearBy(m)) {
+				if (m.t.isRunning())
+					m.stop();
+				continue;
+			}
+			if (canMove(m)) {
+				if (!m.t.isRunning())
+					m.start();
+			} else {
+				if (m.t.isRunning())
+					m.stop();
+			}
+		}
+	}
+
+	public void startTimer(Soldier s) {
+		s.start();
+	}
+
+	public void stopTimer(Soldier s) {
+		s.stop();
+	}
+
+	private boolean canMove(Soldier s) {
+		boolean up = isAvailable(s, Model.UP);
+		boolean down = isAvailable(s, Model.DOWN);
+		boolean left = isAvailable(s, Model.LEFT);
+		boolean right = isAvailable(s, Model.RIGHT);
+
+		return up || down || left || right;
+	}
+
+	private void move(Soldier s, int dir) {
+		if (s instanceof AllyArmada || s instanceof EnemyArmada) {
+			gameObjects[s.getX()][s.getY()] = new Lake(s.getX(), s.getY());
+			map[2 * s.getX() + 1][2 * s.getY() + 1] = LAKE;
+		} else {
+			gameObjects[s.getX()][s.getY()] = null;
+			map[2 * s.getX() + 1][2 * s.getY() + 1] = EMPTY;
+		}
+
+		if (dir == UP)
+			s.y--;
+		else if (dir == DOWN)
+			s.y++;
+		else if (dir == LEFT)
+			s.x--;
+		else if (dir == RIGHT)
+			s.x++;
+		gameObjects[s.getX()][s.getY()] = s;
+		map[2 * s.getX() + 1][2 * s.getY() + 1] = s.getWholeMapIndex();
+	}
+
+	private boolean isAvailable(Soldier s, int dir) {
+		int nextX = s.getX();
+		int nextY = s.getY();
+		int mapX = 0;
+		int mapY = 0;
+		if (dir == LEFT) {
+			mapX = 2 * nextX;
+			mapY = 2 * nextY + 1;
+			nextX--;
+		}
+		if (dir == RIGHT) {
+			mapX = 2 * nextX + 2;
+			mapY = 2 * nextY + 1;
+			nextX++;
+		}
+		if (dir == UP) {
+			mapX = 2 * nextX + 1;
+			mapY = 2 * nextY;
+			nextY--;
+		}
+		if (dir == DOWN) {
+			mapX = 2 * nextX + 1;
+			mapY = 2 * nextY + 2;
+			nextY++;
+		}
+
+		if (!outOfScreen(nextX, nextY) && map[mapX][mapY] != WALL_OR_CHAIN) {
+			if (s instanceof AllyArmada || s instanceof EnemyArmada)
+				return gameObjects[nextX][nextY] instanceof Lake;
+			else
+				return gameObjects[nextX][nextY] == null;
+		}
+		return false;
+	}
+
+	private boolean outOfScreen(int x, int y) {
+		if (x == 0 && y == 0)
+			return true;
+		if (x == mapWidth - 1 && y == 0)
+			return true;
+		if (x == 0 && y == mapLength - 1)
+			return true;
+		if (x == mapWidth - 1 && y == mapLength - 1)
+			return true;
+		return !(x >= 0 && x < mapWidth && y >= 0 && y < mapLength);
+	}
+
+	private boolean outOfScreenMap(int x, int y) {
+		return !(x >= 0 && x < map.length && y >= 0 && y < map[0].length);
+	}
+	
+	class MovableTimerActionListener implements ActionListener {
+		Soldier s;
+
+		public MovableTimerActionListener(Soldier s) {
+			this.s = s;
+		}
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			ArrayList<Integer> dirs = new ArrayList<Integer>();
+			dirs.add(-1);
+			if (isAvailable(s, Model.UP)) {
+				dirs.add(Model.UP);
+			}
+			if (isAvailable(s, Model.DOWN)) {
+				dirs.add(Model.DOWN);
+			}
+			if (isAvailable(s, Model.LEFT)) {
+				dirs.add(Model.LEFT);
+			}
+			if (isAvailable(s, Model.RIGHT)) {
+				dirs.add(Model.RIGHT);
+			}
+
+			int dir = (int) (Math.random() * dirs.size());
+
+			move(s, dirs.get(dir));
+
+		}
+	}
+
+	public boolean update() {
+		boolean result = updateHealthes();
+		rearrangeTimers();
+		return result;
+	}
+
+	private boolean updateHealthes() {
+		for (Soldier s : soldiers) {
+			if (s instanceof Enemy) {
+				if (thereIsWallNearBy(s)) {
+					WallOrChain w = wallNearBy(s);
+					int health = w.damaged(s.power);
+
+					if (health <= 0) {
+						w.collapsed = true;
+						removeFromLines(w);
+						w.remove();
+						return false;
+					} else
+						w.updateColor();
+				}
+			}
+		}
+		return true;
+	}
+
+	private WallOrChain wallNearBy(Soldier s) {
+		for (WallOrChain w : walls) {
+			if (isNextTo(w, s))
+				return w;
+		}
+		return null;
+	}
+
+	private boolean isNextTo(WallOrChain w, Soldier s) {
+		int count = 0;
+		if (w.visible) {
+			if (w.containsEdge(s.getX(), s.getY()))
+				count++;
+			if (w.containsEdge(s.getX() + 1, s.getY()))
+				count++;
+			if (w.containsEdge(s.getX(), s.getY() + 1))
+				count++;
+			if (w.containsEdge(s.getX() + 1, s.getY() + 1))
+				count++;
+		}
+		return count >= 2;
+	}
+
+	private boolean thereIsWallNearBy(Soldier s) {
+		int mapX = s.getX() * 2 + 1;
+		int mapY = s.getY() * 2 + 1;
+
+		if (!outOfScreenMap(mapX + 1, mapY) && map[mapX + 1][mapY] == WALL_OR_CHAIN)
+			return true;
+		if (!outOfScreenMap(mapX - 1, mapY) && map[mapX - 1][mapY] == WALL_OR_CHAIN)
+			return true;
+		if (!outOfScreenMap(mapX, mapY + 1) && map[mapX][mapY + 1] == WALL_OR_CHAIN)
+			return true;
+		if (!outOfScreenMap(mapX, mapY - 1) && map[mapX][mapY - 1] == WALL_OR_CHAIN)
+			return true;
+		return false;
+	}
+
+	public void pause() {
+		stopTimers();
+	}
+
+	public void resume() {
+		startTimers();
 	}
 }
