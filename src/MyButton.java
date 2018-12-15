@@ -49,9 +49,10 @@ public class MyButton extends JButton {
 			@Override
 			public void mouseExited(MouseEvent e) {
 				if (e.getSource() instanceof MyButton)
-					((MyButton) (e.getSource())).setFont(new Font("Arial", Font.PLAIN, ((MyButton) e.getSource()).getDefaultSize()));
-//		else if (e.getSource() instanceof JLabel)
-//			((JLabel) (e.getSource())).setFont(new Font("Arial", Font.PLAIN, 40));
+					((MyButton) (e.getSource()))
+							.setFont(new Font("Arial", Font.PLAIN, ((MyButton) e.getSource()).getDefaultSize()));
+				// else if (e.getSource() instanceof JLabel)
+				// ((JLabel) (e.getSource())).setFont(new Font("Arial", Font.PLAIN, 40));
 			}
 		});
 		addMouseMotionListener(new MouseMotionListener() {
@@ -64,12 +65,13 @@ public class MyButton extends JButton {
 			public void mouseMoved(MouseEvent e) {
 				if (e.getSource() instanceof MyButton)
 					if (((MyButton) (e.getSource())).isEnabled())
-						((MyButton) (e.getSource())).setFont(new Font("Arial", Font.PLAIN, ((MyButton) e.getSource()).getSizeScaledize()));
-//			else if (e.getSource() instanceof JLabel)
-//				((JLabel) (e.getSource())).setFont(new Font("Arial", Font.PLAIN, 50));
+						((MyButton) (e.getSource()))
+								.setFont(new Font("Arial", Font.PLAIN, ((MyButton) e.getSource()).getSizeScaledize()));
+				// else if (e.getSource() instanceof JLabel)
+				// ((JLabel) (e.getSource())).setFont(new Font("Arial", Font.PLAIN, 50));
 			}
 		});
-		
+
 		this.nextPanelName = nextPanel;
 		addActionListener(aL);
 	}
