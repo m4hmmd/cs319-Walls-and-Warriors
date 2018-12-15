@@ -1,8 +1,6 @@
 import javax.imageio.ImageIO;
 import javax.swing.*;
 
-import com.sun.xml.internal.ws.org.objectweb.asm.ClassAdapter;
-
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -20,7 +18,7 @@ import java.util.ArrayList;
 @SuppressWarnings("serial")
 public class MyComponents extends JComponent {
 
-	private Model model;
+	public Model model;
 	private CardLayout cardLayout;
 	private JPanel card;
 	int levelNo;
@@ -28,10 +26,11 @@ public class MyComponents extends JComponent {
 	WallOrChain selectedKey;
 
 	JButton backButton;
+	JButton restartButton;
 	private int pWidth = 0;
 	private int pHeight = 0;
 	GameView gv;
-	TimerActionListener timer;
+	Timer t;
 
 	public MyComponents(GameView gv, Model model, CardLayout cardLayout, JPanel card, int levelNo) {
 		this.model = model;
@@ -39,53 +38,85 @@ public class MyComponents extends JComponent {
 		this.card = card;
 		this.levelNo = levelNo;
 		this.gv = gv;
-		timer = new TimerActionListener();
-//		backButton = new JButton("Home");
-		backButton = new MyButton("Home", "Game Menu", 30, 40,new ActionListener() {
+		t = new Timer(100, new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if (model.update())
+					repaint();
+				else {
+					pause();
+					Object[] options = { "Return Home", "Restart" };
+
+					int n = JOptionPane.showOptionDialog(null, "A Wall or a Chain was collapsed", "Game Over",
+							JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[1]);
+
+					if (GameView.lastCompletedLevel < levelNo)
+						GameView.lastCompletedLevel = levelNo;
+
+					gv.levelButtons[levelNo].setEnabled(true);
+					gv.levelButtons[levelNo].setIcon(null);
+					
+					if (n == JOptionPane.YES_OPTION) {
+						cardLayout.show(card, "Game Menu");
+						model.reset();
+					} else if (n == JOptionPane.NO_OPTION) {
+						model.reset();
+						resume();
+					}
+				}
+			}
+		});
+
+		// backButton = new JButton("Home");
+		backButton = new MyButton("Home", "Game Menu", 30, 40, new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				cardLayout.show(card, "Game Menu");
 				model.reset();
+				stopTimer();
 				selectedKey = null;
 				selectedMouse = null;
-				timer.stop();
 			}
 		});
+		
+		restartButton = new MyButton("Restart", "Level " + levelNo, 30, 40, new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				model.reset();
+				t.restart();
+				selectedKey = null;
+				selectedMouse = null;
+				requestFocusInWindow();
+			}
+		});
+		
 		// back = new MyButton("Back", "Game Menu", btnSizeS, btnSizeScaledS,this);
 
-//		backButton.setForeground(Color.WHITE);
-//		backButton.setFont(new Font("Arial", Font.PLAIN, 30));
-//		backButton.setOpaque(false);
-//		backButton.setContentAreaFilled(false);
-//		backButton.setBorderPainted(false);
-//		// backButton.setHorizontalAlignment(SwingConstants.LEFT);
-//
-		backButton.addMouseListener(new MouseAdapter() {
-			public void mouseExited(MouseEvent e) {
-				((JButton) (e.getSource())).setFont(new Font("Arial", Font.PLAIN, 30));
-			}
-		});
-		backButton.addMouseMotionListener(new MouseMotionAdapter() {
-			@Override
-			public void mouseMoved(MouseEvent e) {
-				((JButton) (e.getSource())).setFont(new Font("Arial", Font.PLAIN, 40));
-			}
+		// backButton.setForeground(Color.WHITE);
+		// backButton.setFont(new Font("Arial", Font.PLAIN, 30));
+		// backButton.setOpaque(false);
+		// backButton.setContentAreaFilled(false);
+		// backButton.setBorderPainted(false);
+		// // backButton.setHorizontalAlignment(SwingConstants.LEFT);
+		//
 
-		});
-//		backButton.addActionListener(new ActionListener() {
-//
-//			@Override
-//			public void actionPerformed(ActionEvent e) {
-//				cardLayout.show(card, "Game Menu");
-//				model.reset();
-//				selectedKey = null;
-//				selectedMouse = null;
-//				timer.stop();
-//			}
-//		});
+		// backButton.addActionListener(new ActionListener() {
+		//
+		// @Override
+		// public void actionPerformed(ActionEvent e) {
+		// cardLayout.show(card, "Game Menu");
+		// model.reset();
+		// selectedKey = null;
+		// selectedMouse = null;
+		// timer.stop();
+		// }
+		// });
 
 		add(backButton);
+		add(restartButton);
 		Listeners listener = new Listeners();
 		requestFocusInWindow();
 		addKeyListener(listener);
@@ -95,6 +126,25 @@ public class MyComponents extends JComponent {
 		setFocusable(true);
 	}
 
+	public void startTimer() {
+		t.start();
+	}
+
+	public void stopTimer() {
+		t.stop();
+	}
+
+	private void pause() {
+		stopTimer();
+		model.pause();
+		repaint();
+	}
+
+	protected void resume() {
+		startTimer();
+		model.resume();
+	}
+	
 	@Override
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
@@ -121,11 +171,11 @@ public class MyComponents extends JComponent {
 
 		drawGrid(g);
 		drawGameObjects(g);
-		
-		drawWallOptions(g);
+
 		drawWalls(g);
 
 		backButton.setBounds(0, (int) (getHeight() / 10 * 0.5), getWidth() / 5, getHeight() / 10);
+		restartButton.setBounds((int) (getHeight() / 10 * 10.5), (int) (getHeight() / 10 * 0.5), getWidth() / 4, getHeight() / 10);
 		pWidth = getWidth();
 		pHeight = getHeight();
 	}
@@ -163,25 +213,6 @@ public class MyComponents extends JComponent {
 							model.squareWidth - model.lineWidth + 1, model.squareHeight - model.lineWidth + 1);
 				}
 			}
-		}
-	}
-
-	void drawWallOptions(Graphics g) {
-		g.setColor(Color.GRAY.brighter());
-		for (int i = 0; i < model.getWalls().length; i++) {
-			Rectangle r = model.getWalls()[i].wallContainer;
-			g.fillRect(r.x, r.y, r.width, r.height);
-		}
-		g.setColor(Color.GRAY);
-		for (int i = 0; i < model.getWalls().length; i++) {
-			Rectangle r = model.getWalls()[i].wallContainer;
-			g.drawRect(r.x, r.y, r.width, r.height);
-		}
-		g.setColor(Color.BLACK);
-		g.setFont(new Font("TimesRoman", Font.PLAIN, model.squareHeight / 6));
-		for (int i = 0; i < model.getWalls().length; i++) {
-			Rectangle r = model.getWalls()[i].wallContainer;
-			g.drawString("" + (i + 1), r.x + model.squareWidth / 14, r.y + model.squareHeight / 6);
 		}
 	}
 
@@ -274,40 +305,43 @@ public class MyComponents extends JComponent {
 			clickedY = e.getY();
 			boolean isWall = false;
 			for (WallOrChain w : model.getWalls()) {
-				if (w != selectedKey && w.visible && w.contains(e.getX(), e.getY())) {
-					selectedMouse = w;
-					model.removeFromLines(selectedMouse);
-					wallStartX_MOUSE = selectedMouse.xCoor;
-					wallStartY_MOUSE = selectedMouse.yCoor;
-					wallStartXInd_MOUSE = selectedMouse.xInd;
-					wallStartYInd_MOUSE = selectedMouse.yInd;
-					isWall = true;
-					break;
-				}
+				if (!w.collapsed) {
+					if (w != selectedKey && w.visible && w.contains(e.getX(), e.getY())) {
+						selectedMouse = w;
+						model.removeFromLines(selectedMouse);
+						wallStartX_MOUSE = selectedMouse.xCoor;
+						wallStartY_MOUSE = selectedMouse.yCoor;
+						wallStartXInd_MOUSE = selectedMouse.xInd;
+						wallStartYInd_MOUSE = selectedMouse.yInd;
+						isWall = true;
+						break;
+					}
 
-				else if (w == selectedKey && w.visible && w.contains(e.getX(), e.getY())) {
-					selectedMouse = w;
-					selectedKey = null;
-					wallStartX_MOUSE = selectedMouse.xCoor;
-					wallStartY_MOUSE = selectedMouse.yCoor;
-					wallStartXInd_MOUSE = wallStartXInd_KEY;
-					wallStartYInd_MOUSE = wallStartYInd_KEY;
-					isWall = true;
-					break;
+					else if (w == selectedKey && w.visible && w.contains(e.getX(), e.getY())) {
+						selectedMouse = w;
+						selectedKey = null;
+						wallStartX_MOUSE = selectedMouse.xCoor;
+						wallStartY_MOUSE = selectedMouse.yCoor;
+						wallStartXInd_MOUSE = wallStartXInd_KEY;
+						wallStartYInd_MOUSE = wallStartYInd_KEY;
+						isWall = true;
+						break;
+					}
 				}
 			}
 
 			if (!isWall) {
 				for (int i = 0; i < model.getWalls().length; i++) {
 
-					if (model.getWalls()[i].wallContainer.contains(clickedX, clickedY)
-							&& !model.getWalls()[i].visible) {
-						model.getWalls()[i].appear();
-						selectedMouse = model.getWalls()[i];
-						indexOfGreenSquare = i;
-						wallStartX_MOUSE = (int) model.getWalls()[i].wallContainer.getCenterX();
-						wallStartY_MOUSE = (int) model.getWalls()[i].wallContainer.getCenterY();
-						wasInvisible_MOUSE = true;
+					if (!model.getWalls()[i].collapsed) {
+						if (model.getWalls()[i].wallContainer.contains(clickedX, clickedY)
+								&& !model.getWalls()[i].visible) {
+							selectedMouse = model.getWalls()[i];
+							indexOfGreenSquare = i;
+							wallStartX_MOUSE = (int) model.getWalls()[i].wallContainer.getCenterX();
+							wallStartY_MOUSE = (int) model.getWalls()[i].wallContainer.getCenterY();
+							wasInvisible_MOUSE = true;
+						}
 					}
 				}
 			}
@@ -316,6 +350,8 @@ public class MyComponents extends JComponent {
 		@Override
 		public void mouseDragged(MouseEvent e) {
 			if (selectedMouse != null) {
+				if (!selectedMouse.visible)
+					selectedMouse.appear();
 				if (!wasInvisible_MOUSE) {
 					selectedMouse.xCoor = (int) (wallStartX_MOUSE + e.getX() - clickedX);
 					selectedMouse.yCoor = (int) (wallStartY_MOUSE + e.getY() - clickedY);
@@ -433,6 +469,8 @@ public class MyComponents extends JComponent {
 			selectedKey = null;
 			repaint();
 			model.gameFinished = true;
+			stopTimer();
+			model.stopTimers();
 			SoundManager.gameWon();
 
 			Object[] options = { "Return Home", "Next Level" };
@@ -454,7 +492,6 @@ public class MyComponents extends JComponent {
 			}
 			selectedKey = null;
 			selectedMouse = null;
-			timer.stop();
 		}
 
 		public void mouseExited(MouseEvent e) {
@@ -609,7 +646,7 @@ public class MyComponents extends JComponent {
 				placeSelectedKey();
 			}
 			if (i > 0 && i <= model.getWalls().length && model.getWalls()[i - 1] != null
-					&& model.getWalls()[i - 1] != selectedMouse) {
+					&& model.getWalls()[i - 1] != selectedMouse && !model.getWalls()[i - 1].collapsed) {
 				if (selectedKey != model.getWalls()[i - 1]) {
 					if (model.getWalls()[i - 1].visible) {
 						selectedKey = model.getWalls()[i - 1];
@@ -697,114 +734,6 @@ public class MyComponents extends JComponent {
 				}
 			}
 			wasInvisible_KEY = false;
-		}
-	}
-
-	public class TimerActionListener implements ActionListener {
-		Timer t = new Timer(3000, this);
-
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			for (Soldier s : model.movables) {
-
-				ArrayList<Integer> dirs = new ArrayList<Integer>();
-
-				if (isAvailable(s, Model.UP)) {
-					dirs.add(Model.UP);
-				}
-				if (isAvailable(s, Model.DOWN)) {
-					dirs.add(Model.DOWN);
-				}
-				if (isAvailable(s, Model.LEFT)) {
-					dirs.add(Model.LEFT);
-				}
-				if (isAvailable(s, Model.RIGHT)) {
-					dirs.add(Model.RIGHT);
-				}
-
-				if (!dirs.isEmpty()) {
-					int dir = (int) (Math.random() * dirs.size());
-
-					move(s, dirs.get(dir));
-					repaint();
-				}
-			}
-		}
-
-		private void move(Soldier s, int dir) {
-			if (s instanceof AllyArmada || s instanceof EnemyArmada) {
-				model.gameObjects[s.getX()][s.getY()] = new Lake(s.getX(), s.getY());
-				model.map[2*s.getX()+1][2*s.getY()+1] = Model.LAKE;
-			} else {
-				model.gameObjects[s.getX()][s.getY()] = null;
-				model.map[2*s.getX()+1][2*s.getY()+1] = Model.EMPTY;
-			}
-
-			if (dir == Model.UP)
-				s.y--;
-			if (dir == Model.DOWN)
-				s.y++;
-			if (dir == Model.LEFT)
-				s.x--;
-			if (dir == Model.RIGHT)
-				s.x++;
-			model.gameObjects[s.getX()][s.getY()] = s;
-			model.map[2*s.getX()+1][2*s.getY()+1] = s.getWholeMapIndex();
-		}
-
-		private boolean isAvailable(Soldier s, int dir) {
-			int nextX = s.getX();
-			int nextY = s.getY();
-			int mapX = 0;
-			int mapY = 0;
-			if (dir == Model.LEFT) {
-				mapX = 2 * nextX;
-				mapY = 2 * nextY + 1;
-				nextX--;
-			}
-			if (dir == Model.RIGHT) {
-				mapX = 2 * nextX + 2;
-				mapY = 2 * nextY + 1;
-				nextX++;
-			}
-			if (dir == Model.UP) {
-				mapX = 2 * nextX + 1;
-				mapY = 2 * nextY;
-				nextY--;
-			}
-			if (dir == Model.DOWN) {
-				mapX = 2 * nextX + 1;
-				mapY = 2 * nextY + 2;
-				nextY++;
-			}
-
-			if (!outOfScreen(nextX, nextY) && model.map[mapX][mapY] != Model.WALL_OR_CHAIN) {
-				if (s instanceof AllyArmada || s instanceof EnemyArmada)
-					return model.gameObjects[nextX][nextY] instanceof Lake;
-				else
-					return model.gameObjects[nextX][nextY] == null;
-			}
-			return false;
-		}
-
-		private boolean outOfScreen(int x, int y) {
-			if (x == 0 && y == 0)
-				return true;
-			if (x == model.mapWidth - 1 && y == 0)
-				return true;
-			if (x == 0 && y == model.mapLength - 1)
-				return true;
-			if (x == model.mapWidth - 1 && y == model.mapLength - 1)
-				return true;
-			return !(x >= 0 && x < model.mapWidth && y >= 0 && y < model.mapLength);
-		}
-
-		public void start() {
-			t.start();
-		}
-
-		public void stop() {
-			t.stop();
 		}
 	}
 }
