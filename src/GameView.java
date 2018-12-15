@@ -22,8 +22,10 @@ public class GameView extends JFrame implements ActionListener {
 	CardLayout cardLayout;
 	JPanel card = new JPanel();
 	GameManager managers[] = new GameManager[5];
-	MyButton[] levelButtons = { new MyButton("Level 1", "Level 1", btnSizeL, btnSizeScaledL,this), new MyButton("Level 2", "Level 2", btnSizeL, btnSizeScaledL,this),
-			new MyButton("Level 3", "Level 3", btnSizeL, btnSizeScaledL, this), new MyButton("Level 4", "Level 4", btnSizeL, btnSizeScaledL, this),
+	MyButton[] levelButtons = { new MyButton("Level 1", "Level 1", btnSizeL, btnSizeScaledL, this),
+			new MyButton("Level 2", "Level 2", btnSizeL, btnSizeScaledL, this),
+			new MyButton("Level 3", "Level 3", btnSizeL, btnSizeScaledL, this),
+			new MyButton("Level 4", "Level 4", btnSizeL, btnSizeScaledL, this),
 			new MyButton("Level 5", "Level 5", btnSizeL, btnSizeScaledL, this) };
 
 	public GameView() throws IOException {
@@ -39,7 +41,7 @@ public class GameView extends JFrame implements ActionListener {
 			levelButtons[i].setEnabled(false);
 			try {
 				Image img = ImageIO.read(new File("src/img/locked.png"));
-				Image newimg = img.getScaledInstance(50, 50,  Image.SCALE_SMOOTH); // scale it the smooth way
+				Image newimg = img.getScaledInstance(50, 50, Image.SCALE_SMOOTH); // scale it the smooth way
 				levelButtons[i].setIcon(new ImageIcon(newimg));
 			} catch (Exception ex) {
 				System.out.println(ex);
@@ -80,7 +82,7 @@ public class GameView extends JFrame implements ActionListener {
 		creditsPanel.addLabel(new JLabel("Mahammad Shirinov"));
 		creditsPanel.addLabel(new JLabel("Samet Demir"));
 
-		MyButton back = new MyButton("Back", "Game Menu", btnSizeS, btnSizeScaledS,this);
+		MyButton back = new MyButton("Back", "Game Menu", btnSizeS, btnSizeScaledS, this);
 		creditsPanel.addBackButton(back);
 
 		card.add("Credits", creditsPanel);
@@ -89,16 +91,17 @@ public class GameView extends JFrame implements ActionListener {
 	private void createHowToPanel() throws IOException {
 		MyPanel howToPanel = new MyPanel("How To Play", "src/img/img1.jpeg");
 
-		JLabel howToPlay = new JLabel("<html><center><h1>HOW TO PLAY</h1></center><br>" + "<u><h2>Description of the Game</h2></u><br>"
-				+ "Walls & Warriors is a board game played with warrior figures <br>"
-				+ "and walls placed under specific rules. The goal of this game place the <br>"
-				+ "four walls on the game board so that all the blue knights are inside the <br>"
-				+ "enclosure and all the red knights are on the outside to defend the castle <br>"
-				+ "to be left inside the walls.<br><br>" + "<u><h2>Gameplay</h2></u><br>"
-				+ "Given a board with red and blue soldiers and, on higher levels, lakes and <br>"
-				+ "special soldiers, the player needs to select one of the provided wall shapes, <br>"
-				+ "rotate it as needed and put onto the board, so as to complete the castle <br>"
-				+ "with all blue knights inside and red ones outside.</html>");
+		JLabel howToPlay = new JLabel(
+				"<html><center><h1>HOW TO PLAY</h1></center><br>" + "<u><h2>Description of the Game</h2></u><br>"
+						+ "Walls & Warriors is a board game played with warrior figures <br>"
+						+ "and walls placed under specific rules. The goal of this game place the <br>"
+						+ "four walls on the game board so that all the blue knights are inside the <br>"
+						+ "enclosure and all the red knights are on the outside to defend the castle <br>"
+						+ "to be left inside the walls.<br><br>" + "<u><h2>Gameplay</h2></u><br>"
+						+ "Given a board with red and blue soldiers and, on higher levels, lakes and <br>"
+						+ "special soldiers, the player needs to select one of the provided wall shapes, <br>"
+						+ "rotate it as needed and put onto the board, so as to complete the castle <br>"
+						+ "with all blue knights inside and red ones outside.</html>");
 		howToPlay.setFont(new Font("Times", 1, 30));
 		howToPlay.setForeground(Color.WHITE);
 		howToPlay.setBounds(0, 0, getWidth(), getHeight());
@@ -107,7 +110,7 @@ public class GameView extends JFrame implements ActionListener {
 
 		MyButton back = new MyButton("Back", "Game Menu", btnSizeS, btnSizeScaledS, this);
 
-//		back.setPreferredSize(new Dimension(20, 20));
+		// back.setPreferredSize(new Dimension(20, 20));
 
 		howToPanel.addBackButton(back);
 
@@ -135,7 +138,7 @@ public class GameView extends JFrame implements ActionListener {
 
 	private void createGameMenu() {
 		try {
-			MyButton play = new MyButton("Play", "Level Menu", btnSizeL, btnSizeScaledL,this);
+			MyButton play = new MyButton("Play", "Level Menu", btnSizeL, btnSizeScaledL, this);
 			MyButton settings = new MyButton("Settings", "Settings", btnSizeL, btnSizeScaledL, this);
 			MyButton howToPlay = new MyButton("How To Play", "How To Play", btnSizeL, btnSizeScaledL, this);
 			MyButton credits = new MyButton("Credits", "Credits", btnSizeL, btnSizeScaledL, this);
@@ -161,11 +164,10 @@ public class GameView extends JFrame implements ActionListener {
 			System.exit(0);
 		}
 		cardLayout.show(card, ((MyButton) e.getSource()).getNextPanelName());
-
 		for (int i = 0; i < managers.length; i++) {
 			if (((MyButton) e.getSource()).getNextPanelName().equals("Level " + (i + 1))) {
 				managers[i].getPanel().requestFocusInWindow();
-				managers[i].getPanel().timer.start();
+				managers[i].startTimers();
 			}
 		}
 	}
