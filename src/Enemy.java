@@ -1,18 +1,22 @@
 
-import java.awt.Color;
-import java.awt.Graphics;
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.io.File;
 
 public class Enemy extends Soldier {
 
 	public Enemy(boolean movable, int x, int y) {
 		super(movable, x, y, Color.RED);
-	}
 
-	@Override
-	public void draw(Graphics g, int initialXShift, int initialYShift, int squareHeight, int squareWidth) {
-		g.setColor(getColor());
-		g.fillOval(initialXShift + squareWidth * getX() + squareWidth / 3,
-				initialYShift + squareHeight * getY() + squareHeight / 3, squareWidth / 3, squareHeight / 3);
+		try
+		{
+			File file = new File("src/img/red.png");
+			soldierImg = ImageIO.read(file);
+		}
+		catch ( Exception e )
+		{
+			System.out.println("Couldn't find file: " + e);
+		}
 	}
 
 	@Override

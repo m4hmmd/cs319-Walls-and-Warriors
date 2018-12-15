@@ -4,6 +4,7 @@ import java.awt.event.ActionListener;
 import javax.swing.Timer;
 
 public abstract class Soldier extends GameObject {
+	protected Image soldierImg;
 
 	int power = 2;
 	boolean movable;
@@ -30,7 +31,11 @@ public abstract class Soldier extends GameObject {
 	}
 	
 	@Override
-	public abstract void draw(Graphics g, int initialXShift, int initialYShift, int squareHeight, int squareWidth);
+	public void draw(Graphics g, int initialXShift, int initialYShift, int squareHeight, int squareWidth) {
+		if (soldierImg != null)
+			g.drawImage(soldierImg, initialXShift + squareWidth * getX() + squareWidth / 8,
+					initialYShift + squareHeight * getY() + squareHeight / 8, 3 * squareWidth / 4, 3 * squareHeight / 4, null);
+	}
 
 	@Override
 	public abstract int getWholeMapIndex();
