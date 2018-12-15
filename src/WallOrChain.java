@@ -55,9 +55,8 @@ public abstract class WallOrChain {
 		}
 		totalX += xCoors[xCoors.length - 1] / 2.0;
 		totalY += yCoors[yCoors.length - 1] / 2.0;
-		
+
 		points.add(new Point(xCoors[xCoors.length - 1], yCoors[yCoors.length - 1]));
-		
 
 		setEdges();
 		centerX = totalX / (xCoors.length - 1);
@@ -113,7 +112,7 @@ public abstract class WallOrChain {
 		this.index = index;
 		this.mapWidth = mapWidth;
 		this.mapHeight = mapHeight;
-		
+
 		nearestRectToCenter = getNearestRectangleToCenter(squareWidth, squareHeight);
 	}
 
@@ -358,9 +357,28 @@ public abstract class WallOrChain {
 		return false;
 	}
 
-	boolean containsEdge(int x, int y) {
-		for (int i = 0; i < points.size(); i++) {
-			if (this.xInd + points.get(i).x == x && this.yInd + points.get(i).y == y) {
+	boolean containsLine(Soldier s, int dir) {
+		Point p1 = null;
+		Point p2 = null;
+
+		if (dir == Model.UP) {
+			p1 = new Point(s.getX(), s.getY());
+			p2 = new Point(s.getX() + 1, s.getY());
+		} else if (dir == Model.DOWN) {
+			p1 = new Point(s.getX(), s.getY() + 1);
+			p2 = new Point(s.getX() + 1, s.getY() + 1);
+		} else if (dir == Model.LEFT) {
+			p1 = new Point(s.getX(), s.getY());
+			p2 = new Point(s.getX(), s.getY() + 1);
+		} else if (dir == Model.RIGHT) {
+			p1 = new Point(s.getX() + 1, s.getY());
+			p2 = new Point(s.getX() + 1, s.getY() + 1);
+		}
+
+		for (int i = 0; i < points.size() - 1; i++) {
+			Point thisLine1 = new Point(this.xInd + points.get(i).x, this.yInd + points.get(i).y);
+			Point thisLine2 = new Point(this.xInd + points.get(i + 1).x, this.yInd + points.get(i + 1).y);
+			if (p1.equals(thisLine1) && p2.equals(thisLine2) || p2.equals(thisLine1) && p1.equals(thisLine2)) {
 				return true;
 			}
 		}
