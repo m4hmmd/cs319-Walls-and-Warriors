@@ -238,24 +238,45 @@ public abstract class WallOrChain {
 
 		int nextXCoor = (int) (wallContainer.getCenterX() - (centerX) * squareWidthOnGreenSquare);
 		int nextYCoor = (int) (wallContainer.getCenterY() - (centerY) * squareHeightOnGreenSquare);
-		for (int i = 0; i < points.size() - 1; i++) {
-			if (points.get(i).x < points.get(i + 1).x) {
-				rectsOnGreenSquare.get(i).setBounds(nextXCoor, nextYCoor - lineWidthOnGreenSquare / 2,
-						squareWidthOnGreenSquare, lineWidthOnGreenSquare);
+
+		int line = (lineWidthOnGreenSquare) / 2;
+		
+		for (int i = 0; i < points.size() - 2; i++) {
+			if (points.get(i).x < points.get(i + 1).x) { // RIGHT
+				rectsOnGreenSquare.get(i).setBounds(nextXCoor + (line ), nextYCoor - (line ), squareWidthOnGreenSquare,
+						lineWidthOnGreenSquare);
 				nextXCoor = nextXCoor + squareWidthOnGreenSquare;
-			} else if (points.get(i).y < points.get(i + 1).y) {
-				rectsOnGreenSquare.get(i).setBounds(nextXCoor - lineWidthOnGreenSquare / 2, nextYCoor,
-						lineWidthOnGreenSquare, squareHeightOnGreenSquare);
+			} else if (points.get(i).y < points.get(i + 1).y) { // DOWN
+				rectsOnGreenSquare.get(i).setBounds(nextXCoor - (line ), nextYCoor + (line ), lineWidthOnGreenSquare,
+						squareHeightOnGreenSquare);
 				nextYCoor = nextYCoor + squareHeightOnGreenSquare;
-			} else if (points.get(i).x > points.get(i + 1).x) {
-				rectsOnGreenSquare.get(i).setBounds(nextXCoor - squareWidthOnGreenSquare,
-						nextYCoor - lineWidthOnGreenSquare / 2, squareWidthOnGreenSquare, lineWidthOnGreenSquare);
+			} else if (points.get(i).x > points.get(i + 1).x) { // LEFT
+				rectsOnGreenSquare.get(i).setBounds(nextXCoor - squareWidthOnGreenSquare - line, nextYCoor - line,
+						squareWidthOnGreenSquare, lineWidthOnGreenSquare);
 				nextXCoor = nextXCoor - squareWidthOnGreenSquare;
-			} else if (points.get(i).y > points.get(i + 1).y) {
-				rectsOnGreenSquare.get(i).setBounds(nextXCoor - lineWidthOnGreenSquare / 2,
-						nextYCoor - squareHeightOnGreenSquare, lineWidthOnGreenSquare, squareHeightOnGreenSquare);
+			} else if (points.get(i).y > points.get(i + 1).y) { // UP
+				rectsOnGreenSquare.get(i).setBounds(nextXCoor - line, nextYCoor - squareHeightOnGreenSquare - line, lineWidthOnGreenSquare,
+						squareHeightOnGreenSquare);
 				nextYCoor = nextYCoor - squareHeightOnGreenSquare;
 			}
+		}
+
+		if (points.get(points.size() - 2).x < points.get(points.size() - 1).x) {
+			rectsOnGreenSquare.get(points.size() - 2).setBounds(nextXCoor + lineWidthOnGreenSquare / 2, nextYCoor - lineWidthOnGreenSquare / 2,
+					squareWidthOnGreenSquare - lineWidthOnGreenSquare, lineWidthOnGreenSquare);
+			nextXCoor = nextXCoor + squareWidthOnGreenSquare;
+		} else if (points.get(points.size() - 2).y < points.get(points.size() - 1).y) {
+			rectsOnGreenSquare.get(points.size() - 2).setBounds(nextXCoor - lineWidthOnGreenSquare / 2, nextYCoor + lineWidthOnGreenSquare / 2, lineWidthOnGreenSquare,
+					squareHeightOnGreenSquare - lineWidthOnGreenSquare);
+			nextYCoor = nextYCoor + squareHeightOnGreenSquare;
+		} else if (points.get(points.size() - 2).x > points.get(points.size() - 1).x) {
+			rectsOnGreenSquare.get(points.size() - 2).setBounds(nextXCoor - squareWidthOnGreenSquare + lineWidthOnGreenSquare / 2, nextYCoor - lineWidthOnGreenSquare / 2,
+					squareWidthOnGreenSquare - lineWidthOnGreenSquare, lineWidthOnGreenSquare);
+			nextXCoor = nextXCoor - squareWidthOnGreenSquare;
+		} else if (points.get(points.size()-2).y > points.get(points.size() - 1).y) {
+			rectsOnGreenSquare.get(points.size() - 2).setBounds(nextXCoor - lineWidthOnGreenSquare / 2, nextYCoor - squareHeightOnGreenSquare + lineWidthOnGreenSquare / 2,
+					lineWidthOnGreenSquare, squareHeightOnGreenSquare - lineWidthOnGreenSquare);
+			nextYCoor = nextYCoor - squareHeightOnGreenSquare;
 		}
 	}
 
@@ -297,43 +318,48 @@ public abstract class WallOrChain {
 
 	}
 
-	void setTheRectanglePoints(int squareHeight, int squareWidth) {
-		int nextXCoor = xCoor;
-		int nextYCoor = yCoor;
-		for (int i = 0; i < points.size() - 1; i++) {
-			if (points.get(i).x < points.get(i + 1).x) {
-				rects.get(i).setBounds(nextXCoor, nextYCoor - lineWidth / 2, squareWidth, lineWidth);
-				nextXCoor = nextXCoor + squareWidth;
-			} else if (points.get(i).y < points.get(i + 1).y) {
-				rects.get(i).setBounds(nextXCoor - lineWidth / 2, nextYCoor, lineWidth, squareHeight);
-				nextYCoor = nextYCoor + squareHeight;
-			} else if (points.get(i).x > points.get(i + 1).x) {
-				rects.get(i).setBounds(nextXCoor - squareWidth, nextYCoor - lineWidth / 2, squareWidth, lineWidth);
-				nextXCoor = nextXCoor - squareWidth;
-			} else if (points.get(i).y > points.get(i + 1).y) {
-				rects.get(i).setBounds(nextXCoor - lineWidth / 2, nextYCoor - squareHeight, lineWidth, squareHeight);
-				nextYCoor = nextYCoor - squareHeight;
-			}
-		}
-	}
-
 	void setTheRectanglePoints(int squareHeight, int squareWidth, int shiftY) {
 		int nextXCoor = xCoor;
 		int nextYCoor = yCoor + shiftY;
-		for (int i = 0; i < points.size() - 1; i++) {
-			if (points.get(i).x < points.get(i + 1).x) {
-				rects.get(i).setBounds(nextXCoor, nextYCoor - lineWidth / 2, squareWidth, lineWidth);
+		
+		int line = (lineWidth) / 2;
+		
+		for (int i = 0; i < points.size() - 2; i++) {
+			if (points.get(i).x < points.get(i + 1).x) { // RIGHT
+				rects.get(i).setBounds(nextXCoor + (line ), nextYCoor - (line ), squareWidth,
+						lineWidth);
 				nextXCoor = nextXCoor + squareWidth;
-			} else if (points.get(i).y < points.get(i + 1).y) {
-				rects.get(i).setBounds(nextXCoor - lineWidth / 2, nextYCoor, lineWidth, squareHeight);
+			} else if (points.get(i).y < points.get(i + 1).y) { // DOWN
+				rects.get(i).setBounds(nextXCoor - (line ), nextYCoor + (line ), lineWidth,
+						squareHeight);
 				nextYCoor = nextYCoor + squareHeight;
-			} else if (points.get(i).x > points.get(i + 1).x) {
-				rects.get(i).setBounds(nextXCoor - squareWidth, nextYCoor - lineWidth / 2, squareWidth, lineWidth);
+			} else if (points.get(i).x > points.get(i + 1).x) { // LEFT
+				rects.get(i).setBounds(nextXCoor - squareWidth - line, nextYCoor - line,
+						squareWidth, lineWidth);
 				nextXCoor = nextXCoor - squareWidth;
-			} else if (points.get(i).y > points.get(i + 1).y) {
-				rects.get(i).setBounds(nextXCoor - lineWidth / 2, nextYCoor - squareHeight, lineWidth, squareHeight);
+			} else if (points.get(i).y > points.get(i + 1).y) { // UP
+				rects.get(i).setBounds(nextXCoor - line, nextYCoor - squareHeight - line, lineWidth,
+						squareHeight);
 				nextYCoor = nextYCoor - squareHeight;
 			}
+		}
+
+		if (points.get(points.size() - 2).x < points.get(points.size() - 1).x) {
+			rects.get(points.size() - 2).setBounds(nextXCoor + lineWidth / 2, nextYCoor - lineWidth / 2,
+					squareWidth - lineWidth, lineWidth);
+			nextXCoor = nextXCoor + squareWidth;
+		} else if (points.get(points.size() - 2).y < points.get(points.size() - 1).y) {
+			rects.get(points.size() - 2).setBounds(nextXCoor - lineWidth / 2, nextYCoor + lineWidth / 2, lineWidth,
+					squareHeight - lineWidth);
+			nextYCoor = nextYCoor + squareHeight;
+		} else if (points.get(points.size() - 2).x > points.get(points.size() - 1).x) {
+			rects.get(points.size() - 2).setBounds(nextXCoor - squareWidth + lineWidth / 2, nextYCoor - lineWidth / 2,
+					squareWidth - lineWidth, lineWidth);
+			nextXCoor = nextXCoor - squareWidth;
+		} else if (points.get(points.size()-2).y > points.get(points.size() - 1).y) {
+			rects.get(points.size() - 2).setBounds(nextXCoor - lineWidth / 2, nextYCoor - squareHeight + lineWidth / 2,
+					lineWidth, squareHeight - lineWidth);
+			nextYCoor = nextYCoor - squareHeight;
 		}
 	}
 
@@ -398,7 +424,7 @@ public abstract class WallOrChain {
 		remove();
 
 		setRectangles();
-		setTheRectanglePoints(squareHeight, squareWidth);
+		setTheRectanglePoints(squareHeight, squareWidth, 0);
 	}
 
 	public int getLineWidthOnGreenSquare() {
