@@ -14,10 +14,9 @@ public class Wall extends WallOrChain {
 		g.setColor(getColor());
 
 		if (visible) {
-			for (int i = 0; i < points.size() - 1; i++) {
-				g.fillRect((int) rects.get(i).getX(), (int) rects.get(i).getY(), (int) rects.get(i).getWidth(),
-						(int) rects.get(i).getHeight());
-			}
+			
+			Graphics2D g2 = (Graphics2D) g;
+			g2.fill(area);
 
 			int healthWidth = squareWidth / 3;
 			int healthHeight = squareWidth / 8;
@@ -35,10 +34,8 @@ public class Wall extends WallOrChain {
 					(int) (healthWidth * (health * 1.0 / initialHealth)), healthHeight);
 
 		} else {
-			for (int i = 0; i < points.size() - 1; i++) {
-				g.fillRect((int) rectsOnGreenSquare.get(i).getX(), (int) rectsOnGreenSquare.get(i).getY(),
-						(int) rectsOnGreenSquare.get(i).getWidth(), (int) rectsOnGreenSquare.get(i).getHeight());
-			}
+			Graphics2D g2 = (Graphics2D) g;
+			g2.fill(areaForSquare);
 		}
 
 		if (collapsed) {
