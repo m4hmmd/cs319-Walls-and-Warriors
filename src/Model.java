@@ -283,7 +283,7 @@ public class Model {
 			}
 		}
 		for (int i = 0; i < w.edgesX.length; i++) {
-			if (map[(w.xInd + w.edgesX[i]) * 2][(w.yInd + w.edgesY[i]) * 2] == WALL_OR_CHAIN) {
+			if (map[(indexX + w.edgesX[i]) * 2][(indexY + w.edgesY[i]) * 2] == WALL_OR_CHAIN) {
 				return false;
 			}
 		}
