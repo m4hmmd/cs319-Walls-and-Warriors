@@ -756,11 +756,49 @@ public class Model {
 		gameObjects[i][j] = new Forest(i, j);
 		map[2 * i + 1][2 * j + 1] = FOREST;
 
-		map[2 * i + 1][2 * j] = FOREST;
-		map[2 * i + 1][2 * j + 2] = FOREST;
-		map[2 * i][2 * j + 1] = FOREST;
-		map[2 * i + 2][2 * j + 1] = FOREST;
+		boolean up = false;
+		boolean down = false;
+		boolean right = false;
+		boolean left = false;
 
+		if (map[2 * i + 1][2 * j] != EDGE_OF_LAKE)
+			map[2 * i + 1][2 * j] = VALID_FOR_WALL;
+		if (map[2 * i + 1][2 * j + 2] != EDGE_OF_LAKE)
+			map[2 * i + 1][2 * j + 2] = VALID_FOR_WALL;
+		if (map[2 * i][2 * j + 1] != EDGE_OF_LAKE)
+			map[2 * i][2 * j + 1] = VALID_FOR_WALL;
+		if (map[2 * i + 2][2 * j + 1] != EDGE_OF_LAKE)
+			map[2 * i + 2][2 * j + 1] = VALID_FOR_WALL;
+
+		if (i != 0) {
+			left = map[2 * i - 1][2 * j + 1] == FOREST;
+		}
+		if (i < mapWidth - 1) {
+			right = map[2 * i + 3][2 * j + 1] == FOREST;
+		}
+
+		if (j != 0) {
+			up = map[2 * i + 1][2 * j - 1] == FOREST;
+		}
+		if (j < mapLength - 1) {
+			down = map[2 * i + 1][2 * j + 3] == FOREST;
+		}
+
+		if (up) {
+			map[2 * i + 1][2 * j] = FOREST;
+		}
+
+		if (down) {
+			map[2 * i + 1][2 * j + 2] = FOREST;
+		}
+
+		if (left) {
+			map[2 * i][2 * j + 1] = FOREST;
+		}
+
+		if (right) {
+			map[2 * i + 2][2 * j + 1] = FOREST;
+		}
 	}
 
 	public void setValues(int width, int height) {
