@@ -22,7 +22,7 @@ public class GameView extends JFrame implements ActionListener {
 	static int lastCompletedLevel = 0;
 	int currentLevelIndex = 0;
 
-	int btnSizeL = 40, btnSizeScaledL = 50, btnSizeS = 25, btnSizeScaledS = 30;
+	int btnSizeL = 40, btnSizeScaledL = 45, btnSizeM = 30, btnSizeScaledM = 35, btnSizeS = 25, btnSizeScaledS = 30;
 
 	CardLayout cardLayout;
 	JPanel card = new JPanel();
@@ -171,13 +171,14 @@ public class GameView extends JFrame implements ActionListener {
 		JLabel soundSettings = new JLabel("<html><h1>Sound Settings</h1></html>");
 		JLabel keyboardSettings = new JLabel("<html><h1>Keyboard Customizations</h1></html>");
 		
-		MyButton switchMute = new MyButton("Mute", "Settings", btnSizeL, btnSizeScaledL, this);
+		MyButton switchMute = new MyButton("Mute", "Settings", btnSizeM, btnSizeScaledM, this);
 		
-		MyButton setRotationAnticlockwise = new MyButton("Wall Rotation Anticlockwise", "Settings", btnSizeL, btnSizeScaledL, this);
-		MyButton setRotationClockwise = new MyButton("Wall Rotation Clockwise", "Settings", btnSizeL, btnSizeScaledL, this);
-		MyButton setDrop = new MyButton("Wall Drop", "Settings", btnSizeL, btnSizeScaledL, this);
-		MyButton setPlace = new MyButton("Wall Place", "Settings", btnSizeL, btnSizeScaledL, this);;
-		MyButton setPrevLocation = new MyButton("Wall Previous Location", "Settings", btnSizeL, btnSizeScaledL, this);
+		MyButton setRotationAnticlockwise = new MyButton("Wall Rotation Anticlockwise", "Settings", btnSizeM, btnSizeScaledM, this);
+		MyButton setRotationClockwise = new MyButton("Wall Rotation Clockwise", "Settings", btnSizeM, btnSizeScaledM, this);
+		MyButton setDrop = new MyButton("Wall Drop", "Settings", btnSizeM, btnSizeScaledM, this);
+		MyButton setPlace = new MyButton("Wall Place", "Settings", btnSizeM, btnSizeScaledM, this);;
+		MyButton setPrevLocation = new MyButton("Wall Previous Location", "Settings", btnSizeM, btnSizeScaledM, this);
+
 		MyButton back = new MyButton("Back", "Game Menu", btnSizeS, btnSizeScaledS, this);
 		
 		setRotationAnticlockwise.addMouseListener(new CustomizeRotationAnticlockwiseButton());
