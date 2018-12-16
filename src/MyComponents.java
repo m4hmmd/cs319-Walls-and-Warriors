@@ -17,7 +17,7 @@ import java.util.ArrayList;
 
 @SuppressWarnings("serial")
 public class MyComponents extends JComponent {
-
+	
 	public Model model;
 	private CardLayout cardLayout;
 	private JPanel card;
@@ -32,6 +32,13 @@ public class MyComponents extends JComponent {
 	GameView gv;
 	Timer t;
 	Timer timer = new Timer(500, null);
+	
+	protected static int wallRotateAnticlockwise = KeyEvent.VK_A;
+	protected static int wallRotateClockwise = KeyEvent.VK_D;
+	protected static int wallDrop = KeyEvent.VK_Q;
+	protected static int wallPlace = KeyEvent.VK_ENTER;
+	protected static int wallPrevLocation = KeyEvent.VK_ESCAPE;
+	
 
 	public MyComponents(GameView gv, Model model, CardLayout cardLayout, JPanel card, int levelNo) {
 		this.model = model;
@@ -537,7 +544,7 @@ public class MyComponents extends JComponent {
 							model.squareWidth);
 				}
 
-				else if (key == KeyEvent.VK_ENTER) {
+				else if (key == wallPlace) {
 					if (selectedKey != null) {
 						placeSelectedKey();
 					}
@@ -545,21 +552,21 @@ public class MyComponents extends JComponent {
 					repaint();
 				}
 
-				else if (key == KeyEvent.VK_D) {
+				else if (key == wallRotateClockwise) {
 					selectedKey.turnRight();
 					selectedKey.setThePositionAgainByIndex(model.initialXShift, model.initialYShift, model.squareHeight,
 							model.squareWidth);
 					selectedKey.setRectangles();
 				}
 
-				else if (key == KeyEvent.VK_A) {
+				else if (key == wallRotateAnticlockwise) {
 					selectedKey.turnLeft();
 					selectedKey.setThePositionAgainByIndex(model.initialXShift, model.initialYShift, model.squareHeight,
 							model.squareWidth);
 					selectedKey.setRectangles();
 				}
 
-				else if (key == KeyEvent.VK_ESCAPE) {
+				else if (key == wallPrevLocation) {
 					int turn = selectedKey.turn;
 					Color prevColor = selectedKey.c;
 					if (!wasInvisible_KEY) {
@@ -658,7 +665,7 @@ public class MyComponents extends JComponent {
 				numberPressed(6);
 			}
 
-			else if (key == KeyEvent.VK_Q) {
+			else if (key == wallDrop) {
 				if (selectedKey != null) {
 					selectedKey.remove();
 					selectedKey = null;

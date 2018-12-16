@@ -15,6 +15,7 @@ public class SoundManager {
 	private static AudioStream mouseOver;
 	private static AudioData BGMD;
 	private static ContinuousAudioDataStream loop;
+	private static boolean playing = true;
 
 	SoundManager() {
 		try {
@@ -54,17 +55,14 @@ public class SoundManager {
 	}
 
 	public static class bListener implements ActionListener {
-
-		private boolean playing = false;
-
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			playing = !(playing);
 			if (playing) {
 				stopBackgroundMusic();
 			} else {
 				playBackgroundMusic();
 			}
+			playing = !(playing);
 		}
 	}
 
@@ -87,7 +85,7 @@ public class SoundManager {
 	}
 
 	public static void playBackgroundMusic() {
-		// BGMP.start(loop);
+		BGMP.start(loop);
 	}
 
 	public static void stopBackgroundMusic() {
@@ -101,6 +99,5 @@ public class SoundManager {
 			System.out.println(error.getMessage());
 		}
 		BGMP.start(mouseOver);
-
 	}
 }
