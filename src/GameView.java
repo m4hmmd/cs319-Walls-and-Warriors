@@ -1,213 +1,193 @@
+import javax.imageio.ImageIO;
 import javax.swing.*;
+
+import com.sun.org.glassfish.gmbal.GmbalMBeanNOPImpl;
+
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
 
-public class GameView implements ActionListener {
+public class GameView extends JFrame implements ActionListener {
 
-    CardLayout cardLayout;
-    JPanel card = new JPanel();
-    JButton play = new JButton("Play");
-    JButton settings = new JButton("Settings");
-    JButton howTo = new JButton("How to Play");
-    JButton credits = new JButton("Credits");
-    JButton quit = new JButton("Quit");
-    JButton home1 = new JButton("Home");
-    JButton home2 = new JButton("Home");
+	SoundManager sm = new SoundManager();
 
-    SoundManager sm = new SoundManager();
+	static int lastCompletedLevel = 0;
+	int currentLevelIndex = 0;
 
-    static JButton[] levelButtons = {new JButton("Level 1"), new JButton("Level 2"), new JButton("Level 3"), new JButton("Level 4"), new JButton("Level 5")};
+	int btnSizeL = 40, btnSizeScaledL = 50, btnSizeS = 25, btnSizeScaledS = 30;
 
-    JButton backButton = new JButton("Back");
-    JButton backButtonHowTo = new JButton("Back");
-    JButton backButtonCredits = new JButton("Back");
-    JButton nextButton = new JButton("Next");
+	CardLayout cardLayout;
+	JPanel card = new JPanel();
+	GameManager managers[] = new GameManager[5];
+	MyButton[] levelButtons = { new MyButton("Level 1", "Level 1", btnSizeL, btnSizeScaledL, this),
+			new MyButton("Level 2", "Level 2", btnSizeL, btnSizeScaledL, this),
+			new MyButton("Level 3", "Level 3", btnSizeL, btnSizeScaledL, this),
+			new MyButton("Level 4", "Level 4", btnSizeL, btnSizeScaledL, this),
+			new MyButton("Level 5", "Level 5", btnSizeL, btnSizeScaledL, this) };
 
-    static int lastCompletedLevel = 0;
-    int currentLevelIndex = 0;
-    GameManager managers[] = new GameManager[5];
+	public GameView() throws IOException {
+		card.setLayout(cardLayout = new CardLayout());
 
-    public void actionPerformed(ActionEvent e) {
+		setMinimumSize(new Dimension(800, 600));
+		managers[0] = new GameManager(this, 1, cardLayout, card);
+		managers[1] = new GameManager(this, 2, cardLayout, card);
 
-        if (e.getSource() == play) {
-            cardLayout.show(card, "Level Menu");
-        } else if (e.getSource() == home1 || e.getSource() == home2) {
-            cardLayout.show(card, "Game Menu");
-            managers[currentLevelIndex].reset();
-        } else if (e.getSource() == howTo) {
-            cardLayout.show(card, "How To Play");
-        } else if (e.getSource() == credits) {
-            cardLayout.show(card, "Credits");
-        } else if (e.getSource() == backButtonHowTo) {
-            cardLayout.show(card, "Game Menu");
-        } else if (e.getSource() == backButtonCredits) {
-            cardLayout.show(card, "Game Menu");
-        } else if (e.getSource() == backButton) {
-            cardLayout.show(card, "Game Menu");
-        } else if (e.getSource() == nextButton) {
-            cardLayout.show(card, "Level Menu 2");
-        } else if (e.getSource() == levelButtons[0]) {
-            cardLayout.show(card, "Level 1");
-        } else if (e.getSource() == levelButtons[1]) {
-            cardLayout.show(card, "Level 2");
-        } else if (e.getSource() == quit) {
-            System.exit(0);
-        }
-    }
+		createPanels();
 
-    public void run() {
-        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        MyJFrame frm = new MyJFrame();
-        // frm.add(new JLabel(new ImageIcon("/Users/ahmetmalal/Desktop/ObjeCode/src/com/images/gameImage.png")));
+		for (int i = 1; i < levelButtons.length; i++) {
+			levelButtons[i].setEnabled(false);
+			try {
+				Image img = ImageIO.read(new File("src/img/locked.png"));
+				Image newimg = img.getScaledInstance(50, 50, Image.SCALE_SMOOTH); // scale it the smooth way
+				levelButtons[i].setIcon(new ImageIcon(newimg));
+			} catch (Exception ex) {
+				System.out.println(ex);
+			}
+		}
 
-        int width = screenSize.width / 2; //(int)screenSize.getWidth();
-        int height = screenSize.height * 3 / 4;//(int)screenSize.getHeight();
-        int startPoint = 0;
-        int buttonHeight = height / 14;
-        int buttonWidth = width / 5;
-        int buttonsLeftMargin = width / 15;
-        int levelButtonsLeftMargin = width / 15;
+		cardLayout.show(card, "Game Menu");
+		add(card);
+	}
 
-        JLabel gameMenuImage = new JLabel(new ImageIcon(scaleImage(width, height, "src/img/img1.jpeg")));
-        gameMenuImage.setBounds(0, 0, width, height);
-        gameMenuImage.setVisible(true);
+	private void createPanels() throws IOException {
+		createGameMenu();
+		createLevelMenu();
+		createHowToPanel();
+		createCreditsPanel();
+		createLevelPanels();
+	}
 
-        JLabel LevelMenuImage = new JLabel(new ImageIcon(scaleImage(width, height, "src/img/img1.jpeg")));
-        LevelMenuImage.setBounds(0, 0, width, height);
-        LevelMenuImage.setVisible(true);
-        JPanel contentPane = (JPanel) frm.getContentPane();
-        card.setLayout(cardLayout = new CardLayout());
-        
-        managers[0] = new GameManager(1, cardLayout, card);
-        managers[1] = new GameManager(2, cardLayout, card);
+	private void createLevelPanels() {
+		card.add("Level 1", managers[0].getPanel());
+		card.add("Level 2", managers[1].getPanel());
+	}
 
-        JPanel gamePanel = new JPanel();
+	private void createCreditsPanel() throws IOException {
 
-        gamePanel.setLayout(null);
-        gamePanel.add(play);
-        gamePanel.add(settings);
-        gamePanel.add(howTo);
-        gamePanel.add(credits);
-        gamePanel.add(howTo);
-        gamePanel.add(credits);
-        gamePanel.add(quit);
+		MyPanel creditsPanel = new MyPanel("Credits", "src/img/img1.jpeg");
+		JLabel credits = new JLabel(
+				"Creators:\nAhmet Malal\nHuseyn Allahyarov\nIbrahim Mammadov\n Mahammad Shirinov\n Samet Demir");
+		credits.setFont(new Font("Times", 1, 30));
+		credits.setForeground(Color.WHITE);
+		credits.setBounds(0, 0, getWidth(), getHeight());
+		credits.setVisible(true);
+		creditsPanel.addLabel(new JLabel("Contributors:"));
+		creditsPanel.addLabel(new JLabel(""));
+		creditsPanel.addLabel(new JLabel("Ahmet Malal"));
+		creditsPanel.addLabel(new JLabel("Huseyn Allahyarov"));
+		creditsPanel.addLabel(new JLabel("Ibrahim Mammadov"));
+		creditsPanel.addLabel(new JLabel("Mahammad Shirinov"));
+		creditsPanel.addLabel(new JLabel("Samet Demir"));
 
-        play.setBounds(buttonsLeftMargin, height / 7, buttonWidth, buttonHeight);
-        settings.setBounds(buttonsLeftMargin, 2 * height / 7, buttonWidth, buttonHeight);
-        howTo.setBounds(buttonsLeftMargin, 3 * height / 7, buttonWidth, buttonHeight);
-        credits.setBounds(buttonsLeftMargin, 4 * height / 7, buttonWidth, buttonHeight);
-        quit.setBounds(buttonsLeftMargin, 5 * height / 7, buttonWidth, buttonHeight);
+		MyButton back = new MyButton("Back", "Game Menu", btnSizeS, btnSizeScaledS, this);
+		creditsPanel.addBackButton(back);
 
-        home1.setBounds(levelButtonsLeftMargin / 3, height / 40, buttonWidth / 2, buttonWidth / 4);
-        home2.setBounds(levelButtonsLeftMargin / 3, height / 40, buttonWidth / 2, buttonWidth / 4);
+		card.add("Credits", creditsPanel);
+	}
 
-        gamePanel.add(gameMenuImage);
+	private void createHowToPanel() throws IOException {
+		MyPanel howToPanel = new MyPanel("How To Play", "src/img/img1.jpeg");
 
-        play.addActionListener(this);
-        quit.addActionListener(this);
-        backButton.addActionListener(this);
-        nextButton.addActionListener(this);
-        howTo.addActionListener(this);
-        credits.addActionListener(this);
-        backButtonHowTo.addActionListener(this);
-        backButtonCredits.addActionListener(this);
-        home1.addActionListener(this);
-        home2.addActionListener(this);
+		JLabel howToPlay = new JLabel(
+				"<html><center><h1>HOW TO PLAY</h1></center><br>" + "<u><h2>Description of the Game</h2></u><br>"
+						+ "Walls & Warriors is a board game played with warrior figures <br>"
+						+ "and walls placed under specific rules. The goal of this game place the <br>"
+						+ "four walls on the game board so that all the blue knights are inside the <br>"
+						+ "enclosure and all the red knights are on the outside to defend the castle <br>"
+						+ "to be left inside the walls.<br><br>" + "<u><h2>Gameplay</h2></u><br>"
+						+ "Given a board with red and blue soldiers and, on higher levels, lakes and <br>"
+						+ "special soldiers, the player needs to select one of the provided wall shapes, <br>"
+						+ "rotate it as needed and put onto the board, so as to complete the castle <br>"
+						+ "with all blue knights inside and red ones outside.</html>");
+		howToPlay.setFont(new Font("Times", 1, 30));
+		howToPlay.setForeground(Color.WHITE);
+		howToPlay.setBounds(0, 0, getWidth(), getHeight());
+		howToPlay.setVisible(true);
+		howToPanel.addOnlyOneLabel(howToPlay);
 
+		MyButton back = new MyButton("Back", "Game Menu", btnSizeS, btnSizeScaledS, this);
 
-        JPanel LevelPanel = new JPanel(null);
+		// back.setPreferredSize(new Dimension(20, 20));
 
-        for (int i = 0; i < levelButtons.length; i++) {
-            LevelPanel.add(levelButtons[i]);
-            levelButtons[i].setBounds(levelButtonsLeftMargin, (i + 1) * height / 7, buttonWidth, buttonHeight);
-            levelButtons[i].addActionListener(this);
-            if (i > lastCompletedLevel) {
-                levelButtons[i].setEnabled(false);
-            }
-        }
+		howToPanel.addBackButton(back);
 
-        JPanel howToPanel = new JPanel(null);
-        JLabel howToBackground = new JLabel(new ImageIcon(scaleImage(width, height, "src/img/img1.jpeg")));
-        howToBackground.setBounds(0, 0, width, height);
-        howToBackground.setVisible(true);
-        JLabel howToPlay = new JLabel("<html><center>Walls & Warriors is a board game played with warrior figures and walls placed under specific rules. The goal of this game place the four walls on the game board so that all the blue knights are inside the enclosure and all the red knights are on the outside to defend the castle to be left inside the walls. There is always only one correct solution.</center><br><center>Gameplay: </center><center>Given a board with red and blue soldiers and, on higher leverls, lakes and special soldiers, the player needs to select one of the provided wall shapes, rotate it as needed and put onto the board, so as to complete the castle with all blue knights inside and red ones outside.<center></html>");
-        howToPlay.setFont(new Font("Times", 1, 30));
-        howToPlay.setForeground(Color.WHITE);
-        howToPlay.setBounds(width / 6, height / 10, 2 * width / 3, 4 * height / 5);
-        howToPlay.setVisible(true);
-        howToPanel.add(backButtonHowTo);
-        howToPanel.add(howToPlay);
-        howToPanel.add(howToBackground);
+		card.add("How To Play", howToPanel);
 
-        JPanel creditsPanel = new JPanel(null);
-        JLabel creditsBackground = new JLabel(new ImageIcon(scaleImage(width, height, "src/img/img1.jpeg")));
-        creditsBackground.setBounds(0, 0, width, height);
-        creditsBackground.setVisible(true);
-        JLabel credits = new JLabel("<html><center>Creators:</center><br><br><center>Ahmet Malal<center><br><br><center>Huseyn Allahyarov<center><br><br><center>Ibrahim Mammadov<center><br><br><center>Mahammad Shirinov<center><br><br><center>Samet Demir<center></html>");
-        credits.setFont(new Font("Times", 1, 30));
-        credits.setForeground(Color.WHITE);
-        credits.setBounds(width / 3, height / 10, width / 3, 4 * height / 5);
-        credits.setVisible(true);
-        creditsPanel.add(backButtonCredits);
-        creditsPanel.add(credits);
-        creditsPanel.add(creditsBackground);
+	}
 
-        LevelPanel.add(backButton);
-        LevelPanel.add(nextButton);
-        LevelPanel.add(LevelMenuImage);
+	private void createLevelMenu() {
+		try {
 
-        backButton.setBounds(width / 20, 6 * height / 7, width / 13, buttonHeight / 3 * 2);
-        backButtonHowTo.setBounds(width / 20, 6 * height / 7, width / 13, buttonHeight / 3 * 2);
-        backButtonCredits.setBounds(width / 20, 6 * height / 7, width / 13, buttonHeight / 3 * 2);
-        nextButton.setBounds((int) ((19 / 20.0 - 1 / 13.0) * width), 6 * height / 7, width / 13, buttonHeight / 3 * 2);
+			MyButton back = new MyButton("Back", "Game Menu", btnSizeS, btnSizeScaledS, this);
+			MyPanel levelMenu = new MyPanel("Game Menu", "src/img/img1.jpeg");
 
-        managers[0].getPanel().add(home1);
-        managers[1].getPanel().add(home2);
+			for (int i = 0; i < levelButtons.length; i++) {
+				levelMenu.addButton(levelButtons[i]);
+			}
 
-        card.add("Game Menu", gamePanel);
-        card.add("Level Menu", LevelPanel);
-        card.add("How To Play", howToPanel);
-        card.add("Credits", creditsPanel);
-        card.add("Level 1", managers[0].getPanel());
-        card.add("Level 2", managers[1].getPanel());
-        cardLayout.show(card, "Game Menu");
+			levelMenu.addBackButton(back);
+			card.add("Level Menu", levelMenu);
 
-        contentPane.add(card);
-        frm.addWindowListener(new SoundManager.wListener());
-        frm.setVisible(true);
-        frm.setResizable(true);
-        frm.setSize(width, height);
-        frm.setLocation(startPoint, startPoint);
-        frm.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-    }
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 
-    class MyJFrame extends JFrame {
+	private void createGameMenu() {
+		try {
+			MyButton play = new MyButton("Play", "Level Menu", btnSizeL, btnSizeScaledL, this);
+			MyButton settings = new MyButton("Settings", "Settings", btnSizeL, btnSizeScaledL, this);
+			MyButton howToPlay = new MyButton("How To Play", "How To Play", btnSizeL, btnSizeScaledL, this);
+			MyButton credits = new MyButton("Credits", "Credits", btnSizeL, btnSizeScaledL, this);
+			MyButton quit = new MyButton("Quit", "Quit", btnSizeL, btnSizeScaledL, this);
 
-        @Override
-        public void paintComponents(Graphics g) {
-            super.paintComponents(g); //To change body of generated methods, choose Tools | Templates.
-        }
-    }
+			MyPanel gameMenu = new MyPanel("Game Menu", "src/img/img1.jpeg");
 
-    public static void main(String[] args) {
-        GameView gameView = new GameView();
-        gameView.run();
+			gameMenu.addButton(play);
+			gameMenu.addButton(settings);
+			gameMenu.addButton(howToPlay);
+			gameMenu.addButton(credits);
+			gameMenu.addButton(quit);
 
-    }
+			card.add("Game Menu", gameMenu);
+		} catch (Exception e) {
 
-    public BufferedImage scaleImage(int WIDTH, int HEIGHT, String filename) {
-        BufferedImage bi = null;
-        try {
-            ImageIcon ii = new ImageIcon(filename);//path to image
-            bi = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
-            Graphics2D g2d = (Graphics2D) bi.createGraphics();
-            g2d.addRenderingHints(new RenderingHints(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY));
-            g2d.drawImage(ii.getImage(), 0, 0, WIDTH, HEIGHT, null);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
-        return bi;
-    }
+		}
+	}
+
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		if (((MyButton) e.getSource()).getNextPanelName().equals("Quit")) {
+			System.exit(0);
+		}
+		cardLayout.show(card, ((MyButton) e.getSource()).getNextPanelName());
+		for (int i = 0; i < managers.length; i++) {
+			if (((MyButton) e.getSource()).getNextPanelName().equals("Level " + (i + 1))) {
+				managers[i].getPanel().requestFocusInWindow();
+				managers[i].startTimers();
+			}
+		}
+	}
+
+	public void run() throws IOException {
+
+		GameView f = new GameView();
+
+		f.setVisible(true);
+		f.setBounds(100, 100, 800, 500);
+		f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+	}
+
+	public static void main(String[] args) {
+		try {
+			GameView gameView = new GameView();
+			gameView.run();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
 }
