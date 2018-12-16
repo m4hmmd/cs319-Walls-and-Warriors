@@ -5,13 +5,9 @@ public class Castle extends GameObject {
 	int x1, y1;
 
 	Castle(int x, int y, int x1, int y1, Color c) {
-		super(x, y, c);
+		super(x, y);
 		this.x1 = x1;
 		this.y1 = y1;
-	}
-
-	Color getColor() {
-		return c;
 	}
 
 	int getX1() {
@@ -25,7 +21,7 @@ public class Castle extends GameObject {
 	void draw(Graphics g, int initialXShift, int initialYShift, int squareHeight, int squareWidth) {
 		int width = squareWidth / 5;
 		int height = squareHeight / 5;
-		g.setColor(getColor());
+		g.setColor(new Color(0, 255, 0));
 		int leftOne = (getX() == getX1()) ? getX() : ((getX() > getX1()) ? getX1() : getX());
 		int topOne = (getY() == getY1()) ? getY() : ((getY() > getY1()) ? getY1() : getY());
 

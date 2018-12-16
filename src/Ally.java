@@ -6,7 +6,7 @@ public class Ally extends Soldier {
 //	private Image soldierImg;
 
 	public Ally(boolean movable, int x, int y) {
-		super(movable, x, y, Color.BLUE);
+		super(movable, x, y);
 
 		try
 		{

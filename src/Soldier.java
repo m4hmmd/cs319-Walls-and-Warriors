@@ -11,8 +11,8 @@ public abstract class Soldier extends GameObject {
 	Point initialPoint;
 	Timer t ;
 
-	Soldier(boolean movable, int x, int y, Color c) {
-		super(x, y, c);
+	Soldier(boolean movable, int x, int y) {
+		super(x, y);
 		this.movable = movable;
 		initialPoint = new Point(x, y);
 		t = new Timer(3000, null);

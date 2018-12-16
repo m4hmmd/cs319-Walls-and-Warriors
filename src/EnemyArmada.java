@@ -23,8 +23,6 @@ public class EnemyArmada extends Enemy {
 
 	@Override
 	public void draw(Graphics g, int initialXShift, int initialYShift, int squareHeight, int squareWidth) {
-//		g.setColor(new Color(0,0,175,200));
-//		g.fillRect(initialXShift + squareWidth * x, initialYShift + squareHeight * y, squareWidth, squareHeight);
 		if (lakeImg != null)
 			g.drawImage(lakeImg, initialXShift + squareWidth * x,
 					initialYShift + squareHeight * y, squareWidth, squareHeight, null);

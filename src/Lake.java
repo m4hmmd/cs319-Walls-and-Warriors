@@ -6,7 +6,7 @@ public class Lake extends GameObject {
 	private Image img;
 
 	public Lake(int x_, int y_) {
-		super(x_, y_, new Color(0,0,175,200));
+		super(x_, y_);
 
 		try
 		{
@@ -21,8 +21,6 @@ public class Lake extends GameObject {
 
 	@Override
 	void draw(Graphics g, int initialXShift, int initialYShift, int squareHeight, int squareWidth) {
-//		g.setColor(c);
-//		g.fillRect(initialXShift + squareWidth * x, initialYShift + squareHeight * y, squareWidth, squareHeight);
 		if (img != null)
 			g.drawImage(img, initialXShift + squareWidth * x,
 					initialYShift + squareHeight * y, squareWidth, squareHeight, null);

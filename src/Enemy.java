@@ -6,7 +6,7 @@ import java.io.File;
 public class Enemy extends Soldier {
 
 	public Enemy(boolean movable, int x, int y) {
-		super(movable, x, y, Color.RED);
+		super(movable, x, y);
 
 		try
 		{

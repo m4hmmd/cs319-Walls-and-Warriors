@@ -3,19 +3,13 @@ import java.awt.*;
 public abstract class GameObject {
 
     int x, y;
-    Color c;
 
-    public GameObject(int x_, int y_, Color c) {
+    public GameObject(int x_, int y_) {
         x = x_;
         y = y_;
-        this.c = c;
     }
 
     abstract void draw(Graphics g, int initialXShift, int initialYShift, int squareHeight, int squareWidth);
-
-    Color getColor() {
-        return c;
-    }
 
     void setX(int x) {
         this.x = x;

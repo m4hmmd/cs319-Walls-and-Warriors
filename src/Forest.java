@@ -6,7 +6,7 @@ public class Forest extends GameObject {
 	protected Image img;
 
 	public Forest(int x_, int y_) {
-		super(x_, y_, new Color(0,255,0,200).darker());
+		super(x_, y_);
 
 		try
 		{
@@ -21,8 +21,6 @@ public class Forest extends GameObject {
 
 	@Override
 	void draw(Graphics g, int initialXShift, int initialYShift, int squareHeight, int squareWidth) {
-//		g.setColor(c);
-//		g.fillRect(initialXShift + squareWidth * x, initialYShift + squareHeight * y, squareWidth, squareHeight);
 		if (img != null)
 			g.drawImage(img, initialXShift + squareWidth * x,
 					initialYShift + squareHeight * y, squareWidth, squareHeight, null);
