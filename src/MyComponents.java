@@ -59,18 +59,15 @@ public class MyComponents extends JComponent {
 					int n = JOptionPane.showOptionDialog(null, "A Wall or a Chain was collapsed", "Game Over",
 							JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[1]);
 
-					if (GameView.lastCompletedLevel < levelNo)
-						GameView.lastCompletedLevel = levelNo;
-
-					gv.levelButtons[levelNo].setEnabled(true);
-					gv.levelButtons[levelNo].setIcon(null);
-					
 					if (n == JOptionPane.YES_OPTION) {
 						cardLayout.show(card, "Game Menu");
 						model.reset();
 					} else if (n == JOptionPane.NO_OPTION) {
 						model.reset();
-						resume();
+						t.restart();
+						selectedKey = null;
+						selectedMouse = null;
+						requestFocusInWindow();
 					}
 				}
 			}
