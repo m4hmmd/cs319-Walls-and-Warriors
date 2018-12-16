@@ -1,9 +1,9 @@
 import javax.imageio.ImageIO;
-import java.awt.Color;
-import java.awt.Graphics;
+import java.awt.*;
 import java.io.File;
 
 public class AllyArmada extends Ally {
+	private Image lakeImg;
 
 	public AllyArmada(boolean movable,int x, int y) {
 		super(movable, x, y);
@@ -12,6 +12,8 @@ public class AllyArmada extends Ally {
 		{
 			File file = new File("src/img/blue-ship.png");
 			soldierImg = ImageIO.read(file);
+			file = new File("src/img/water.png");
+			lakeImg = ImageIO.read(file);
 		}
 		catch ( Exception e )
 		{
@@ -21,8 +23,11 @@ public class AllyArmada extends Ally {
 
 	@Override
 	public void draw(Graphics g, int initialXShift, int initialYShift, int squareHeight, int squareWidth) {
-		g.setColor(new Color(0,0,175,200));
-		g.fillRect(initialXShift + squareWidth * x, initialYShift + squareHeight * y, squareWidth, squareHeight);
+//		g.setColor(new Color(0,0,175,200));
+//		g.fillRect(initialXShift + squareWidth * x, initialYShift + squareHeight * y, squareWidth, squareHeight);
+		if (lakeImg != null)
+			g.drawImage(lakeImg, initialXShift + squareWidth * x,
+					initialYShift + squareHeight * y, squareWidth, squareHeight, null);
 		super.draw(g, initialXShift, initialYShift, squareHeight, squareWidth);
 	}
 
