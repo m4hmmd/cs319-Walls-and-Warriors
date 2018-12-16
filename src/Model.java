@@ -347,7 +347,7 @@ public class Model {
 			return 0;
 		if (i > map.length - 1)
 			return 0;
-		if (map[i][j] == ALLY || map[i][j] == ALLY_ARMADA)
+		if (map[i][j] == ALLY || map[i][j] == ALLY_ARMADA || map[i][j] == CASTLE)
 			return -80;
 
 		visited.add(new Point(i, j));
