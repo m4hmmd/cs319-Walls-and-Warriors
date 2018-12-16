@@ -384,7 +384,7 @@ public class GameView extends JFrame implements ActionListener {
 		f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	}
 
-	public static void main(String[] args) {
+	public static void main(String[] args)throws IOException {
 		try {
 			GameView gameView = new GameView();
 			gameView.run();
