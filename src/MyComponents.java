@@ -31,6 +31,7 @@ public class MyComponents extends JComponent {
 	private int pHeight = 0;
 	GameView gv;
 	Timer t;
+	Timer timer = new Timer(500, null);
 
 	public MyComponents(GameView gv, Model model, CardLayout cardLayout, JPanel card, int levelNo) {
 		this.model = model;
@@ -76,6 +77,7 @@ public class MyComponents extends JComponent {
 				cardLayout.show(card, "Game Menu");
 				model.reset();
 				stopTimer();
+				timer.stop();
 				selectedKey = null;
 				selectedMouse = null;
 			}
@@ -540,7 +542,6 @@ public class MyComponents extends JComponent {
 						placeSelectedKey();
 					}
 					wasInvisible_KEY = false;
-					selectedKey = null;
 					repaint();
 				}
 
@@ -559,12 +560,15 @@ public class MyComponents extends JComponent {
 				}
 
 				else if (key == KeyEvent.VK_ESCAPE) {
+					int turn = selectedKey.turn;
+					Color prevColor = selectedKey.c;
 					if (!wasInvisible_KEY) {
 						selectedKey.setTurn(turnStart);
 					}
 					if (wasInvisible_KEY) {
 						selectedKey.remove();
 						selectedKey.setRectangles();
+						selectedKey = null;
 					} else if (model.isAvailablePlaceFor(selectedKey, wallStartXInd_KEY, wallStartYInd_KEY)) {
 						selectedKey.xCoor = wallStartX_KEY;
 						selectedKey.yCoor = wallStartY_KEY;
@@ -572,11 +576,34 @@ public class MyComponents extends JComponent {
 						selectedKey.setThePositionAgain(model.getInitialXShift(), model.getInitialYShift(),
 								model.getSquareHeight(), model.getSquareWidth());
 						model.addToLines(selectedKey);
+						selectedKey = null;
 					} else {
-						selectedKey.remove();
-						selectedKey.setRectangles();
+						Point startPoint = new Point(selectedKey.xInd, selectedKey.yInd);
+						
+						for (int i = 0; i < timer.getActionListeners().length; i++) {
+							timer.removeActionListener(timer.getActionListeners()[i]);
+						}
+						
+						timer.addActionListener(new ActionListener() {
+
+							@Override
+							public void actionPerformed(ActionEvent e) {
+								selectedKey.setIndexes(startPoint.x, startPoint.y);
+								selectedKey.setTurn(turn);
+								selectedKey.setThePositionAgainByIndex(model.initialXShift, model.initialYShift,
+										model.squareHeight, model.squareWidth);
+								selectedKey.setColor(prevColor);
+								timer.stop();
+							}
+						});
+
+						selectedKey.setColor(Color.RED);
+						selectedKey.setIndexes(wallStartXInd_KEY, wallStartYInd_KEY);
+						selectedKey.setTurn(turnStart);
+						selectedKey.setThePositionAgainByIndex(model.initialXShift, model.initialYShift,
+								model.squareHeight, model.squareWidth);
+						timer.start();
 					}
-					selectedKey = null;
 				}
 
 				if (selectedKey != null)
@@ -642,40 +669,45 @@ public class MyComponents extends JComponent {
 
 		private void numberPressed(int i) {
 
+			boolean bool = selectedKey != model.getWalls()[i - 1];
+			
 			if (selectedKey != null) {
 				placeSelectedKey();
 			}
-			if (i > 0 && i <= model.getWalls().length && model.getWalls()[i - 1] != null
-					&& model.getWalls()[i - 1] != selectedMouse && !model.getWalls()[i - 1].collapsed) {
-				if (selectedKey != model.getWalls()[i - 1]) {
-					if (model.getWalls()[i - 1].visible) {
-						selectedKey = model.getWalls()[i - 1];
-						model.removeFromLines(selectedKey);
-						wallStartX_KEY = selectedKey.xCoor;
-						wallStartY_KEY = selectedKey.yCoor;
-						wallStartXInd_KEY = selectedKey.xInd;
-						wallStartYInd_KEY = selectedKey.yInd;
-						turnStart = selectedKey.turn;
-						wasInvisible_KEY = false;
+			if (selectedKey == null) {
+				if (i > 0 && i <= model.getWalls().length && model.getWalls()[i - 1] != null
+						&& model.getWalls()[i - 1] != selectedMouse && !model.getWalls()[i - 1].collapsed) {
+					if (bool) {
+						if (model.getWalls()[i - 1].visible) {
+							selectedKey = model.getWalls()[i - 1];
+							model.removeFromLines(selectedKey);
+							wallStartX_KEY = selectedKey.xCoor;
+							wallStartY_KEY = selectedKey.yCoor;
+							wallStartXInd_KEY = selectedKey.xInd;
+							wallStartYInd_KEY = selectedKey.yInd;
+							turnStart = selectedKey.turn;
+							wasInvisible_KEY = false;
+						} else {
+							model.getWalls()[i - 1].appear();
+							int indexX = (int) ((model.getWalls()[i - 1].wallContainer.getCenterX()
+									- model.initialXShift) / model.squareWidth);
+							int indexY = (int) ((model.getWalls()[i - 1].wallContainer.getCenterY()
+									- model.initialYShift) / model.squareHeight);
+							model.getWalls()[i - 1].setIndexes(indexX, indexY);
+							model.getWalls()[i - 1].setThePositionAgainByIndex(model.initialXShift, model.initialYShift,
+									model.squareHeight, model.squareWidth);
+							selectedKey = model.getWalls()[i - 1];
+							wallStartXInd_KEY = selectedKey.xInd;
+							wallStartYInd_KEY = selectedKey.yInd;
+							wasInvisible_KEY = true;
+							setColor(selectedKey);
+						}
 					} else {
-						model.getWalls()[i - 1].appear();
-						int indexX = (int) ((model.getWalls()[i - 1].wallContainer.getCenterX() - model.initialXShift)
-								/ model.squareWidth);
-						int indexY = (int) ((model.getWalls()[i - 1].wallContainer.getCenterY() - model.initialYShift)
-								/ model.squareHeight);
-						model.getWalls()[i - 1].setIndexes(indexX, indexY);
-						model.getWalls()[i - 1].setThePositionAgainByIndex(model.initialXShift, model.initialYShift,
-								model.squareHeight, model.squareWidth);
-						selectedKey = model.getWalls()[i - 1];
-						wallStartXInd_KEY = selectedKey.xInd;
-						wallStartYInd_KEY = selectedKey.yInd;
-						wasInvisible_KEY = true;
-						setColor(selectedKey);
+						selectedKey = null;
 					}
-				} else {
-					selectedKey = null;
 				}
 				repaint();
+
 			}
 		}
 
@@ -688,6 +720,7 @@ public class MyComponents extends JComponent {
 		}
 
 		public void placeSelectedKey() {
+			Color prevColor = selectedKey.c;
 			selectedKey.setColorToOriginal();
 			selectedKey.setThePositionAgain(model.getInitialXShift(), model.getInitialYShift(), model.getSquareHeight(),
 					model.getSquareWidth());
@@ -695,12 +728,15 @@ public class MyComponents extends JComponent {
 			if (model.outOfScreen(selectedKey)) {
 				selectedKey.remove();
 				selectedKey.setRectangles();
+				selectedKey = null;
 			} else {
 				if (!model.onAvailablePlace(selectedKey)) {
 					if (wasInvisible_KEY) {
 						selectedKey.remove();
 						selectedKey.setRectangles();
+						selectedKey = null;
 					} else {
+						int turn = selectedKey.turn;
 						selectedKey.setTurn(turnStart);
 						if (model.isAvailablePlaceFor(selectedKey, wallStartXInd_KEY, wallStartYInd_KEY)) {
 							selectedKey.xCoor = wallStartX_KEY;
@@ -708,18 +744,34 @@ public class MyComponents extends JComponent {
 							selectedKey.setThePositionAgain(model.getInitialXShift(), model.getInitialYShift(),
 									model.getSquareHeight(), model.getSquareWidth());
 							model.addToLines(selectedKey);
+							selectedKey = null;
 						} else {
-							selectedKey.remove();
-							selectedKey.setRectangles();
-						}
-						/*
-						 * selectedKey.xCoor = wallStartX_KEY; selectedKey.yCoor = wallStartY_KEY;
-						 * selectedKey.setTurn(turnStart);
-						 * selectedKey.setThePositionAgain(model.getInitialXShift(),
-						 * model.getInitialYShift(), model.getSquareHeight(), model.getSquareWidth());
-						 * model.addToLines(selectedKey);
-						 */
+							Point startPoint = new Point(selectedKey.xInd, selectedKey.yInd);
+							
+							for (int i = 0; i < timer.getActionListeners().length; i++) {
+								timer.removeActionListener(timer.getActionListeners()[i]);
+							}
+							
+							timer.addActionListener(new ActionListener() {
 
+								@Override
+								public void actionPerformed(ActionEvent e) {
+									selectedKey.setIndexes(startPoint.x, startPoint.y);
+									selectedKey.setTurn(turn);
+									selectedKey.setThePositionAgainByIndex(model.initialXShift, model.initialYShift,
+											model.squareHeight, model.squareWidth);
+									selectedKey.setColor(prevColor);
+									timer.stop();
+								}
+							});
+
+							selectedKey.setColor(Color.RED);
+							selectedKey.setIndexes(wallStartXInd_KEY, wallStartYInd_KEY);
+							selectedKey.setTurn(turnStart);
+							selectedKey.setThePositionAgainByIndex(model.initialXShift, model.initialYShift,
+									model.squareHeight, model.squareWidth);
+							timer.start();
+						}
 					}
 
 				} else {
@@ -731,6 +783,7 @@ public class MyComponents extends JComponent {
 					if (model.isGameFinished()) {
 						gameFinished();
 					}
+					selectedKey = null;
 				}
 			}
 			wasInvisible_KEY = false;
