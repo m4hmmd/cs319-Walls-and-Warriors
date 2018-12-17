@@ -6,7 +6,7 @@ public abstract class WallOrChain {
 
 	private static final double MIN_ALPHA = 75;
 
-	int lineWidthOnGreenSquare = 4, squareWidthOnGreenSquare = 20, squareHeightOnGreenSquare = 20;
+	int lineWidthOnBar = 4, squareWidthOnBar = 20, squareHeightOnBar = 20;
 
 	int index;
 	int health;
@@ -21,7 +21,7 @@ public abstract class WallOrChain {
 	boolean visible = false;
 	ArrayList<Point> points = new ArrayList<Point>();
 	ArrayList<Rectangle> rects = new ArrayList<Rectangle>();
-	ArrayList<Rectangle> rectsOnGreenSquare = new ArrayList<Rectangle>();
+	ArrayList<Rectangle> rectsOnBar = new ArrayList<Rectangle>();
 	Rectangle nearestRectToCenter;
 	Rectangle wallContainer = new Rectangle(0, 0, 0, 0);
 	int lineWidth;
@@ -89,25 +89,25 @@ public abstract class WallOrChain {
 			}
 		}
 
-		nextXCoor = (int) (wallContainer.getCenterX() - (centerX) * squareHeightOnGreenSquare);
-		nextYCoor = (int) (wallContainer.getCenterY() - (centerY) * squareHeightOnGreenSquare);
+		nextXCoor = (int) (wallContainer.getCenterX() - (centerX) * squareHeightOnBar);
+		nextYCoor = (int) (wallContainer.getCenterY() - (centerY) * squareHeightOnBar);
 		for (int i = 0; i < points.size() - 1; i++) {
 			if (points.get(i).x < points.get(i + 1).x) {
-				rectsOnGreenSquare.add(new Rectangle(nextXCoor, nextYCoor - lineWidthOnGreenSquare / 2,
-						squareWidthOnGreenSquare, lineWidthOnGreenSquare));
-				nextXCoor = nextXCoor + squareWidthOnGreenSquare;
+				rectsOnBar.add(new Rectangle(nextXCoor, nextYCoor - lineWidthOnBar / 2,
+						squareWidthOnBar, lineWidthOnBar));
+				nextXCoor = nextXCoor + squareWidthOnBar;
 			} else if (points.get(i).y < points.get(i + 1).y) {
-				rectsOnGreenSquare.add(new Rectangle(nextXCoor - lineWidthOnGreenSquare / 2, nextYCoor,
-						lineWidthOnGreenSquare, squareHeightOnGreenSquare));
-				nextYCoor = nextYCoor + squareHeightOnGreenSquare;
+				rectsOnBar.add(new Rectangle(nextXCoor - lineWidthOnBar / 2, nextYCoor,
+						lineWidthOnBar, squareHeightOnBar));
+				nextYCoor = nextYCoor + squareHeightOnBar;
 			} else if (points.get(i).x > points.get(i + 1).x) {
-				rectsOnGreenSquare.add(new Rectangle(nextXCoor - squareWidthOnGreenSquare,
-						nextYCoor - lineWidthOnGreenSquare / 2, squareWidthOnGreenSquare, lineWidthOnGreenSquare));
-				nextXCoor = nextXCoor - squareWidthOnGreenSquare;
+				rectsOnBar.add(new Rectangle(nextXCoor - squareWidthOnBar,
+						nextYCoor - lineWidthOnBar / 2, squareWidthOnBar, lineWidthOnBar));
+				nextXCoor = nextXCoor - squareWidthOnBar;
 			} else if (points.get(i).y > points.get(i + 1).y) {
-				rectsOnGreenSquare.add(new Rectangle(nextXCoor - lineWidthOnGreenSquare / 2,
-						nextYCoor - squareHeightOnGreenSquare, lineWidthOnGreenSquare, squareHeightOnGreenSquare));
-				nextYCoor = nextYCoor - squareHeightOnGreenSquare;
+				rectsOnBar.add(new Rectangle(nextXCoor - lineWidthOnBar / 2,
+						nextYCoor - squareHeightOnBar, lineWidthOnBar, squareHeightOnBar));
+				nextYCoor = nextYCoor - squareHeightOnBar;
 			}
 		}
 		this.c = c;
@@ -239,51 +239,51 @@ public abstract class WallOrChain {
 
 	void setRectangles() {
 
-		int nextXCoor = (int) (wallContainer.getCenterX() - (centerX) * squareWidthOnGreenSquare);
-		int nextYCoor = (int) (wallContainer.getCenterY() - (centerY) * squareHeightOnGreenSquare);
+		int nextXCoor = (int) (wallContainer.getCenterX() - (centerX) * squareWidthOnBar);
+		int nextYCoor = (int) (wallContainer.getCenterY() - (centerY) * squareHeightOnBar);
 
-		int line = (lineWidthOnGreenSquare) / 2;
+		int line = (lineWidthOnBar) / 2;
 
 		areaForSquare = new Area();
 
 		if (points.get(0).x < points.get(1).x) { // RIGHT
-			rectsOnGreenSquare.get(0).setBounds(nextXCoor - line, nextYCoor - line, squareWidthOnGreenSquare + 2*line,
-					lineWidthOnGreenSquare);
-			nextXCoor = nextXCoor + squareWidthOnGreenSquare;
+			rectsOnBar.get(0).setBounds(nextXCoor - line, nextYCoor - line, squareWidthOnBar + 2*line,
+					lineWidthOnBar);
+			nextXCoor = nextXCoor + squareWidthOnBar;
 		} else if (points.get(0).y < points.get(1).y) { // DOWN
-			rectsOnGreenSquare.get(0).setBounds(nextXCoor - line, nextYCoor - line, lineWidthOnGreenSquare,
-					squareHeightOnGreenSquare + 2*line);
-			nextYCoor = nextYCoor + squareHeightOnGreenSquare;
+			rectsOnBar.get(0).setBounds(nextXCoor - line, nextYCoor - line, lineWidthOnBar,
+					squareHeightOnBar + 2*line);
+			nextYCoor = nextYCoor + squareHeightOnBar;
 		} else if (points.get(0).x > points.get(1).x) { // LEFT
-			rectsOnGreenSquare.get(0).setBounds(nextXCoor - squareWidthOnGreenSquare - line, nextYCoor - line,
-					squareWidthOnGreenSquare + 2*line, lineWidthOnGreenSquare);
-			nextXCoor = nextXCoor - squareWidthOnGreenSquare;
+			rectsOnBar.get(0).setBounds(nextXCoor - squareWidthOnBar - line, nextYCoor - line,
+					squareWidthOnBar + 2*line, lineWidthOnBar);
+			nextXCoor = nextXCoor - squareWidthOnBar;
 		} else if (points.get(0).y > points.get(1).y) { // UP
-			rectsOnGreenSquare.get(0).setBounds(nextXCoor - line, nextYCoor - squareHeightOnGreenSquare - line,
-					lineWidthOnGreenSquare, squareHeightOnGreenSquare + 2*line);
-			nextYCoor = nextYCoor - squareHeightOnGreenSquare;
+			rectsOnBar.get(0).setBounds(nextXCoor - line, nextYCoor - squareHeightOnBar - line,
+					lineWidthOnBar, squareHeightOnBar + 2*line);
+			nextYCoor = nextYCoor - squareHeightOnBar;
 		}
-		areaForSquare.add(new Area(rectsOnGreenSquare.get(0)));
+		areaForSquare.add(new Area(rectsOnBar.get(0)));
 
 		for (int i = 1; i < points.size() - 1; i++) {
 			if (points.get(i).x < points.get(i + 1).x) { // RIGHT
-				rectsOnGreenSquare.get(i).setBounds(nextXCoor + (line), nextYCoor - (line), squareWidthOnGreenSquare,
-						lineWidthOnGreenSquare);
-				nextXCoor = nextXCoor + squareWidthOnGreenSquare;
+				rectsOnBar.get(i).setBounds(nextXCoor + (line), nextYCoor - (line), squareWidthOnBar,
+						lineWidthOnBar);
+				nextXCoor = nextXCoor + squareWidthOnBar;
 			} else if (points.get(i).y < points.get(i + 1).y) { // DOWN
-				rectsOnGreenSquare.get(i).setBounds(nextXCoor - (line), nextYCoor + (line), lineWidthOnGreenSquare,
-						squareHeightOnGreenSquare);
-				nextYCoor = nextYCoor + squareHeightOnGreenSquare;
+				rectsOnBar.get(i).setBounds(nextXCoor - (line), nextYCoor + (line), lineWidthOnBar,
+						squareHeightOnBar);
+				nextYCoor = nextYCoor + squareHeightOnBar;
 			} else if (points.get(i).x > points.get(i + 1).x) { // LEFT
-				rectsOnGreenSquare.get(i).setBounds(nextXCoor - squareWidthOnGreenSquare - line, nextYCoor - line,
-						squareWidthOnGreenSquare, lineWidthOnGreenSquare);
-				nextXCoor = nextXCoor - squareWidthOnGreenSquare;
+				rectsOnBar.get(i).setBounds(nextXCoor - squareWidthOnBar - line, nextYCoor - line,
+						squareWidthOnBar, lineWidthOnBar);
+				nextXCoor = nextXCoor - squareWidthOnBar;
 			} else if (points.get(i).y > points.get(i + 1).y) { // UP
-				rectsOnGreenSquare.get(i).setBounds(nextXCoor - line, nextYCoor - squareHeightOnGreenSquare - line,
-						lineWidthOnGreenSquare, squareHeightOnGreenSquare);
-				nextYCoor = nextYCoor - squareHeightOnGreenSquare;
+				rectsOnBar.get(i).setBounds(nextXCoor - line, nextYCoor - squareHeightOnBar - line,
+						lineWidthOnBar, squareHeightOnBar);
+				nextYCoor = nextYCoor - squareHeightOnBar;
 			}
-			areaForSquare.add(new Area(rectsOnGreenSquare.get(i)));
+			areaForSquare.add(new Area(rectsOnBar.get(i)));
 		}
 	}
 	void setThePositionAgain(int initialXShift, int initialYShift, int squareHeight, int squareWidth) {
@@ -432,31 +432,31 @@ public abstract class WallOrChain {
 		setTheRectanglePoints(squareHeight, squareWidth, 0);
 	}
 
-	public int getLineWidthOnGreenSquare() {
-		return lineWidthOnGreenSquare;
+	public int getLineWidthOnBar() {
+		return lineWidthOnBar;
 	}
 
-	public void setLineWidthOnGreenSquare(int lineWidthOnGreenSquare) {
-		if (lineWidthOnGreenSquare > 0)
-			this.lineWidthOnGreenSquare = lineWidthOnGreenSquare;
+	public void setLineWidthOnBar(int lineWidthOnBar) {
+		if (lineWidthOnBar > 0)
+			this.lineWidthOnBar = lineWidthOnBar;
 		else
-			this.lineWidthOnGreenSquare = 1;
+			this.lineWidthOnBar = 1;
 	}
 
-	public int getSquareWidthOnGreenSquare() {
-		return squareWidthOnGreenSquare;
+	public int getSquareWidthOnBar() {
+		return squareWidthOnBar;
 	}
 
-	public void setSquareWidthOnGreenSquare(int squareWidthOnGreenSquare) {
-		this.squareWidthOnGreenSquare = squareWidthOnGreenSquare;
+	public void setSquareWidthOnBar(int squareWidthOnBar) {
+		this.squareWidthOnBar = squareWidthOnBar;
 	}
 
-	public int getSquareHeightOnGreenSquare() {
-		return squareHeightOnGreenSquare;
+	public int getSquareHeightOnBar() {
+		return squareHeightOnBar;
 	}
 
-	public void setSquareHeightOnGreenSquare(int squareHeightOnGreenSquare) {
-		this.squareHeightOnGreenSquare = squareHeightOnGreenSquare;
+	public void setSquareHeightOnBar(int squareHeightOnBar) {
+		this.squareHeightOnBar = squareHeightOnBar;
 	}
 
 	public abstract int getWholeMapIndex();
