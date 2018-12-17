@@ -459,9 +459,7 @@ public abstract class WallOrChain {
 		this.squareHeightOnGreenSquare = squareHeightOnGreenSquare;
 	}
 
-	public int getWholeMapIndex() {
-		return 7;
-	}
+	public abstract int getWholeMapIndex();
 
 	public void setColor(Color color) {
 		c = color;
