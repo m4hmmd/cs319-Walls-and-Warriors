@@ -18,30 +18,30 @@ import java.util.ArrayList;
 @SuppressWarnings("serial")
 public class MyComponents extends JComponent {
 	
-	public Model model;
+	static public Model model;
 	private CardLayout cardLayout;
 	private JPanel card;
 	int levelNo;
-	WallOrChain selectedMouse;
-	WallOrChain selectedKey;
+	static WallOrChain selectedMouse;
+	static WallOrChain selectedKey;
 
 	JButton backButton;
-	JButton restartButton;
+	JButton pauseButton;
 	private int pWidth = 0;
 	private int pHeight = 0;
 	GameView gv;
-	Timer t;
-	Timer timer = new Timer(500, null);
+	static Timer t;
+	static Timer timer = new Timer(500, null);
 	
 	protected static int wallRotateAnticlockwise = KeyEvent.VK_A;
 	protected static int wallRotateClockwise = KeyEvent.VK_D;
 	protected static int wallDrop = KeyEvent.VK_Q;
 	protected static int wallPlace = KeyEvent.VK_ENTER;
-	protected static int wallPrevLocation = KeyEvent.VK_ESCAPE;
+	protected static int wallPrevLocation = KeyEvent.VK_SPACE;
 	
 
 	public MyComponents(GameView gv, Model model, CardLayout cardLayout, JPanel card, int levelNo) {
-		this.model = model;
+		MyComponents.model = model;
 		this.cardLayout = cardLayout;
 		this.card = card;
 		this.levelNo = levelNo;
@@ -54,6 +54,7 @@ public class MyComponents extends JComponent {
 					repaint();
 				else {
 					pause();
+					repaint();
 					Object[] options = { "Return Home", "Restart" };
 
 					int n = JOptionPane.showOptionDialog(null, "A Wall or a Chain was collapsed", "Game Over",
@@ -63,10 +64,7 @@ public class MyComponents extends JComponent {
 						cardLayout.show(card, "Game Menu");
 						model.reset();
 					} else if (n == JOptionPane.NO_OPTION) {
-						model.reset();
-						t.restart();
-						selectedKey = null;
-						selectedMouse = null;
+						restart();
 						requestFocusInWindow();
 					}
 				}
@@ -79,23 +77,17 @@ public class MyComponents extends JComponent {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				cardLayout.show(card, "Game Menu");
-				model.reset();
-				stopTimer();
-				timer.stop();
-				selectedKey = null;
-				selectedMouse = null;
+				returnHome();
 			}
 		});
 		
-		restartButton = new MyButton("Restart", "Level " + levelNo, 30, 40, new ActionListener() {
+		pauseButton = new MyButton("Pause", "Level " + levelNo, 30, 40, new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				model.reset();
-				t.restart();
-				selectedKey = null;
-				selectedMouse = null;
-				requestFocusInWindow();
+				pause();
+				repaint();
+				cardLayout.show(card, "Pause");
 			}
 		});
 		
@@ -122,7 +114,7 @@ public class MyComponents extends JComponent {
 		// });
 
 		add(backButton);
-		add(restartButton);
+		add(pauseButton);
 		Listeners listener = new Listeners();
 		requestFocusInWindow();
 		addKeyListener(listener);
@@ -132,21 +124,35 @@ public class MyComponents extends JComponent {
 		setFocusable(true);
 	}
 
-	public void startTimer() {
+	public static void restart() {
+		model.reset();
+		t.restart();
+		selectedKey = null;
+		selectedMouse = null;
+	}
+	
+	public static void returnHome() {
+		model.reset();
+		stopTimer();
+		timer.stop();
+		selectedKey = null;
+		selectedMouse = null;
+	}
+	
+	public static void startTimer() {
 		t.start();
 	}
 
-	public void stopTimer() {
+	public static void stopTimer() {
 		t.stop();
 	}
 
-	private void pause() {
+	static void pause() {
 		stopTimer();
 		model.pause();
-		repaint();
 	}
 
-	protected void resume() {
+	protected static void resume() {
 		startTimer();
 		model.resume();
 	}
@@ -181,7 +187,7 @@ public class MyComponents extends JComponent {
 		drawWalls(g);
 
 		backButton.setBounds(0, (int) (getHeight() / 10 * 0.5), getWidth() / 5, getHeight() / 10);
-		restartButton.setBounds((int) (getWidth() / 10 * 7.5), (int) (getHeight() / 10 * 0.5), getWidth() / 4, getHeight() / 10);
+		pauseButton.setBounds((int) (getWidth() / 10 * 7.5), (int) (getHeight() / 10 * 0.5), getWidth() / 4, getHeight() / 10);
 		pWidth = getWidth();
 		pHeight = getHeight();
 	}

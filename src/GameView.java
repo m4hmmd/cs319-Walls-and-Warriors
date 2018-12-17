@@ -18,6 +18,7 @@ public class GameView extends JFrame implements ActionListener {
 	SoundManager sm = new SoundManager();
 	private static int newKey;
 	private static int clicked = 0;
+	private boolean paused = false;
 
 	static int lastCompletedLevel = 0;
 	int currentLevelIndex = 0;
@@ -32,7 +33,7 @@ public class GameView extends JFrame implements ActionListener {
 			new MyButton("Level 3", "Level 3", btnSizeL, btnSizeScaledL, this),
 			new MyButton("Level 4", "Level 4", btnSizeL, btnSizeScaledL, this),
 			new MyButton("Level 5", "Level 5", btnSizeL, btnSizeScaledL, this) };
-
+	
 	public GameView() throws IOException {
 		card.setLayout(cardLayout = new CardLayout());
 		
@@ -52,7 +53,7 @@ public class GameView extends JFrame implements ActionListener {
 				System.out.println(ex);
 			}
 		}
-		addWindowListener(new SoundManager.wListener());
+		//addWindowListener(new SoundManager.wListener());
 		
 		cardLayout.show(card, "Game Menu");
 		add(card);
@@ -60,6 +61,7 @@ public class GameView extends JFrame implements ActionListener {
 
 	private void createPanels() throws IOException {
 		createGameMenu();
+		createPauseMenu();
 		createSettingsMenu();
 		createLevelMenu();
 		createHowToPanel();
@@ -205,6 +207,121 @@ public class GameView extends JFrame implements ActionListener {
 		settingsMenu.addBackButton(back);
 		
 		card.add("Settings", settingsMenu);
+	}
+	
+	private void createPauseMenu() throws IOException {
+		MyPanel pauseMenu = new MyPanel("Pause", "src/img/img1.jpeg");
+		
+		MyButton restart = new MyButton("Restart", "Pause", btnSizeM, btnSizeScaledM, this);
+		MyButton resume = new MyButton("Resume", "Pause", btnSizeM, btnSizeScaledM, this);
+		MyButton returnHome = new MyButton("Return Home", "Pause", btnSizeM, btnSizeScaledM, this);
+		
+		restart.addMouseListener(new MouseListener() {
+			
+			@Override
+			public void mouseReleased(MouseEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void mousePressed(MouseEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void mouseExited(MouseEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void mouseEntered(MouseEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				MyComponents.restart();
+				cardLayout.last(card);
+				requestFocusInWindow();
+			}
+		});
+		
+		resume.addMouseListener(new MouseListener() {
+			
+			@Override
+			public void mouseReleased(MouseEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void mousePressed(MouseEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void mouseExited(MouseEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void mouseEntered(MouseEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				MyComponents.resume();
+				cardLayout.last(card);
+				requestFocusInWindow();
+			}
+		});
+		
+		returnHome.addMouseListener(new MouseListener() {
+			
+			@Override
+			public void mouseReleased(MouseEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void mousePressed(MouseEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void mouseExited(MouseEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void mouseEntered(MouseEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				cardLayout.show(card, "Game Menu");
+				MyComponents.returnHome();
+			}
+		});
+		
+		pauseMenu.addButton(resume);
+		pauseMenu.addButton(restart);
+		pauseMenu.addButton(returnHome);
+		
+		card.add("Pause", pauseMenu);
 	}
 
 	@Override
@@ -394,7 +511,7 @@ public class GameView extends JFrame implements ActionListener {
 		}
 	}
 	
-	public static class customizeKeys implements KeyListener {
+	public class customizeKeys implements KeyListener {
 		@Override
 		public void keyPressed(KeyEvent e) {
 			if (checkKey(e))
@@ -428,6 +545,7 @@ public class GameView extends JFrame implements ActionListener {
 		
 		public boolean checkKey(KeyEvent e) {
 			int pressed = e.getKeyCode();
+			
 			if (pressed == MyComponents.wallRotateAnticlockwise ||
 				pressed == MyComponents.wallRotateClockwise ||	
 				pressed == MyComponents.wallDrop ||
@@ -448,7 +566,8 @@ public class GameView extends JFrame implements ActionListener {
 				pressed == KeyEvent.VK_UP ||
 				pressed == KeyEvent.VK_DOWN ||
 				pressed == KeyEvent.VK_LEFT ||
-				pressed == KeyEvent.VK_RIGHT) {
+				pressed == KeyEvent.VK_RIGHT ||
+				pressed == KeyEvent.VK_SPACE) {
 				
 				JOptionPane.showMessageDialog(null, "Entered key is in use!", "Used Key", JOptionPane.ERROR_MESSAGE);
 				
