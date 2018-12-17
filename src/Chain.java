@@ -37,8 +37,8 @@ public class Chain extends WallOrChain {
 			g.fillRect(CoorX - healthWidth / 2, CoorY - healthHeight / 2 - lineWidth,
 					(int) (healthWidth * (health * 1.0 / initialHealth)), healthHeight);
 			Graphics2D g3 = (Graphics2D) g;
-			g3.setColor(Color.BLUE.brighter().brighter().brighter().brighter());
-			g3.fill(areaForSquare);
+			g3.setColor(Color.RED.brighter().brighter().brighter().brighter());
+			g3.draw(areaForSquare);
 
 		} else {
 			Graphics2D g2 = (Graphics2D) g;
