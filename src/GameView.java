@@ -33,10 +33,10 @@ public class GameView extends JFrame implements ActionListener {
 			new MyButton("Level 3", "Level 3", btnSizeL, btnSizeScaledL, this),
 			new MyButton("Level 4", "Level 4", btnSizeL, btnSizeScaledL, this),
 			new MyButton("Level 5", "Level 5", btnSizeL, btnSizeScaledL, this) };
-	
+
 	public GameView() throws IOException {
 		card.setLayout(cardLayout = new CardLayout());
-		
+
 		setMinimumSize(new Dimension(800, 600));
 		managers[0] = new GameManager(this, 1, cardLayout, card);
 		managers[1] = new GameManager(this, 2, cardLayout, card);
@@ -53,8 +53,8 @@ public class GameView extends JFrame implements ActionListener {
 				System.out.println(ex);
 			}
 		}
-		//addWindowListener(new SoundManager.wListener());
-		
+		// addWindowListener(new SoundManager.wListener());
+
 		cardLayout.show(card, "Game Menu");
 		add(card);
 	}
@@ -166,161 +166,91 @@ public class GameView extends JFrame implements ActionListener {
 
 		}
 	}
-	
-	private void createSettingsMenu() throws IOException {		
+
+	private void createSettingsMenu() throws IOException {
 		MyPanel settingsMenu = new MyPanel("Settings", "src/img/img1.jpeg");
-		
+
 		JLabel soundSettings = new JLabel("<html><h1>Sound Settings</h1></html>");
 		JLabel keyboardSettings = new JLabel("<html><h1>Keyboard Customizations</h1></html>");
-		
+
 		MyButton switchMute = new MyButton("Mute", "Settings", btnSizeM, btnSizeScaledM, this);
-		
-		MyButton setRotationAnticlockwise = new MyButton("Wall Rotation Anticlockwise", "Settings", btnSizeM, btnSizeScaledM, this);
-		MyButton setRotationClockwise = new MyButton("Wall Rotation Clockwise", "Settings", btnSizeM, btnSizeScaledM, this);
+
+		MyButton setRotationAnticlockwise = new MyButton("Wall Rotation Anticlockwise", "Settings", btnSizeM,
+				btnSizeScaledM, this);
+		MyButton setRotationClockwise = new MyButton("Wall Rotation Clockwise", "Settings", btnSizeM, btnSizeScaledM,
+				this);
 		MyButton setDrop = new MyButton("Wall Drop", "Settings", btnSizeM, btnSizeScaledM, this);
-		MyButton setPlace = new MyButton("Wall Place", "Settings", btnSizeM, btnSizeScaledM, this);;
+		MyButton setPlace = new MyButton("Wall Place", "Settings", btnSizeM, btnSizeScaledM, this);
+		;
 		MyButton setPrevLocation = new MyButton("Wall Previous Location", "Settings", btnSizeM, btnSizeScaledM, this);
 
 		MyButton back = new MyButton("Back", "Game Menu", btnSizeS, btnSizeScaledS, this);
-		
+
 		setRotationAnticlockwise.addMouseListener(new CustomizeRotationAnticlockwiseButton());
 		setRotationClockwise.addMouseListener(new CustomizeRotationClockwiseButton());
 		setDrop.addMouseListener(new CustomizeDropButton());
 		setPlace.addMouseListener(new CustomizePlaceButton());
 		setPrevLocation.addMouseListener(new CustomizePrevLocationButton());
-		
+
 		setRotationAnticlockwise.addKeyListener(new customizeKeys());
 		setRotationClockwise.addKeyListener(new customizeKeys());
 		setDrop.addKeyListener(new customizeKeys());
 		setPlace.addKeyListener(new customizeKeys());
 		setPrevLocation.addKeyListener(new customizeKeys());
-		
+
 		switchMute.addActionListener(new SoundManager.bListener());
-		
+
 		settingsMenu.addButton(switchMute);
 		settingsMenu.addButton(setRotationAnticlockwise);
 		settingsMenu.addButton(setRotationClockwise);
 		settingsMenu.addButton(setDrop);
 		settingsMenu.addButton(setPlace);
 		settingsMenu.addButton(setPrevLocation);
-		
+
 		settingsMenu.addBackButton(back);
-		
+
 		card.add("Settings", settingsMenu);
 	}
-	
+
 	private void createPauseMenu() throws IOException {
 		MyPanel pauseMenu = new MyPanel("Pause", "src/img/img1.jpeg");
-		
-		MyButton restart = new MyButton("Restart", "Pause", btnSizeM, btnSizeScaledM, this);
-		MyButton resume = new MyButton("Resume", "Pause", btnSizeM, btnSizeScaledM, this);
-		MyButton returnHome = new MyButton("Return Home", "Pause", btnSizeM, btnSizeScaledM, this);
-		
-		restart.addMouseListener(new MouseListener() {
+
+		MyButton restart = new MyButton("Restart", "Level " + currentLevelIndex, btnSizeM, btnSizeScaledM, this);
+		MyButton resume = new MyButton("Resume", "Level " + currentLevelIndex, btnSizeM, btnSizeScaledM, this);
+		MyButton returnHome = new MyButton("Return Home", "Game Menu", btnSizeM, btnSizeScaledM, this);
+
+		restart.addActionListener(new ActionListener() {
 			
 			@Override
-			public void mouseReleased(MouseEvent e) {
-				// TODO Auto-generated method stub
-				
-			}
-			
-			@Override
-			public void mousePressed(MouseEvent e) {
-				// TODO Auto-generated method stub
-				
-			}
-			
-			@Override
-			public void mouseExited(MouseEvent e) {
-				// TODO Auto-generated method stub
-				
-			}
-			
-			@Override
-			public void mouseEntered(MouseEvent e) {
-				// TODO Auto-generated method stub
-				
-			}
-			
-			@Override
-			public void mouseClicked(MouseEvent e) {
-				MyComponents.restart();
-				cardLayout.last(card);
-				requestFocusInWindow();
+			public void actionPerformed(ActionEvent e) {
+				managers[currentLevelIndex - 1].reset();
+				managers[currentLevelIndex - 1].startTimers();
+				cardLayout.show(card, "Level " + currentLevelIndex);
+				managers[currentLevelIndex - 1].getPanel().requestFocusInWindow();
 			}
 		});
-		
-		resume.addMouseListener(new MouseListener() {
+		resume.addActionListener(new ActionListener() {
 			
 			@Override
-			public void mouseReleased(MouseEvent e) {
-				// TODO Auto-generated method stub
-				
-			}
-			
-			@Override
-			public void mousePressed(MouseEvent e) {
-				// TODO Auto-generated method stub
-				
-			}
-			
-			@Override
-			public void mouseExited(MouseEvent e) {
-				// TODO Auto-generated method stub
-				
-			}
-			
-			@Override
-			public void mouseEntered(MouseEvent e) {
-				// TODO Auto-generated method stub
-				
-			}
-			
-			@Override
-			public void mouseClicked(MouseEvent e) {
-				MyComponents.resume();
-				cardLayout.last(card);
-				requestFocusInWindow();
+			public void actionPerformed(ActionEvent e) {
+				managers[currentLevelIndex - 1].startTimers();
+				cardLayout.show(card, "Level " + currentLevelIndex);
+				managers[currentLevelIndex - 1].getPanel().requestFocusInWindow();
 			}
 		});
-		
-		returnHome.addMouseListener(new MouseListener() {
+		returnHome.addActionListener(new ActionListener() {
 			
 			@Override
-			public void mouseReleased(MouseEvent e) {
-				// TODO Auto-generated method stub
-				
-			}
-			
-			@Override
-			public void mousePressed(MouseEvent e) {
-				// TODO Auto-generated method stub
-				
-			}
-			
-			@Override
-			public void mouseExited(MouseEvent e) {
-				// TODO Auto-generated method stub
-				
-			}
-			
-			@Override
-			public void mouseEntered(MouseEvent e) {
-				// TODO Auto-generated method stub
-				
-			}
-			
-			@Override
-			public void mouseClicked(MouseEvent e) {
+			public void actionPerformed(ActionEvent e) {
 				cardLayout.show(card, "Game Menu");
-				MyComponents.returnHome();
+				managers[currentLevelIndex - 1].reset();
 			}
 		});
-		
+
 		pauseMenu.addButton(resume);
 		pauseMenu.addButton(restart);
 		pauseMenu.addButton(returnHome);
-		
+
 		card.add("Pause", pauseMenu);
 	}
 
@@ -334,6 +264,7 @@ public class GameView extends JFrame implements ActionListener {
 			if (((MyButton) e.getSource()).getNextPanelName().equals("Level " + (i + 1))) {
 				managers[i].getPanel().requestFocusInWindow();
 				managers[i].startTimers();
+				currentLevelIndex = i + 1;
 			}
 		}
 	}
@@ -346,29 +277,25 @@ public class GameView extends JFrame implements ActionListener {
 
 		@Override
 		public void mouseEntered(MouseEvent e) {
-			// TODO Auto-generated method stub
-			
+
 		}
 
 		@Override
 		public void mouseExited(MouseEvent e) {
-			// TODO Auto-generated method stub
-			
+
 		}
 
 		@Override
 		public void mousePressed(MouseEvent e) {
-			// TODO Auto-generated method stub
-			
+
 		}
 
 		@Override
 		public void mouseReleased(MouseEvent e) {
-			// TODO Auto-generated method stub
-			
+
 		}
 	}
-	
+
 	public static class CustomizeRotationClockwiseButton implements MouseListener {
 		@Override
 		public void mouseClicked(MouseEvent e) {
@@ -377,29 +304,25 @@ public class GameView extends JFrame implements ActionListener {
 
 		@Override
 		public void mouseEntered(MouseEvent e) {
-			// TODO Auto-generated method stub
-			
+
 		}
 
 		@Override
 		public void mouseExited(MouseEvent e) {
-			// TODO Auto-generated method stub
-			
+
 		}
 
 		@Override
 		public void mousePressed(MouseEvent e) {
-			// TODO Auto-generated method stub
-			
+
 		}
 
 		@Override
 		public void mouseReleased(MouseEvent e) {
-			// TODO Auto-generated method stub
-			
-		}		
+
+		}
 	}
-	
+
 	public static class CustomizeDropButton implements MouseListener {
 		@Override
 		public void mouseClicked(MouseEvent e) {
@@ -408,29 +331,25 @@ public class GameView extends JFrame implements ActionListener {
 
 		@Override
 		public void mouseEntered(MouseEvent e) {
-			// TODO Auto-generated method stub
-			
+
 		}
 
 		@Override
 		public void mouseExited(MouseEvent e) {
-			// TODO Auto-generated method stub
-			
+
 		}
 
 		@Override
 		public void mousePressed(MouseEvent e) {
-			// TODO Auto-generated method stub
-			
+
 		}
 
 		@Override
 		public void mouseReleased(MouseEvent e) {
-			// TODO Auto-generated method stub
-			
-		}		
+
+		}
 	}
-	
+
 	public static class CustomizePlaceButton implements MouseListener {
 		@Override
 		public void mouseClicked(MouseEvent e) {
@@ -439,29 +358,25 @@ public class GameView extends JFrame implements ActionListener {
 
 		@Override
 		public void mouseEntered(MouseEvent e) {
-			// TODO Auto-generated method stub
-			
+
 		}
 
 		@Override
 		public void mouseExited(MouseEvent e) {
-			// TODO Auto-generated method stub
-			
+
 		}
 
 		@Override
 		public void mousePressed(MouseEvent e) {
-			// TODO Auto-generated method stub
-			
+
 		}
 
 		@Override
 		public void mouseReleased(MouseEvent e) {
-			// TODO Auto-generated method stub
-			
-		}		
+
+		}
 	}
-	
+
 	public static class CustomizePrevLocationButton implements MouseListener {
 		@Override
 		public void mouseClicked(MouseEvent e) {
@@ -470,39 +385,35 @@ public class GameView extends JFrame implements ActionListener {
 
 		@Override
 		public void mouseEntered(MouseEvent e) {
-			// TODO Auto-generated method stub
-			
+
 		}
 
 		@Override
 		public void mouseExited(MouseEvent e) {
-			// TODO Auto-generated method stub
-			
+
 		}
 
 		@Override
 		public void mousePressed(MouseEvent e) {
-			// TODO Auto-generated method stub
-			
+
 		}
 
 		@Override
 		public void mouseReleased(MouseEvent e) {
-			// TODO Auto-generated method stub
-			
-		}		
+
+		}
 	}
-	
+
 	public void run() throws IOException {
 
 		GameView f = new GameView();
-		
+
 		f.setVisible(true);
 		f.setBounds(100, 100, 800, 500);
 		f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	}
 
-	public static void main(String[] args)throws IOException {
+	public static void main(String[] args) throws IOException {
 		try {
 			GameView gameView = new GameView();
 			gameView.run();
@@ -510,17 +421,17 @@ public class GameView extends JFrame implements ActionListener {
 			e.printStackTrace();
 		}
 	}
-	
+
 	public class customizeKeys implements KeyListener {
 		@Override
 		public void keyPressed(KeyEvent e) {
 			if (checkKey(e))
 				return;
-			
+
 			newKey = e.getKeyCode();
 			if (clicked == 1)
 				MyComponents.wallRotateAnticlockwise = newKey;
-			else if (clicked == 2) 
+			else if (clicked == 2)
 				MyComponents.wallRotateClockwise = newKey;
 			else if (clicked == 3)
 				MyComponents.wallDrop = newKey;
@@ -533,47 +444,31 @@ public class GameView extends JFrame implements ActionListener {
 
 		@Override
 		public void keyReleased(KeyEvent e) {
-			// TODO Auto-generated method stub
-			
+
 		}
 
 		@Override
 		public void keyTyped(KeyEvent e) {
-			// TODO Auto-generated method stub
-			
+
 		}
-		
+
 		public boolean checkKey(KeyEvent e) {
 			int pressed = e.getKeyCode();
-			
-			if (pressed == MyComponents.wallRotateAnticlockwise ||
-				pressed == MyComponents.wallRotateClockwise ||	
-				pressed == MyComponents.wallDrop ||
-				pressed == MyComponents.wallPlace ||
-				pressed == MyComponents.wallPrevLocation ||
-				pressed == KeyEvent.VK_1 ||
-				pressed == KeyEvent.VK_2 ||	
-				pressed == KeyEvent.VK_3 ||
-				pressed == KeyEvent.VK_4 ||
-				pressed == KeyEvent.VK_5||
-				pressed == KeyEvent.VK_6 || 
-				pressed == KeyEvent.VK_NUMPAD1 ||
-				pressed == KeyEvent.VK_NUMPAD2 ||	
-				pressed == KeyEvent.VK_NUMPAD3 ||
-				pressed == KeyEvent.VK_NUMPAD4 ||
-				pressed == KeyEvent.VK_NUMPAD5 ||
-				pressed == KeyEvent.VK_NUMPAD6 || 
-				pressed == KeyEvent.VK_UP ||
-				pressed == KeyEvent.VK_DOWN ||
-				pressed == KeyEvent.VK_LEFT ||
-				pressed == KeyEvent.VK_RIGHT ||
-				pressed == KeyEvent.VK_SPACE) {
-				
+
+			if (pressed == MyComponents.wallRotateAnticlockwise || pressed == MyComponents.wallRotateClockwise
+					|| pressed == MyComponents.wallDrop || pressed == MyComponents.wallPlace
+					|| pressed == MyComponents.wallPrevLocation || pressed == KeyEvent.VK_1 || pressed == KeyEvent.VK_2
+					|| pressed == KeyEvent.VK_3 || pressed == KeyEvent.VK_4 || pressed == KeyEvent.VK_5
+					|| pressed == KeyEvent.VK_6 || pressed == KeyEvent.VK_NUMPAD1 || pressed == KeyEvent.VK_NUMPAD2
+					|| pressed == KeyEvent.VK_NUMPAD3 || pressed == KeyEvent.VK_NUMPAD4
+					|| pressed == KeyEvent.VK_NUMPAD5 || pressed == KeyEvent.VK_NUMPAD6 || pressed == KeyEvent.VK_UP
+					|| pressed == KeyEvent.VK_DOWN || pressed == KeyEvent.VK_LEFT || pressed == KeyEvent.VK_RIGHT
+					|| pressed == KeyEvent.VK_SPACE) {
+
 				JOptionPane.showMessageDialog(null, "Entered key is in use!", "Used Key", JOptionPane.ERROR_MESSAGE);
-				
+
 				return true;
-			}
-			else 
+			} else
 				return false;
 		}
 	}
