@@ -18,20 +18,20 @@ import java.util.ArrayList;
 @SuppressWarnings("serial")
 public class MyComponents extends JComponent {
 	
-	static public Model model;
+	public Model model;
 	private CardLayout cardLayout;
 	private JPanel card;
 	int levelNo;
-	static WallOrChain selectedMouse;
-	static WallOrChain selectedKey;
+	WallOrChain selectedMouse;
+	WallOrChain selectedKey;
 
 	JButton backButton;
 	JButton pauseButton;
 	private int pWidth = 0;
 	private int pHeight = 0;
 	GameView gv;
-	static Timer t;
-	static Timer timer = new Timer(500, null);
+	Timer t;
+	Timer timer = new Timer(500, null);
 	
 	protected static int wallRotateAnticlockwise = KeyEvent.VK_A;
 	protected static int wallRotateClockwise = KeyEvent.VK_D;
@@ -41,7 +41,7 @@ public class MyComponents extends JComponent {
 	
 
 	public MyComponents(GameView gv, Model model, CardLayout cardLayout, JPanel card, int levelNo) {
-		MyComponents.model = model;
+		this.model = model;
 		this.cardLayout = cardLayout;
 		this.card = card;
 		this.levelNo = levelNo;
@@ -124,14 +124,14 @@ public class MyComponents extends JComponent {
 		setFocusable(true);
 	}
 
-	public static void restart() {
+	public void restart() {
 		model.reset();
 		t.restart();
 		selectedKey = null;
 		selectedMouse = null;
 	}
 	
-	public static void returnHome() {
+	public void returnHome() {
 		model.reset();
 		stopTimer();
 		timer.stop();
@@ -139,20 +139,20 @@ public class MyComponents extends JComponent {
 		selectedMouse = null;
 	}
 	
-	public static void startTimer() {
+	public void startTimer() {
 		t.start();
 	}
 
-	public static void stopTimer() {
+	public void stopTimer() {
 		t.stop();
 	}
 
-	static void pause() {
+	public void pause() {
 		stopTimer();
 		model.pause();
 	}
 
-	protected static void resume() {
+	protected void resume() {
 		startTimer();
 		model.resume();
 	}
