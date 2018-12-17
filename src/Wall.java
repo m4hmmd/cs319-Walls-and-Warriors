@@ -65,4 +65,7 @@ public class Wall extends WallOrChain {
 
 	}
 
+	public int getWholeMapIndex() {
+		return Model.WALL;
+	}
 }
