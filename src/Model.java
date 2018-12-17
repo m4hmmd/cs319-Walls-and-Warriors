@@ -17,11 +17,12 @@ public class Model {
 	public static final int ENEMY = 3;
 	public static final int FOREST = 4;
 	public static final int LAKE = 5;
-	public static final int WALL_OR_CHAIN = 6;
-	public static final int VALID_FOR_WALL = 7;
-	public static final int VALID_FOR_CHAIN = 8;
-	public static final int ALLY_ARMADA = 9;
-	public static final int ENEMY_ARMADA = 10;
+	public static final int WALL = 6;
+	public static final int CHAIN = 7;
+	public static final int VALID_FOR_WALL = 8;
+	public static final int VALID_FOR_CHAIN = 9;
+	public static final int ALLY_ARMADA = 10;
+	public static final int ENEMY_ARMADA = 11;
 	public static final int UP = 0;
 	public static final int DOWN = 1;
 	public static final int LEFT = 2;
@@ -252,7 +253,8 @@ public class Model {
 			}
 		}
 		for (int i = 0; i < w.edgesX.length; i++) {
-			if (map[(w.xInd + w.edgesX[i]) * 2][(w.yInd + w.edgesY[i]) * 2] == WALL_OR_CHAIN) {
+			if (map[(w.xInd + w.edgesX[i]) * 2][(w.yInd + w.edgesY[i]) * 2] == WALL
+					|| map[(w.xInd + w.edgesX[i]) * 2][(w.yInd + w.edgesY[i]) * 2] == CHAIN) {
 				return false;
 			}
 		}
@@ -283,7 +285,8 @@ public class Model {
 			}
 		}
 		for (int i = 0; i < w.edgesX.length; i++) {
-			if (map[(indexX + w.edgesX[i]) * 2][(indexY + w.edgesY[i]) * 2] == WALL_OR_CHAIN) {
+			if (map[(indexX + w.edgesX[i]) * 2][(indexY + w.edgesY[i]) * 2] == WALL
+					|| map[(w.xInd + w.edgesX[i]) * 2][(w.yInd + w.edgesY[i]) * 2] == CHAIN) {
 				return false;
 			}
 		}
@@ -291,20 +294,21 @@ public class Model {
 	}
 
 	void addToLines(WallOrChain w) {
+		int index = w.getWholeMapIndex();
 		for (int i = 0; i < w.points.size() - 1; i++) {
 			int leftOne = (w.points.get(i).x == w.points.get(i + 1).x) ? w.points.get(i).x
 					: ((w.points.get(i).x > w.points.get(i + 1).x) ? w.points.get(i + 1).x : w.points.get(i).x);
 			int topOne = (w.points.get(i).y == w.points.get(i + 1).y) ? w.points.get(i).y
 					: ((w.points.get(i).y > w.points.get(i + 1).y) ? w.points.get(i + 1).y : w.points.get(i).y);
 			if (w.points.get(i).x == w.points.get(i + 1).x) {
-				map[(w.xInd + leftOne) * 2][(w.yInd + topOne) * 2 + 1] = WALL_OR_CHAIN;
+				map[(w.xInd + leftOne) * 2][(w.yInd + topOne) * 2 + 1] = index;
 			} else {
-				map[(w.xInd + leftOne) * 2 + 1][(w.yInd + topOne) * 2] = WALL_OR_CHAIN;
+				map[(w.xInd + leftOne) * 2 + 1][(w.yInd + topOne) * 2] = index;
 			}
 		}
 
 		for (int i = 0; i < w.edgesX.length; i++) {
-			map[(w.xInd + w.edgesX[i]) * 2][(w.yInd + w.edgesY[i]) * 2] = WALL_OR_CHAIN;
+			map[(w.xInd + w.edgesX[i]) * 2][(w.yInd + w.edgesY[i]) * 2] = index;
 		}
 	}
 
@@ -314,22 +318,22 @@ public class Model {
 		int numberOfEnemies = 0;
 
 		for (int i = 1; i < map.length; i = i + 2) {
-			if (map[i][0] != WALL_OR_CHAIN)
+			if (map[i][0] != WALL && map[i][0] != CHAIN)
 				numberOfEnemies += numberOfEnemiesOutside(i, 1, visited);
 		}
 
 		for (int i = 1; i < map.length; i = i + 2) {
-			if (map[i][map[0].length - 1] != WALL_OR_CHAIN)
+			if (map[i][map[0].length - 1] != WALL && map[i][map[0].length - 1] != CHAIN)
 				numberOfEnemies += numberOfEnemiesOutside(i, map[0].length - 2, visited);
 		}
 
 		for (int j = 1; j < map[0].length; j = j + 2) {
-			if (map[0][j] != WALL_OR_CHAIN)
+			if (map[0][j] != WALL && map[0][j] != CHAIN)
 				numberOfEnemies += numberOfEnemiesOutside(1, j, visited);
 		}
 
 		for (int j = 1; j < map[0].length; j = j + 2) {
-			if (map[map.length - 1][j] != WALL_OR_CHAIN)
+			if (map[map.length - 1][j] != WALL && map[map.length - 1][j] != CHAIN)
 				numberOfEnemies += numberOfEnemiesOutside(map.length - 2, j, visited);
 		}
 
@@ -356,13 +360,13 @@ public class Model {
 		int cRight = 0;
 		int cLeft = 0;
 
-		if ((map[i][j + 1] != WALL_OR_CHAIN && map[i][j + 1] != CASTLE))
+		if (map[i][j + 1] != WALL && map[i][j + 1] != CHAIN)
 			cUp = numberOfEnemiesOutside(i, j + 2, visited);
-		if ((map[i][j - 1] != WALL_OR_CHAIN && map[i][j - 1] != CASTLE))
+		if (map[i][j - 1] != WALL && map[i][j - 1] != CHAIN)
 			cDown = numberOfEnemiesOutside(i, j - 2, visited);
-		if ((map[i + 1][j] != WALL_OR_CHAIN && map[i + 1][j] != CASTLE))
+		if (map[i + 1][j] != WALL && map[i + 1][j] != CHAIN)
 			cRight = numberOfEnemiesOutside(i + 2, j, visited);
-		if ((map[i - 1][j] != WALL_OR_CHAIN && map[i - 1][j] != CASTLE))
+		if (map[i - 1][j] != WALL && map[i - 1][j] != CHAIN)
 			cLeft = numberOfEnemiesOutside(i - 2, j, visited);
 
 		int thisCell = map[i][j] == ENEMY || map[i][j] == ENEMY_ARMADA ? 1 : 0;
@@ -938,7 +942,7 @@ public class Model {
 			nextY++;
 		}
 
-		if (!outOfScreen(nextX, nextY) && map[mapX][mapY] != WALL_OR_CHAIN) {
+		if (!outOfScreen(nextX, nextY) && map[mapX][mapY] != WALL && map[mapX][mapY] != CHAIN) {
 			if (s instanceof AllyArmada || s instanceof EnemyArmada)
 				return gameObjects[nextX][nextY] instanceof Lake;
 			else
@@ -1041,13 +1045,13 @@ public class Model {
 		int mapX = s.getX() * 2 + 1;
 		int mapY = s.getY() * 2 + 1;
 
-		if (!outOfScreenMap(mapX + 1, mapY) && map[mapX + 1][mapY] == WALL_OR_CHAIN)
+		if (!outOfScreenMap(mapX + 1, mapY) && map[mapX + 1][mapY] == WALL)
 			return Model.RIGHT;
-		if (!outOfScreenMap(mapX - 1, mapY) && map[mapX - 1][mapY] == WALL_OR_CHAIN)
+		if (!outOfScreenMap(mapX - 1, mapY) && map[mapX - 1][mapY] == WALL)
 			return Model.LEFT;
-		if (!outOfScreenMap(mapX, mapY + 1) && map[mapX][mapY + 1] == WALL_OR_CHAIN)
+		if (!outOfScreenMap(mapX, mapY + 1) && map[mapX][mapY + 1] == WALL)
 			return Model.DOWN;
-		if (!outOfScreenMap(mapX, mapY - 1) && map[mapX][mapY - 1] == WALL_OR_CHAIN)
+		if (!outOfScreenMap(mapX, mapY - 1) && map[mapX][mapY - 1] == WALL)
 			return Model.UP;
 		return -1;
 	}
