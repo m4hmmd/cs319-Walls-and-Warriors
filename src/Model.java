@@ -823,9 +823,9 @@ public class Model {
 			lineWidth++;
 		
 		for (WallOrChain w : walls) {
-			w.setLineWidthOnGreenSquare((lineWidth / 2) % 2 == 0 ? lineWidth / 2 : lineWidth / 2 - 1);
-			w.setSquareHeightOnGreenSquare(squareHeight / 4);
-			w.setSquareWidthOnGreenSquare(squareWidth / 4);
+			w.setLineWidthOnBar((lineWidth / 2) % 2 == 0 ? lineWidth / 2 : lineWidth / 2 - 1);
+			w.setSquareHeightOnBar(squareHeight / 4);
+			w.setSquareWidthOnBar(squareWidth / 4);
 			w.lineWidth = lineWidth;
 		}
 
