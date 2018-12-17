@@ -19,27 +19,11 @@ public class Chain extends WallOrChain {
 		g.setColor(getColor());
 
 		if (visible) {
-			
 			Graphics2D g2 = (Graphics2D) g;
 			g2.draw(area);
 
-			int healthWidth = squareWidth / 3;
-			int healthHeight = squareWidth / 8;
-			Rectangle nearestToCenter = getNearestRectToCenter();
-			int CoorX = (int) nearestToCenter.getCenterX();
-			int CoorY = (int) nearestToCenter.getCenterY();
-
-			g.setColor(Color.GREEN);
-			g.drawRect(CoorX - healthWidth / 2, CoorY - healthHeight / 2 - lineWidth, healthWidth, healthHeight);
-			int r = (int) (510 * (1 - health * 1.0 / initialHealth));
-			int gr = (int) (510 * (health * 1.0 / initialHealth));
-			g.setColor(new Color(r >= 255 ? 255 : r, gr >= 255 ? 255 : gr, 0));
-			g.fillRect(CoorX - healthWidth / 2, CoorY - healthHeight / 2 - lineWidth,
-					(int) (healthWidth * (health * 1.0 / initialHealth)), healthHeight);
-			Graphics2D g3 = (Graphics2D) g;
-			g3.setColor(Color.WHITE);
-			g3.draw(areaForSquare);
-
+			g2.setColor(Color.WHITE);
+			g2.draw(areaForSquare);
 		} else {
 			Graphics2D g2 = (Graphics2D) g;
 			g2.draw(areaForSquare);
