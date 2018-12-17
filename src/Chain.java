@@ -67,4 +67,9 @@ public class Chain extends WallOrChain {
 
 		g.drawString("" + (index + 1), wallContainer.x + squareWidth / 14, wallContainer.y + squareHeight / 6);
 	}
+	
+	@Override
+	public int getWholeMapIndex() {
+		return Model.CHAIN;
+	}
 }
