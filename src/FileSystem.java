@@ -1,5 +1,3 @@
-import org.omg.PortableInterceptor.INACTIVE;
-
 import java.io.*;
 import java.util.*;
 public class FileSystem 
@@ -7,8 +5,7 @@ public class FileSystem
 	private int castle [] = new int [4];
 	private int forestAndLake [] = new int [9];
 	private boolean armada;
-	private int number_of_soldiers[];
-	private int size_of_soldiers;
+	private int numberOfSoldiers;
 	private FileDataStructure x [];
 	int mapWidth;
 	int mapLength;
@@ -47,9 +44,9 @@ public class FileSystem
 		size = 0;
 	}
 	
-	public int getSizeOfSoldiers()
+	public int getNumberOfSoldiers()
 	{
-		return size_of_soldiers;
+		return numberOfSoldiers;
 	}
 	
 	public int [] getCastle()
@@ -107,11 +104,10 @@ public class FileSystem
 		mapWidth = Integer.parseInt(in.next());
 		mapLength = Integer.parseInt(in.next());
 		
-		number_of_soldiers = new int[Integer.parseInt(in.next())];
-		size_of_soldiers = number_of_soldiers.length;
+		numberOfSoldiers = Integer.parseInt(in.next());
 		
-		x = new FileDataStructure[number_of_soldiers.length];
-		for(int i = 0; i <number_of_soldiers.length ; i++)
+		x = new FileDataStructure[numberOfSoldiers];
+		for(int i = 0; i < numberOfSoldiers; i++)
 		{
 			x[i] = new FileDataStructure();
 			boolean ally = Boolean.parseBoolean(in.next());
