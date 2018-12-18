@@ -12,7 +12,7 @@ public class AllyArmada extends Ally {
 		{
 			File file = new File("src/img/blue-ship.png");
 			soldierImg = ImageIO.read(file);
-			file = new File("src/img/water.png");
+			file = new File("src/img/water-cartoon.png");
 			lakeImg = ImageIO.read(file);
 		}
 		catch ( Exception e )
@@ -23,9 +23,14 @@ public class AllyArmada extends Ally {
 
 	@Override
 	public void draw(Graphics g, int initialXShift, int initialYShift, int squareHeight, int squareWidth) {
+		Graphics2D g2d = (Graphics2D) g;
+		AlphaComposite acomp = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.7f);
+		g2d.setComposite(acomp);
 		if (lakeImg != null)
 			g.drawImage(lakeImg, initialXShift + squareWidth * x,
 					initialYShift + squareHeight * y, squareWidth, squareHeight, null);
+		acomp = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1f);
+		g2d.setComposite(acomp);
 		super.draw(g, initialXShift, initialYShift, squareHeight, squareWidth);
 	}
 

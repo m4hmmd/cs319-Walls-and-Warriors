@@ -32,9 +32,11 @@ public abstract class Soldier extends GameObject {
 	
 	@Override
 	public void draw(Graphics g, int initialXShift, int initialYShift, int squareHeight, int squareWidth) {
-		if (soldierImg != null)
+		if (soldierImg != null) {
 			g.drawImage(soldierImg, initialXShift + squareWidth * getX() + squareWidth / 8,
-					initialYShift + squareHeight * getY() + squareHeight / 8, 3 * squareWidth / 4, 3 * squareHeight / 4, null);
+					initialYShift + squareHeight * getY() + squareHeight / 8,
+					3 * squareWidth / 4, 3 * squareHeight / 4, null);
+		}
 	}
 
 	@Override

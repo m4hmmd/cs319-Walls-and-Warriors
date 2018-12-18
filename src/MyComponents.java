@@ -17,6 +17,8 @@ import java.util.ArrayList;
 
 @SuppressWarnings("serial")
 public class MyComponents extends JComponent {
+
+	private Image mapTile;
 	
 	public Model model;
 	private CardLayout cardLayout;
@@ -41,6 +43,15 @@ public class MyComponents extends JComponent {
 	
 
 	public MyComponents(GameView gv, Model model, CardLayout cardLayout, JPanel card, int levelNo) {
+		try
+		{
+			File file = new File("src/img/grass.png");
+			mapTile = ImageIO.read(file);
+		}
+		catch ( Exception e )
+		{
+			System.out.println("Couldn't find file: " + e);
+		}
 		this.model = model;
 		this.cardLayout = cardLayout;
 		this.card = card;
@@ -203,7 +214,8 @@ public class MyComponents extends JComponent {
 	}
 
 	void drawGrid(Graphics g) {
-		g.setColor(Color.gray);
+//		g.setColor(Color.gray);
+		g.setColor(new Color(102,59, 22));
 		g.fillRect(model.initialXShift + model.squareWidth - model.lineWidth / 2,
 				model.initialYShift - model.lineWidth / 2, model.squareWidth * (model.mapWidth - 2) + model.lineWidth,
 				model.squareHeight * model.mapLength + model.lineWidth);
@@ -219,10 +231,21 @@ public class MyComponents extends JComponent {
 				} else if (i == 0 && j == model.mapLength - 1) {
 				} else if (i == model.mapWidth - 1 && j == model.mapLength - 1) {
 				} else {
-					g.setColor(Color.gray.brighter());
-					g.fillRect(model.initialXShift + model.squareWidth * i + model.lineWidth / 2,
-							model.initialYShift + model.squareHeight * j + model.lineWidth / 2,
-							model.squareWidth - model.lineWidth + 1, model.squareHeight - model.lineWidth + 1);
+//					g.setColor(Color.gray.brighter());
+//					g.fillRect(model.initialXShift + model.squareWidth * i + model.lineWidth / 2,
+//							model.initialYShift + model.squareHeight * j + model.lineWidth / 2,
+//							model.squareWidth - model.lineWidth + 1, model.squareHeight - model.lineWidth + 1);
+					float alpha = 0.7f;
+					Graphics2D g2d = (Graphics2D) g;
+					AlphaComposite acomp = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, alpha);
+					g2d.setComposite(acomp);
+					if (mapTile != null)
+						g2d.drawImage(mapTile, model.initialXShift + model.squareWidth * i,
+								model.initialYShift + model.squareHeight * j, model.squareWidth + 1, model.squareHeight + 1, null);
+
+					alpha = 1f;
+					acomp = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, alpha);
+					g2d.setComposite(acomp);
 				}
 			}
 		}

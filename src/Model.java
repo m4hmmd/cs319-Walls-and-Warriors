@@ -47,8 +47,8 @@ public class Model {
 		this.mapWidth = mapWidth;
 		this.castle = castle;
 		this.levelNo = levelNo;
-		soldiers = new ArrayList<Soldier>();
-		movables = new ArrayList<Soldier>();
+		soldiers = new ArrayList<>();
+		movables = new ArrayList<>();
 
 		map = new int[2 * mapWidth + 1][2 * mapLength + 1];
 
