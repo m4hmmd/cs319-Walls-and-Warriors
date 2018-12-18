@@ -1,3 +1,5 @@
+import org.omg.PortableInterceptor.INACTIVE;
+
 import java.io.*;
 import java.util.*;
 public class FileSystem 
@@ -112,7 +114,21 @@ public class FileSystem
 		for(int i = 0; i <number_of_soldiers.length ; i++)
 		{
 			x[i] = new FileDataStructure();
-			x[i].setSoldier(Boolean.parseBoolean(in.next()), Boolean.parseBoolean(in.next()), Integer.parseInt(in.next()), Integer.parseInt(in.next()));
+			boolean ally = Boolean.parseBoolean(in.next());
+			boolean movable = Boolean.parseBoolean(in.next());
+			if (!movable) {
+				x[i].setSoldier(ally, false, Integer.parseInt(in.next()), Integer.parseInt(in.next()), null);
+			} else {
+				int xx = Integer.parseInt(in.next());
+				int y = Integer.parseInt(in.next());
+				int routeLength = Integer.parseInt(in.next());
+				ArrayList<Integer> route = new ArrayList<>();
+				for (int j = 0; j < routeLength; j++) {
+					route.add(Integer.parseInt(in.next()));
+				}
+				x[i].setSoldier(ally, true, xx, y, route);
+			}
+
 			
 		}
 		

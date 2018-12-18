@@ -1,5 +1,6 @@
 import java.awt.*;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 
 import javax.swing.Timer;
 
@@ -8,12 +9,14 @@ public abstract class Soldier extends GameObject {
 
 	int power = 2;
 	boolean movable;
+	ArrayList<Integer> route;
 	Point initialPoint;
 	Timer t ;
 
-	Soldier(boolean movable, int x, int y) {
+	Soldier(boolean movable, int x, int y, ArrayList<Integer> route) {
 		super(x, y);
 		this.movable = movable;
+		this.route = route;
 		initialPoint = new Point(x, y);
 		t = new Timer(3000, null);
 	}
@@ -34,8 +37,7 @@ public abstract class Soldier extends GameObject {
 	public void draw(Graphics g, int initialXShift, int initialYShift, int squareHeight, int squareWidth) {
 		if (soldierImg != null) {
 			g.drawImage(soldierImg, initialXShift + squareWidth * getX() + squareWidth / 8,
-					initialYShift + squareHeight * getY() + squareHeight / 8,
-					3 * squareWidth / 4, 3 * squareHeight / 4, null);
+					initialYShift + squareHeight * getY() + squareHeight / 8,3 * squareWidth / 4, 3 * squareHeight / 4, null);
 		}
 	}
 

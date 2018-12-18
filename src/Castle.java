@@ -21,7 +21,8 @@ public class Castle extends GameObject {
 	void draw(Graphics g, int initialXShift, int initialYShift, int squareHeight, int squareWidth) {
 		int width = squareWidth / 5;
 		int height = squareHeight / 5;
-		g.setColor(new Color(0, 255, 0));
+//		g.setColor(new Color(0, 255, 0));
+		g.setColor(Color.GRAY);
 		int leftOne = (getX() == getX1()) ? getX() : ((getX() > getX1()) ? getX1() : getX());
 		int topOne = (getY() == getY1()) ? getY() : ((getY() > getY1()) ? getY1() : getY());
 

@@ -51,7 +51,7 @@ public class GameManager {
 		
 		for(int i = 0; i < size_of_soldiers; i++)
 		{
-			model.addSoldier(fileSystem.getDataStructure().getInst()[0], fileSystem.getDataStructure().getInst()[1], fileSystem.getDataStructure().getNum()[0], fileSystem.getDataStructure().getNum()[1]);
+			model.addSoldier(fileSystem.getDataStructure().getInst()[0], fileSystem.getDataStructure().getInst()[1], fileSystem.getDataStructure().getNum()[0], fileSystem.getDataStructure().getNum()[1], fileSystem.getDataStructure().getRoute());
 			fileSystem.incrementSize();
 		}
 		fileSystem.resetSize();
@@ -61,7 +61,7 @@ public class GameManager {
 		for (int i = forestAndLake[0]; i < forestAndLake[1]; i++) {
 			model.addLake(i, forestAndLake[2]);
 			model.addLake(i, forestAndLake[3]);
-			model.addEnemyArmada(i, forestAndLake[4], i < forestAndLake[5]);
+			model.addEnemyArmada(i, forestAndLake[4], false, null);
 			//model.addAllyArmada(i, forestAndLake[6], fileSystem.getArmada());
 		}
 
