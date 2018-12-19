@@ -54,18 +54,6 @@ public class SoundManager {
 		}
 	}
 
-	public static class bListener implements ActionListener {
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			if (playing) {
-				stopBackgroundMusic();
-			} else {
-				playBackgroundMusic();
-			}
-			playing = !(playing);
-		}
-	}
-
 	public static void gameWon() {
 		try {
 			gameWon = new AudioStream(new FileInputStream("src/sounds/gameWon.wav"));
@@ -99,5 +87,14 @@ public class SoundManager {
 			System.out.println(error.getMessage());
 		}
 		BGMP.start(mouseOver);
+	}
+	
+	public static void switchSound() {
+		if (playing) {
+			stopBackgroundMusic();
+		} else {
+			playBackgroundMusic();
+		}
+		playing = !(playing);
 	}
 }
