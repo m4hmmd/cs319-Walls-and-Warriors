@@ -99,8 +99,8 @@ public class MyComponents extends JComponent {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				cardLayout.show(card, "Level Menu");
-//				returnLevelMenu();
-				returnHome();
+				returnLevelMenu();
+				//returnHome();
 			}
 		});
 		
@@ -155,6 +155,13 @@ public class MyComponents extends JComponent {
 	}
 	
 	public void returnHome() {
+		model.reset();
+		stopTimer();
+		timer.stop();
+		selectedKey = null;
+		selectedMouse = null;
+	}
+	public void returnLevelMenu() {
 		model.reset();
 		stopTimer();
 		timer.stop();
