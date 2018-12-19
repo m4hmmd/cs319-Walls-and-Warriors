@@ -33,16 +33,30 @@ public class Castle extends GameObject {
 	}
 
 	void draw(Graphics g, int initialXShift, int initialYShift, int squareHeight, int squareWidth) {
-		int width = squareWidth / 5;
-		int height = squareHeight / 5;
-		g.setColor(Color.GRAY);
 		int leftOne = (getX() == getX1()) ? getX() : ((getX() > getX1()) ? getX1() : getX());
 		int topOne = (getY() == getY1()) ? getY() : ((getY() > getY1()) ? getY1() : getY());
 
-		if (img != null)
-			g.drawImage(img, initialXShift + squareWidth * x,
-					initialYShift + squareHeight * y, 2 * squareWidth, squareHeight, null);
+		Graphics2D g2d = (Graphics2D) g;
+		double scale = 0.8;
+		double shift = (1 - scale) / 2;
 
+		if (img != null) {
+			if (getY() == getY1()) {
+				g.drawImage(img, initialXShift + squareWidth * leftOne + (int) (2*shift * squareWidth),
+						initialYShift + squareHeight * topOne + (int) (shift * squareHeight),
+						(int) (2 * squareWidth * scale), (int) (squareHeight * scale), null);
+			} else {
+				AffineTransform backup = g2d.getTransform();
+				AffineTransform trans = new AffineTransform();
+				trans.rotate(Math.PI / 2, initialXShift + squareWidth * leftOne + squareWidth / 2,
+						initialYShift + squareHeight * topOne + squareHeight / 2);
+				g2d.transform(trans);
+				g2d.drawImage(img, initialXShift + squareWidth * leftOne + (int) (2*shift * squareWidth), initialYShift + squareHeight * topOne + (int) (shift * squareHeight),
+						(int) (2 * squareWidth * scale), (int) (squareHeight * scale), null);
+
+				g2d.setTransform(backup); // restore previous transform
+			}
+		}
 //		g.fillOval(initialXShift + squareWidth * getX() + squareWidth / 4,
 //				initialYShift + squareHeight * getY() + squareHeight / 4, squareWidth / 2, squareHeight / 2);
 //		g.fillOval(initialXShift + squareWidth * getX1() + squareWidth / 3,
