@@ -33,7 +33,9 @@ public class GameView extends JFrame implements ActionListener {
 			new MyButton("Level 3", "Level 3", btnSizeL, btnSizeScaledL, this),
 			new MyButton("Level 4", "Level 4", btnSizeL, btnSizeScaledL, this),
 			new MyButton("Level 5", "Level 5", btnSizeL, btnSizeScaledL, this) };
-	MyButton switchMute = new MyButton("Music: " + (SoundManager.playing ? "ON" : "OFF"), "Settings", btnSizeM,
+	MyButton music = new MyButton("Music: " + (SoundManager.playing ? "ON" : "OFF"), "Settings", btnSizeM,
+			btnSizeScaledM, this);
+	MyButton sound = new MyButton("Sound: " + (SoundManager.sound ? "ON" : "OFF"), "Settings", btnSizeM,
 			btnSizeScaledM, this);
 	MyButton setRotationAnticlockwise = new MyButton(
 			"Left Rotation: \t" + KeyEvent.getKeyText(MyComponents.wallLeftRotation), "Settings", btnSizeM,
@@ -52,6 +54,15 @@ public class GameView extends JFrame implements ActionListener {
 	boolean listenKey;
 	
 	public GameView() throws IOException {
+		Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
+			public void run() {
+				try {
+					saveGame();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}));
 		card.setLayout(cardLayout = new CardLayout());
 
 		setMinimumSize(new Dimension(800, 600));
@@ -70,10 +81,18 @@ public class GameView extends JFrame implements ActionListener {
 				System.out.println(ex);
 			}
 		}
-		addWindowListener(new SoundManager.wListener());
 
 		cardLayout.show(card, "Game Menu");
 		add(card);
+		loadGame();
+		music.setText("Music: " + (SoundManager.playing ? "ON" : "OFF"));
+		sound.setText("Sound: " + (SoundManager.sound ? "ON" : "OFF"));
+		setRotationAnticlockwise.setText("Left Rotation: \t" + KeyEvent.getKeyText(MyComponents.wallLeftRotation));
+		setRotationClockwise.setText("Right Rotation: \t" + KeyEvent.getKeyText(MyComponents.wallRightRotation));
+		setDrop.setText("Wall Drop: \t" + KeyEvent.getKeyText(MyComponents.wallDrop));
+		setPlace.setText("Wall Place: \t" + KeyEvent.getKeyText(MyComponents.wallPlace));
+		setPrevLocation.setText("Wall Previous Location: \t" + KeyEvent.getKeyText(MyComponents.wallPrevLocation));
+		SoundManager.start();
 	}
 
 	private void createPanels() throws IOException {
@@ -242,18 +261,30 @@ public class GameView extends JFrame implements ActionListener {
 	
 	public void saveGame() throws IOException {
 		// code saves the game
-		FileOutputStream fileOut = new FileOutputStream("savedLevelNo.txt");
+		FileOutputStream fileOut = new FileOutputStream("game.txt");
 		ObjectOutputStream out = new ObjectOutputStream(fileOut);
-		out.writeObject((lastCompletedLevel));
+		out.writeObject(SoundManager.playing);
+		out.writeObject(SoundManager.sound);
+		out.writeObject(MyComponents.wallDrop);
+		out.writeObject(MyComponents.wallLeftRotation);
+		out.writeObject(MyComponents.wallPlace);
+		out.writeObject(MyComponents.wallPrevLocation);
+		out.writeObject(MyComponents.wallRightRotation);
 		out.close();
 	}
 
 	public void loadGame() throws IOException {
 		// code loads the game
-		FileInputStream fileIn = new FileInputStream("savedLevelNo.txt"); // this codes take the inforations from txt file
+		FileInputStream fileIn = new FileInputStream("game.txt"); // this codes take the inforations from txt file
 		ObjectInputStream in = new ObjectInputStream(fileIn);
 		try {
-			lastCompletedLevel = ((Integer) in.readObject());
+			SoundManager.playing = ((Boolean) in.readObject());
+			SoundManager.sound = ((Boolean) in.readObject());
+			MyComponents.wallDrop = ((Integer) in.readObject());
+			MyComponents.wallLeftRotation = ((Integer) in.readObject());
+			MyComponents.wallPlace = ((Integer) in.readObject());
+			MyComponents.wallPrevLocation = ((Integer) in.readObject());
+			MyComponents.wallRightRotation = ((Integer) in.readObject());
 		} catch (ClassNotFoundException e1) {
 			e1.printStackTrace();
 		}
@@ -278,16 +309,26 @@ public class GameView extends JFrame implements ActionListener {
 		setPlace.addKeyListener(new customizeKeys());
 		setPrevLocation.addKeyListener(new customizeKeys());
 
-		switchMute.addActionListener(new ActionListener() {
+		music.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				SoundManager.switchPlay();
+				music.setText("Music: " + (SoundManager.playing ? "ON" : "OFF"));
+			}
+		});
+		
+		sound.addActionListener(new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				SoundManager.switchSound();
-				switchMute.setText("Music: " + (SoundManager.playing ? "ON" : "OFF"));
+				sound.setText("Sound: " + (SoundManager.sound ? "ON" : "OFF"));
 			}
 		});
 		
-		settingsMenu.addButton(switchMute);
+		settingsMenu.addButton(music);
+		settingsMenu.addButton(sound);
 		settingsMenu.addButton(setRotationAnticlockwise);
 		settingsMenu.addButton(setRotationClockwise);
 		settingsMenu.addButton(setDrop);
