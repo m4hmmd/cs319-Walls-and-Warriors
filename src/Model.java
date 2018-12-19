@@ -142,7 +142,7 @@ public class Model {
 		}
 
 		for (WallOrChain w : walls) {
-			w.reset(initialXShift, initialYShift, squareHeight, squareWidth);
+			w.reset(initialXShift, initialYShift, squareHeight, squareWidth, lineWidth);
 		}
 		resetWholeMapWithRespectToMap();
 	}
