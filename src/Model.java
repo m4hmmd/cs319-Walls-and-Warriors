@@ -815,7 +815,7 @@ public class Model {
 			squareWidth = squareHeight;
 		}
 		if (squareWidth / 10 != 0)
-			lineWidth = (squareWidth + squareHeight) / 20;
+			lineWidth = (squareWidth + squareHeight) / 10;
 		else
 			lineWidth = 1;
 		
