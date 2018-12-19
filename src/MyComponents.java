@@ -11,11 +11,9 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionAdapter;
 import java.awt.event.MouseMotionListener;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.Writer;
+import java.io.*;
 import java.util.ArrayList;
+import java.util.Scanner;
 
 @SuppressWarnings("serial")
 public class MyComponents extends JComponent {
@@ -68,13 +66,13 @@ public class MyComponents extends JComponent {
 				else {
 					pause();
 					repaint();
-					Object[] options = { "Return Home", "Restart" };
+					Object[] options = { "Return Level Menu", "Restart" };
 
-					int n = JOptionPane.showOptionDialog(null, "A Wall or a Chain was collapsed", "Game Over",
+					int n = JOptionPane.showOptionDialog(null, "A Wall was collapsed", "Game Over",
 							JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[1]);
 
 					if (n == JOptionPane.YES_OPTION) {
-						cardLayout.show(card, "Game Menu");
+						cardLayout.show(card, "Level Menu");
 						model.reset();
 					} else if (n == JOptionPane.NO_OPTION) {
 						restart();
@@ -85,22 +83,12 @@ public class MyComponents extends JComponent {
 		});
 
 		// backButton = new JButton("Home");
-		/*backButton = new MyButton("Home", "Game Menu", 30, 40, new ActionListener() {
+		backButton = new MyButton("Home", "Game Menu", 30, 40, new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				cardLayout.show(card, "Game Menu");
 				returnHome();
-			}
-		});
-		*/
-		backButton = new MyButton("Level Menu", "Level Menu", 30, 40, new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				cardLayout.show(card, "Level Menu");
-				returnLevelMenu();
-				//returnHome();
 			}
 		});
 		
@@ -155,13 +143,6 @@ public class MyComponents extends JComponent {
 	}
 	
 	public void returnHome() {
-		model.reset();
-		stopTimer();
-		timer.stop();
-		selectedKey = null;
-		selectedMouse = null;
-	}
-	public void returnLevelMenu() {
 		model.reset();
 		stopTimer();
 		timer.stop();
@@ -527,7 +508,7 @@ public class MyComponents extends JComponent {
 			model.stopTimers();
 			SoundManager.gameWon();
 
-			Object[] options = { "Return Home", "Next Level" };
+			Object[] options = { "Return Level Menu", "Next Level" };
 
 			int n = JOptionPane.showOptionDialog(null, "You have completed this level!", "Congratulations!!",
 					JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[1]);
@@ -538,7 +519,7 @@ public class MyComponents extends JComponent {
 			gv.levelButtons[levelNo].setEnabled(true);
 			gv.levelButtons[levelNo].setIcon(null);
 			if (n == JOptionPane.YES_OPTION) {
-				cardLayout.show(card, "Game Menu");
+				cardLayout.show(card, "Level Menu");
 				model.reset();
 			} else if (n == JOptionPane.NO_OPTION) {
 				cardLayout.show(card, "Level " + (levelNo + 1));
@@ -546,17 +527,19 @@ public class MyComponents extends JComponent {
 			}
 			selectedKey = null;
 			selectedMouse = null;
-			
+
+
 			try {
 
-                	Writer wr = new FileWriter("savedLevelNo.txt");
-               	 	wr.write(GameView.lastCompletedLevel+""); // write string
-			wr.flush();
-			wr.close();
+                Writer wr = new FileWriter("savedLevelNo.txt");
+                wr.write(GameView.lastCompletedLevel+""); // write string
+                wr.flush();
+                wr.close();
 
 
-          		  }catch (Exception ea){}
-			}
+            }catch (Exception ea){}
+
+		}
 
 		public void mouseExited(MouseEvent e) {
 
