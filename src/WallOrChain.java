@@ -409,7 +409,7 @@ public abstract class WallOrChain {
 		wallContainer = r;
 	}
 
-	void reset(int initialXShift, int initialYShift, int squareHeight, int squareWidth) {
+	void reset(int initialXShift, int initialYShift, int squareHeight, int squareWidth, int lineWidth) {
 		collapsed = false;
 		health = initialHealth;
 		this.lineWidth = lineWidth;
