@@ -83,12 +83,21 @@ public class MyComponents extends JComponent {
 		});
 
 		// backButton = new JButton("Home");
-		backButton = new MyButton("Home", "Game Menu", 30, 40, new ActionListener() {
+		/*backButton = new MyButton("Home", "Game Menu", 30, 40, new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				cardLayout.show(card, "Game Menu");
 				returnHome();
+			}
+		});
+		*/
+		backButton = new MyButton("Level Menu", "Level Menu", 30, 40, new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				cardLayout.show(card, "Level Menu");
+				returnLevelMenu();
 			}
 		});
 		
@@ -142,6 +151,13 @@ public class MyComponents extends JComponent {
 		selectedMouse = null;
 	}
 	
+	public void returnHome() {
+		model.reset();
+		stopTimer();
+		timer.stop();
+		selectedKey = null;
+		selectedMouse = null;
+	}
 	public void returnHome() {
 		model.reset();
 		stopTimer();
@@ -527,7 +543,17 @@ public class MyComponents extends JComponent {
 			}
 			selectedKey = null;
 			selectedMouse = null;
-		}
+			
+			try {
+
+                	Writer wr = new FileWriter("savedLevelNo.txt");
+               	 	wr.write(GameView.lastCompletedLevel+""); // write string
+			wr.flush();
+			wr.close();
+
+
+          		  }catch (Exception ea){}
+			}
 
 		public void mouseExited(MouseEvent e) {
 
