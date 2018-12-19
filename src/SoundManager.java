@@ -15,7 +15,7 @@ public class SoundManager {
 	private static AudioStream mouseOver;
 	private static AudioData BGMD;
 	private static ContinuousAudioDataStream loop;
-	private static boolean playing = true;
+	public static boolean playing = true;
 
 	SoundManager() {
 		try {
