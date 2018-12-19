@@ -47,7 +47,7 @@ public class GameManager {
 		
 		model = new Model(mapWidth, mapLength, castle, levelNo);
 		
-		size_of_soldiers = fileSystem.getSizeOfSoldiers();
+		size_of_soldiers = fileSystem.getNumberOfSoldiers();
 		
 		for(int i = 0; i < size_of_soldiers; i++)
 		{

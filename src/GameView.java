@@ -9,9 +9,9 @@ import javax.swing.text.JTextComponent;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
+import java.util.Scanner;
 
 public class GameView extends JFrame implements ActionListener {
 

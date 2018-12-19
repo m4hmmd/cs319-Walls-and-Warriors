@@ -12,7 +12,9 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionAdapter;
 import java.awt.event.MouseMotionListener;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.Writer;
 import java.util.ArrayList;
 
 @SuppressWarnings("serial")
@@ -97,7 +99,8 @@ public class MyComponents extends JComponent {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				cardLayout.show(card, "Level Menu");
-				returnLevelMenu();
+//				returnLevelMenu();
+				returnHome();
 			}
 		});
 		
@@ -151,13 +154,6 @@ public class MyComponents extends JComponent {
 		selectedMouse = null;
 	}
 	
-	public void returnHome() {
-		model.reset();
-		stopTimer();
-		timer.stop();
-		selectedKey = null;
-		selectedMouse = null;
-	}
 	public void returnHome() {
 		model.reset();
 		stopTimer();
