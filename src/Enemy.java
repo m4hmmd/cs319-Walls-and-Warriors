@@ -1,4 +1,3 @@
-
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.io.File;
@@ -6,8 +5,8 @@ import java.util.ArrayList;
 
 public class Enemy extends Soldier {
 
-	public Enemy(boolean movable, int x, int y, ArrayList<Integer> route) {
-		super(movable, x, y, route);
+	public Enemy(boolean movable, int x, int y) {
+		super(movable, x, y);
 
 		try
 		{
