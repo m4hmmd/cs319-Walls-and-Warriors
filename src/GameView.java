@@ -35,8 +35,8 @@ public class GameView extends JFrame implements ActionListener {
 			new MyButton("Level 5", "Level 5", btnSizeL, btnSizeScaledL, this) };
 	MyButton music = new MyButton("Music: " + (SoundManager.playing ? "ON" : "OFF"), "Settings", btnSizeM,
 			btnSizeScaledM, this);
-	MyButton sound = new MyButton("Sound: " + (SoundManager.sound ? "ON" : "OFF"), "Settings", btnSizeM,
-			btnSizeScaledM, this);
+	MyButton sound = new MyButton("Sound: " + (SoundManager.sound ? "ON" : "OFF"), "Settings", btnSizeM, btnSizeScaledM,
+			this);
 	MyButton setRotationAnticlockwise = new MyButton(
 			"Left Rotation: \t" + KeyEvent.getKeyText(MyComponents.wallLeftRotation), "Settings", btnSizeM,
 			btnSizeScaledM, this);
@@ -52,7 +52,7 @@ public class GameView extends JFrame implements ActionListener {
 			btnSizeScaledM, this);
 
 	boolean listenKey;
-	
+
 	public GameView() throws IOException {
 		Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
 			public void run() {
@@ -196,9 +196,9 @@ public class GameView extends JFrame implements ActionListener {
 							levelButtons[i].setIcon(new ImageIcon(newimg));
 							Writer wr = new FileWriter("savedLevelNo.txt");
 							lastCompletedLevel = 0;
-			                		wr.write(GameView.lastCompletedLevel+""); // write string
-			                		wr.flush();
-			                		wr.close();
+							wr.write(GameView.lastCompletedLevel + ""); // write string
+							wr.flush();
+							wr.close();
 						} catch (Exception ex) {
 							System.out.println(ex);
 						}
@@ -208,7 +208,7 @@ public class GameView extends JFrame implements ActionListener {
 			MyButton loadGame = new MyButton("Load Game", "Level Menu", btnSizeL, btnSizeScaledL, this);
 			loadGame.addActionListener(new ActionListener() {
 
- 				@Override
+				@Override
 				public void actionPerformed(ActionEvent e) {
 					int last = 0;
 					try {
@@ -217,11 +217,11 @@ public class GameView extends JFrame implements ActionListener {
 						Scanner s = new Scanner(f);
 						last = (Integer) s.nextInt();
 
-					} catch (  IOException e1) {
+					} catch (IOException e1) {
 						e1.printStackTrace();
 					}
 
-					for(int i=0;i< last + 1;i++){
+					for (int i = 0; i < last + 1; i++) {
 						levelButtons[i].setIcon(null);
 						levelButtons[i].setEnabled(true);
 					}
@@ -238,7 +238,7 @@ public class GameView extends JFrame implements ActionListener {
 					}
 				}
 			});
-			
+
 			MyButton settings = new MyButton("Settings", "Settings", btnSizeL, btnSizeScaledL, this);
 			MyButton howToPlay = new MyButton("How To Play", "How To Play", btnSizeL, btnSizeScaledL, this);
 			MyButton credits = new MyButton("Credits", "Credits", btnSizeL, btnSizeScaledL, this);
@@ -258,7 +258,7 @@ public class GameView extends JFrame implements ActionListener {
 
 		}
 	}
-	
+
 	public void saveGame() throws IOException {
 		// code saves the game
 		FileOutputStream fileOut = new FileOutputStream("game.txt");
@@ -273,7 +273,8 @@ public class GameView extends JFrame implements ActionListener {
 		out.close();
 	}
 
-	public void loadGame() throws IOException {
+	public void loadGame() {
+		// code loads the game
 		try {
 			FileInputStream fileIn = new FileInputStream("game.txt"); // this codes take the inforations from txt file
 			ObjectInputStream in = new ObjectInputStream(fileIn);
@@ -318,7 +319,7 @@ public class GameView extends JFrame implements ActionListener {
 				music.setText("Music: " + (SoundManager.playing ? "ON" : "OFF"));
 			}
 		});
-		
+
 		sound.addActionListener(new ActionListener() {
 
 			@Override
@@ -327,7 +328,7 @@ public class GameView extends JFrame implements ActionListener {
 				sound.setText("Sound: " + (SoundManager.sound ? "ON" : "OFF"));
 			}
 		});
-		
+
 		settingsMenu.addButton(music);
 		settingsMenu.addButton(sound);
 		settingsMenu.addButton(setRotationAnticlockwise);
@@ -349,7 +350,7 @@ public class GameView extends JFrame implements ActionListener {
 		MyButton returnHome = new MyButton("Return Home", "Game Menu", btnSizeM, btnSizeScaledM, this);
 
 		restart.addActionListener(new ActionListener() {
-			
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				managers[currentLevelIndex - 1].reset();
@@ -359,7 +360,7 @@ public class GameView extends JFrame implements ActionListener {
 			}
 		});
 		resume.addActionListener(new ActionListener() {
-			
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				managers[currentLevelIndex - 1].startTimers();
@@ -368,7 +369,7 @@ public class GameView extends JFrame implements ActionListener {
 			}
 		});
 		returnHome.addActionListener(new ActionListener() {
-			
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				cardLayout.show(card, "Game Menu");
@@ -451,6 +452,7 @@ public class GameView extends JFrame implements ActionListener {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+
 	}
 
 	public class customizeKeys implements KeyListener {
