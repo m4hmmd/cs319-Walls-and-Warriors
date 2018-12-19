@@ -42,8 +42,12 @@ public class Chain extends WallOrChain {
 	}
 
 	private void drawWallOption(Graphics g, int initialXShift, int initialYShift, int squareHeight, int squareWidth) {
-
-		g.setColor(Color.GRAY.brighter());
+		if (collapsed) {
+			g.setColor(Color.RED.brighter());
+		} else if (!visible)
+			g.setColor(Color.GRAY.brighter());
+		else
+			g.setColor(Color.GRAY.darker());
 		g.fillRect(wallContainer.x, wallContainer.y, wallContainer.width, wallContainer.height);
 
 		g.setColor(Color.GRAY);
