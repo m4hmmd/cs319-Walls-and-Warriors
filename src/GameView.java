@@ -147,7 +147,67 @@ public class GameView extends JFrame implements ActionListener {
 
 	private void createGameMenu() {
 		try {
-			MyButton play = new MyButton("Play", "Level Menu", btnSizeL, btnSizeScaledL, this);
+			
+			MyButton play = new MyButton("New Game", "Level Menu", btnSizeL, btnSizeScaledL, this);
+			play.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+
+					for (int i = 1; i < levelButtons.length; i++) {
+						levelButtons[i].setEnabled(false);
+						try {
+							Image img = ImageIO.read(new File("src/img/locked.png"));
+							Image newimg = img.getScaledInstance(50, 50, Image.SCALE_SMOOTH); // scale it the smooth way
+							levelButtons[i].setIcon(new ImageIcon(newimg));
+							Writer wr = new FileWriter("savedLevelNo.txt");
+							lastCompletedLevel = 0;
+			                wr.write(GameView.lastCompletedLevel+""); // write string
+			                wr.flush();
+			                wr.close();
+						} catch (Exception ex) {
+							System.out.println(ex);
+						}
+					}
+				}
+			});
+			MyButton loadGame = new MyButton("Load Game", "Level Menu", btnSizeL, btnSizeScaledL, this);
+			loadGame.addActionListener(new ActionListener() {
+
+ 				@Override
+				public void actionPerformed(ActionEvent e) {
+					int last = 0;
+					try
+					{
+					// code loads the game
+						File f = new File("savedLevelNo.txt");
+						Scanner s = new Scanner(f);
+						last = (Integer) s.nextInt();
+
+					} catch (  IOException e1)
+					{
+						e1.printStackTrace();
+					}
+
+					System.out.println("Load "+ last);
+
+					for(int i=0;i< last + 1;i++){
+						levelButtons[i].setIcon(null);
+						levelButtons[i].setEnabled(true);
+					}
+
+					for (int i = last + 1; i < levelButtons.length; i++) {
+						levelButtons[i].setEnabled(false);
+						try {
+							Image img = ImageIO.read(new File("src/img/locked.png"));
+							Image newimg = img.getScaledInstance(50, 50, Image.SCALE_SMOOTH); // scale it the smooth way
+							levelButtons[i].setIcon(new ImageIcon(newimg));
+						} catch (Exception ex) {
+							System.out.println(ex);
+						}
+					}
+				}
+			});
+			
 			MyButton settings = new MyButton("Settings", "Settings", btnSizeL, btnSizeScaledL, this);
 			MyButton howToPlay = new MyButton("How To Play", "How To Play", btnSizeL, btnSizeScaledL, this);
 			MyButton credits = new MyButton("Credits", "Credits", btnSizeL, btnSizeScaledL, this);
@@ -156,6 +216,7 @@ public class GameView extends JFrame implements ActionListener {
 			MyPanel gameMenu = new MyPanel("Game Menu", "src/img/img1.jpeg");
 
 			gameMenu.addButton(play);
+			gameMenu.addButton(loadGame);
 			gameMenu.addButton(settings);
 			gameMenu.addButton(howToPlay);
 			gameMenu.addButton(credits);
@@ -165,6 +226,31 @@ public class GameView extends JFrame implements ActionListener {
 		} catch (Exception e) {
 
 		}
+	}
+	
+	public void saveGame() throws IOException
+	{
+		// code saves the game
+		FileOutputStream fileOut = new FileOutputStream("savedLevelNo.txt");
+		ObjectOutputStream out = new ObjectOutputStream(fileOut);
+		out.writeObject((lastCompletedLevel));
+		out.close();
+	}
+
+	public void loadGame() throws IOException
+	{
+		// code loads the game
+		FileInputStream fileIn = new FileInputStream("savedLevelNo.txt"); // this codes take the inforations from txt file
+		ObjectInputStream in = new ObjectInputStream(fileIn);
+		try
+		{
+			lastCompletedLevel = ((Integer) in.readObject());
+		} catch (ClassNotFoundException e1)
+		{
+			e1.printStackTrace();
+		}
+		in.close();
+		fileIn.close();
 	}
 
 	private void createSettingsMenu() throws IOException {
