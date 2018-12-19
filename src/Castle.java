@@ -1,5 +1,6 @@
 import javax.imageio.ImageIO;
 import java.awt.*;
+import java.awt.geom.AffineTransform;
 import java.io.File;
 
 public class Castle extends GameObject {
@@ -10,13 +11,10 @@ public class Castle extends GameObject {
 	Castle(int x, int y, int x1, int y1, Color c) {
 		super(x, y);
 
-		try
-		{
+		try {
 			File file = new File("src/img/castle.png");
 			img = ImageIO.read(file);
-		}
-		catch ( Exception e )
-		{
+		} catch (Exception e) {
 			System.out.println("Couldn't find file: " + e);
 		}
 
@@ -57,19 +55,10 @@ public class Castle extends GameObject {
 				g2d.setTransform(backup); // restore previous transform
 			}
 		}
-//		g.fillOval(initialXShift + squareWidth * getX() + squareWidth / 4,
-//				initialYShift + squareHeight * getY() + squareHeight / 4, squareWidth / 2, squareHeight / 2);
-//		g.fillOval(initialXShift + squareWidth * getX1() + squareWidth / 3,
-//				initialYShift + squareHeight * getY1() + squareHeight / 3, squareWidth / 3, squareHeight / 3);
-//
-//		g.fillRect(initialXShift + squareWidth * leftOne + squareWidth / 2 - ((getY() == getY1()) ? 0 : width / 2),
-//				initialYShift + squareHeight * topOne + squareHeight / 2 - ((getX() == getX1()) ? 0 : height / 2),
-//				(getX() == getX1()) ? width : (squareWidth), (getY() == getY1()) ? height : squareHeight);
 	}
 
 	@Override
 	public int getWholeMapIndex() {
-		// TODO Auto-generated method stub
 		return Model.CASTLE;
 	}
 }
