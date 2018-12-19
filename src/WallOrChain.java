@@ -122,7 +122,7 @@ public abstract class WallOrChain {
 		this.mapHeight = mapHeight;
 
 		try {
-			wallLine = ImageIO.read(new File("src/img/wall.jpeg"));
+			wallLine = ImageIO.read(new File("src/img/wall.png"));
 			wallEdge = ImageIO.read(new File("src/img/edge.png"));
 		} catch (IOException e) {}
 		
