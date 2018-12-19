@@ -70,7 +70,7 @@ public class GameView extends JFrame implements ActionListener {
 				System.out.println(ex);
 			}
 		}
-		// addWindowListener(new SoundManager.wListener());
+		addWindowListener(new SoundManager.wListener());
 
 		cardLayout.show(card, "Game Menu");
 		add(card);
@@ -397,12 +397,9 @@ public class GameView extends JFrame implements ActionListener {
 	}
 
 	public void run() throws IOException {
-
-		GameView f = new GameView();
-
-		f.setVisible(true);
-		f.setBounds(100, 100, 800, 500);
-		f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setVisible(true);
+		setBounds(100, 100, 800, 500);
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	}
 
 	public static void main(String[] args) throws IOException {
