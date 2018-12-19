@@ -33,7 +33,24 @@ public class GameView extends JFrame implements ActionListener {
 			new MyButton("Level 3", "Level 3", btnSizeL, btnSizeScaledL, this),
 			new MyButton("Level 4", "Level 4", btnSizeL, btnSizeScaledL, this),
 			new MyButton("Level 5", "Level 5", btnSizeL, btnSizeScaledL, this) };
+	MyButton switchMute = new MyButton("Music: " + (SoundManager.playing ? "ON" : "OFF"), "Settings", btnSizeM,
+			btnSizeScaledM, this);
+	MyButton setRotationAnticlockwise = new MyButton(
+			"Left Rotation: \t" + KeyEvent.getKeyText(MyComponents.wallLeftRotation), "Settings", btnSizeM,
+			btnSizeScaledM, this);
+	MyButton setRotationClockwise = new MyButton(
+			"Right Rotation: \t" + KeyEvent.getKeyText(MyComponents.wallRightRotation), "Settings", btnSizeM,
+			btnSizeScaledM, this);
+	MyButton setDrop = new MyButton("Wall Drop: \t" + KeyEvent.getKeyText(MyComponents.wallDrop), "Settings", btnSizeM,
+			btnSizeScaledM, this);
+	MyButton setPlace = new MyButton("Wall Place: \t" + KeyEvent.getKeyText(MyComponents.wallPlace), "Settings",
+			btnSizeM, btnSizeScaledM, this);
+	MyButton setPrevLocation = new MyButton(
+			"Wall Previous Location: \t" + KeyEvent.getKeyText(MyComponents.wallPrevLocation), "Settings", btnSizeM,
+			btnSizeScaledM, this);
 
+	boolean listenKey;
+	
 	public GameView() throws IOException {
 		card.setLayout(cardLayout = new CardLayout());
 
@@ -147,7 +164,6 @@ public class GameView extends JFrame implements ActionListener {
 
 	private void createGameMenu() {
 		try {
-			
 			MyButton play = new MyButton("New Game", "Level Menu", btnSizeL, btnSizeScaledL, this);
 			play.addActionListener(new ActionListener() {
 				@Override
@@ -161,9 +177,9 @@ public class GameView extends JFrame implements ActionListener {
 							levelButtons[i].setIcon(new ImageIcon(newimg));
 							Writer wr = new FileWriter("savedLevelNo.txt");
 							lastCompletedLevel = 0;
-			                wr.write(GameView.lastCompletedLevel+""); // write string
-			                wr.flush();
-			                wr.close();
+			                		wr.write(GameView.lastCompletedLevel+""); // write string
+			                		wr.flush();
+			                		wr.close();
 						} catch (Exception ex) {
 							System.out.println(ex);
 						}
@@ -176,19 +192,15 @@ public class GameView extends JFrame implements ActionListener {
  				@Override
 				public void actionPerformed(ActionEvent e) {
 					int last = 0;
-					try
-					{
-					// code loads the game
+					try {
+						// code loads the game
 						File f = new File("savedLevelNo.txt");
 						Scanner s = new Scanner(f);
 						last = (Integer) s.nextInt();
 
-					} catch (  IOException e1)
-					{
+					} catch (  IOException e1) {
 						e1.printStackTrace();
 					}
-
-					System.out.println("Load "+ last);
 
 					for(int i=0;i< last + 1;i++){
 						levelButtons[i].setIcon(null);
@@ -228,8 +240,7 @@ public class GameView extends JFrame implements ActionListener {
 		}
 	}
 	
-	public void saveGame() throws IOException
-	{
+	public void saveGame() throws IOException {
 		// code saves the game
 		FileOutputStream fileOut = new FileOutputStream("savedLevelNo.txt");
 		ObjectOutputStream out = new ObjectOutputStream(fileOut);
@@ -237,16 +248,13 @@ public class GameView extends JFrame implements ActionListener {
 		out.close();
 	}
 
-	public void loadGame() throws IOException
-	{
+	public void loadGame() throws IOException {
 		// code loads the game
 		FileInputStream fileIn = new FileInputStream("savedLevelNo.txt"); // this codes take the inforations from txt file
 		ObjectInputStream in = new ObjectInputStream(fileIn);
-		try
-		{
+		try {
 			lastCompletedLevel = ((Integer) in.readObject());
-		} catch (ClassNotFoundException e1)
-		{
+		} catch (ClassNotFoundException e1) {
 			e1.printStackTrace();
 		}
 		in.close();
@@ -256,27 +264,13 @@ public class GameView extends JFrame implements ActionListener {
 	private void createSettingsMenu() throws IOException {
 		MyPanel settingsMenu = new MyPanel("Settings", "src/img/img1.jpeg");
 
-		JLabel soundSettings = new JLabel("<html><h1>Sound Settings</h1></html>");
-		JLabel keyboardSettings = new JLabel("<html><h1>Keyboard Customizations</h1></html>");
-
-		MyButton switchMute = new MyButton("Mute", "Settings", btnSizeM, btnSizeScaledM, this);
-
-		MyButton setRotationAnticlockwise = new MyButton("Wall Rotation Anticlockwise", "Settings", btnSizeM,
-				btnSizeScaledM, this);
-		MyButton setRotationClockwise = new MyButton("Wall Rotation Clockwise", "Settings", btnSizeM, btnSizeScaledM,
-				this);
-		MyButton setDrop = new MyButton("Wall Drop", "Settings", btnSizeM, btnSizeScaledM, this);
-		MyButton setPlace = new MyButton("Wall Place", "Settings", btnSizeM, btnSizeScaledM, this);
-		;
-		MyButton setPrevLocation = new MyButton("Wall Previous Location", "Settings", btnSizeM, btnSizeScaledM, this);
-
 		MyButton back = new MyButton("Back", "Game Menu", btnSizeS, btnSizeScaledS, this);
 
-		setRotationAnticlockwise.addMouseListener(new CustomizeRotationAnticlockwiseButton());
-		setRotationClockwise.addMouseListener(new CustomizeRotationClockwiseButton());
-		setDrop.addMouseListener(new CustomizeDropButton());
-		setPlace.addMouseListener(new CustomizePlaceButton());
-		setPrevLocation.addMouseListener(new CustomizePrevLocationButton());
+		setRotationAnticlockwise.addActionListener(new CustomizeRotationAnticlockwiseButton());
+		setRotationClockwise.addActionListener(new CustomizeRotationClockwiseButton());
+		setDrop.addActionListener(new CustomizeDropButton());
+		setPlace.addActionListener(new CustomizePlaceButton());
+		setPrevLocation.addActionListener(new CustomizePrevLocationButton());
 
 		setRotationAnticlockwise.addKeyListener(new customizeKeys());
 		setRotationClockwise.addKeyListener(new customizeKeys());
@@ -284,8 +278,15 @@ public class GameView extends JFrame implements ActionListener {
 		setPlace.addKeyListener(new customizeKeys());
 		setPrevLocation.addKeyListener(new customizeKeys());
 
-		switchMute.addActionListener(new SoundManager.bListener());
+		switchMute.addActionListener(new ActionListener() {
 
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				SoundManager.switchSound();
+				switchMute.setText("Music: " + (SoundManager.playing ? "ON" : "OFF"));
+			}
+		});
+		
 		settingsMenu.addButton(switchMute);
 		settingsMenu.addButton(setRotationAnticlockwise);
 		settingsMenu.addButton(setRotationClockwise);
@@ -355,138 +356,43 @@ public class GameView extends JFrame implements ActionListener {
 		}
 	}
 
-	public static class CustomizeRotationAnticlockwiseButton implements MouseListener {
+	public class CustomizeRotationAnticlockwiseButton implements ActionListener {
 		@Override
-		public void mouseClicked(MouseEvent e) {
+		public void actionPerformed(ActionEvent e) {
 			clicked = 1;
-		}
-
-		@Override
-		public void mouseEntered(MouseEvent e) {
-
-		}
-
-		@Override
-		public void mouseExited(MouseEvent e) {
-
-		}
-
-		@Override
-		public void mousePressed(MouseEvent e) {
-
-		}
-
-		@Override
-		public void mouseReleased(MouseEvent e) {
-
+			listenKey = true;
 		}
 	}
 
-	public static class CustomizeRotationClockwiseButton implements MouseListener {
+	public class CustomizeRotationClockwiseButton implements ActionListener {
 		@Override
-		public void mouseClicked(MouseEvent e) {
+		public void actionPerformed(ActionEvent e) {
 			clicked = 2;
-		}
-
-		@Override
-		public void mouseEntered(MouseEvent e) {
-
-		}
-
-		@Override
-		public void mouseExited(MouseEvent e) {
-
-		}
-
-		@Override
-		public void mousePressed(MouseEvent e) {
-
-		}
-
-		@Override
-		public void mouseReleased(MouseEvent e) {
-
+			listenKey = true;
 		}
 	}
 
-	public static class CustomizeDropButton implements MouseListener {
+	public class CustomizeDropButton implements ActionListener {
 		@Override
-		public void mouseClicked(MouseEvent e) {
+		public void actionPerformed(ActionEvent e) {
 			clicked = 3;
-		}
-
-		@Override
-		public void mouseEntered(MouseEvent e) {
-
-		}
-
-		@Override
-		public void mouseExited(MouseEvent e) {
-
-		}
-
-		@Override
-		public void mousePressed(MouseEvent e) {
-
-		}
-
-		@Override
-		public void mouseReleased(MouseEvent e) {
-
+			listenKey = true;
 		}
 	}
 
-	public static class CustomizePlaceButton implements MouseListener {
+	public class CustomizePlaceButton implements ActionListener {
 		@Override
-		public void mouseClicked(MouseEvent e) {
+		public void actionPerformed(ActionEvent e) {
 			clicked = 4;
-		}
-
-		@Override
-		public void mouseEntered(MouseEvent e) {
-
-		}
-
-		@Override
-		public void mouseExited(MouseEvent e) {
-
-		}
-
-		@Override
-		public void mousePressed(MouseEvent e) {
-
-		}
-
-		@Override
-		public void mouseReleased(MouseEvent e) {
-
+			listenKey = true;
 		}
 	}
 
-	public static class CustomizePrevLocationButton implements MouseListener {
+	public class CustomizePrevLocationButton implements ActionListener {
 		@Override
-		public void mouseClicked(MouseEvent e) {
+		public void actionPerformed(ActionEvent e) {
 			clicked = 5;
-		}
-
-		@Override
-		public void mouseEntered(MouseEvent e) {
-
-		}
-
-		@Override
-		public void mouseExited(MouseEvent e) {
-
-		}
-
-		@Override
-		public void mousePressed(MouseEvent e) {
-
-		}
-
-		@Override
-		public void mouseReleased(MouseEvent e) {
-
+			listenKey = true;
 		}
 	}
 
@@ -511,20 +417,30 @@ public class GameView extends JFrame implements ActionListener {
 	public class customizeKeys implements KeyListener {
 		@Override
 		public void keyPressed(KeyEvent e) {
-			if (checkKey(e))
+			if (!listenKey || checkKey(e))
 				return;
 
 			newKey = e.getKeyCode();
-			if (clicked == 1)
-				MyComponents.wallRotateAnticlockwise = newKey;
-			else if (clicked == 2)
-				MyComponents.wallRotateClockwise = newKey;
-			else if (clicked == 3)
+			if (clicked == 1) {
+				MyComponents.wallLeftRotation = newKey;
+				setRotationAnticlockwise
+						.setText("Left Rotation: \t" + KeyEvent.getKeyText(MyComponents.wallLeftRotation));
+			} else if (clicked == 2) {
+				MyComponents.wallRightRotation = newKey;
+				setRotationClockwise
+						.setText("Right Rotation: \t" + KeyEvent.getKeyText(MyComponents.wallRightRotation));
+			} else if (clicked == 3) {
 				MyComponents.wallDrop = newKey;
-			else if (clicked == 4)
+				setDrop.setText("Wall Drop: \t" + KeyEvent.getKeyText(MyComponents.wallDrop));
+			} else if (clicked == 4) {
 				MyComponents.wallPlace = newKey;
-			else if (clicked == 5)
+				setPlace.setText("Wall Place: \t" + KeyEvent.getKeyText(MyComponents.wallPlace));
+			} else if (clicked == 5) {
 				MyComponents.wallPrevLocation = newKey;
+				setPrevLocation
+						.setText("Wall Previous Location: \t" + KeyEvent.getKeyText(MyComponents.wallPrevLocation));
+			}
+			listenKey = false;
 			clicked = 0;
 		}
 
@@ -541,7 +457,7 @@ public class GameView extends JFrame implements ActionListener {
 		public boolean checkKey(KeyEvent e) {
 			int pressed = e.getKeyCode();
 
-			if (pressed == MyComponents.wallRotateAnticlockwise || pressed == MyComponents.wallRotateClockwise
+			if (pressed == MyComponents.wallLeftRotation || pressed == MyComponents.wallRightRotation
 					|| pressed == MyComponents.wallDrop || pressed == MyComponents.wallPlace
 					|| pressed == MyComponents.wallPrevLocation || pressed == KeyEvent.VK_1 || pressed == KeyEvent.VK_2
 					|| pressed == KeyEvent.VK_3 || pressed == KeyEvent.VK_4 || pressed == KeyEvent.VK_5
