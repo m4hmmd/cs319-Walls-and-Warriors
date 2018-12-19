@@ -6,8 +6,8 @@ import java.util.ArrayList;
 public class Ally extends Soldier {
 //	private Image soldierImg;
 
-	public Ally(boolean movable, int x, int y, ArrayList<Integer> route) {
-		super(movable, x, y, route);
+	public Ally(boolean movable, int x, int y) {
+		super(movable, x, y);
 
 		try
 		{
