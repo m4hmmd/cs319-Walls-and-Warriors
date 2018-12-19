@@ -37,11 +37,11 @@ public class MyComponents extends JComponent {
 	Timer t;
 	Timer timer = new Timer(500, null);
 	
-	protected static int wallRotateAnticlockwise = KeyEvent.VK_A;
-	protected static int wallRotateClockwise = KeyEvent.VK_D;
+	protected static int wallLeftRotation = KeyEvent.VK_A;
+	protected static int wallRightRotation = KeyEvent.VK_D;
 	protected static int wallDrop = KeyEvent.VK_Q;
 	protected static int wallPlace = KeyEvent.VK_ENTER;
-	protected static int wallPrevLocation = KeyEvent.VK_SPACE;
+	protected static int wallPrevLocation = KeyEvent.VK_Z;
 	
 
 	public MyComponents(GameView gv, Model model, CardLayout cardLayout, JPanel card, int levelNo) {
@@ -607,14 +607,14 @@ public class MyComponents extends JComponent {
 					repaint();
 				}
 
-				else if (key == wallRotateClockwise) {
+				else if (key == wallRightRotation) {
 					selectedKey.turnRight();
 					selectedKey.setThePositionAgainByIndex(model.initialXShift, model.initialYShift, model.squareHeight,
 							model.squareWidth);
 					selectedKey.setRectangles();
 				}
 
-				else if (key == wallRotateAnticlockwise) {
+				else if (key == wallLeftRotation) {
 					selectedKey.turnLeft();
 					selectedKey.setThePositionAgainByIndex(model.initialXShift, model.initialYShift, model.squareHeight,
 							model.squareWidth);
