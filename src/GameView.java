@@ -274,10 +274,9 @@ public class GameView extends JFrame implements ActionListener {
 	}
 
 	public void loadGame() throws IOException {
-		// code loads the game
-		FileInputStream fileIn = new FileInputStream("game.txt"); // this codes take the inforations from txt file
-		ObjectInputStream in = new ObjectInputStream(fileIn);
 		try {
+			FileInputStream fileIn = new FileInputStream("game.txt"); // this codes take the inforations from txt file
+			ObjectInputStream in = new ObjectInputStream(fileIn);
 			SoundManager.playing = ((Boolean) in.readObject());
 			SoundManager.sound = ((Boolean) in.readObject());
 			MyComponents.wallDrop = ((Integer) in.readObject());
@@ -285,11 +284,13 @@ public class GameView extends JFrame implements ActionListener {
 			MyComponents.wallPlace = ((Integer) in.readObject());
 			MyComponents.wallPrevLocation = ((Integer) in.readObject());
 			MyComponents.wallRightRotation = ((Integer) in.readObject());
+			in.close();
+			fileIn.close();
 		} catch (ClassNotFoundException e1) {
-			e1.printStackTrace();
+			return;
+		} catch (IOException e1) {
+			return;
 		}
-		in.close();
-		fileIn.close();
 	}
 
 	private void createSettingsMenu() throws IOException {
