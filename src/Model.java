@@ -606,17 +606,17 @@ public class Model {
 		map[2 * i + 2][2 * j + 1] = EDGE_OF_LAKE;
 
 		if (i != 0) {
-			left = map[2 * i - 1][2 * j + 1] == LAKE;
+			left = map[2 * i - 1][2 * j + 1] == LAKE || map[2 * i - 1][2 * j + 1] == ENEMY_ARMADA || map[2 * i - 1][2 * j + 1] == ALLY_ARMADA;
 		}
 		if (i < mapWidth - 1) {
-			right = map[2 * i + 3][2 * j + 1] == LAKE;
+			right = map[2 * i + 3][2 * j + 1] == LAKE || map[2 * i + 3][2 * j + 1] == ENEMY_ARMADA || map[2 * i + 3][2 * j + 1] == ALLY_ARMADA;
 		}
 
 		if (j != 0) {
-			up = map[2 * i + 1][2 * j - 1] == LAKE;
+			up = map[2 * i + 1][2 * j - 1] == LAKE || map[2 * i + 1][2 * j - 1] == ENEMY_ARMADA || map[2 * i + 1][2 * j - 1] == ALLY_ARMADA;
 		}
 		if (j < mapLength - 1) {
-			down = map[2 * i + 1][2 * j + 3] == LAKE;
+			down = map[2 * i + 1][2 * j + 3] == LAKE || map[2 * i + 1][2 * j + 3] == ENEMY_ARMADA || map[2 * i + 1][2 * j + 3] == ALLY_ARMADA;
 		}
 
 		if (up) {
