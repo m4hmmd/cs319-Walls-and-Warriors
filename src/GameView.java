@@ -274,7 +274,10 @@ public class GameView extends JFrame implements ActionListener {
 	}
 
 	public void loadGame() {
+<<<<<<< HEAD
 		// code loads the game
+=======
+>>>>>>> 24f16d704b382f6e4da443c5f8e7856161561160
 		try {
 			FileInputStream fileIn = new FileInputStream("game.txt"); // this codes take the inforations from txt file
 			ObjectInputStream in = new ObjectInputStream(fileIn);
@@ -320,6 +323,10 @@ public class GameView extends JFrame implements ActionListener {
 			}
 		});
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> 24f16d704b382f6e4da443c5f8e7856161561160
 		sound.addActionListener(new ActionListener() {
 
 			@Override
@@ -390,11 +397,51 @@ public class GameView extends JFrame implements ActionListener {
 			System.exit(0);
 		}
 		cardLayout.show(card, ((MyButton) e.getSource()).getNextPanelName());
+
 		for (int i = 0; i < managers.length; i++) {
 			if (((MyButton) e.getSource()).getNextPanelName().equals("Level " + (i + 1))) {
 				managers[i].getPanel().requestFocusInWindow();
 				managers[i].startTimers();
 				currentLevelIndex = i + 1;
+
+				// description of Levels
+				if(currentLevelIndex==1) {
+					repaint();
+					Object[] options = {"Close"};
+					int n = JOptionPane.showOptionDialog(null, "Description of game objects", "Level 1",
+							JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
+
+				}
+				if(currentLevelIndex==2) {
+					repaint();
+					Object[] options = {"Close"};
+					int n = JOptionPane.showOptionDialog(null, "Description of game objects", "Level 2",
+							JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
+
+				}
+				if(currentLevelIndex==3) {
+					repaint();
+					Object[] options = {"Close"};
+					int n = JOptionPane.showOptionDialog(null, "Description of game objects", "Level 3",
+							JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
+
+				}
+				if(currentLevelIndex==4) {
+					repaint();
+					Object[] options = {"Close"};
+					int n = JOptionPane.showOptionDialog(null, "Description of game objects", "Level 4",
+							JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
+
+				}if(currentLevelIndex==5) {
+					repaint();
+					Object[] options = {"Close"};
+					int n = JOptionPane.showOptionDialog(null, "Description of game objects", "Level 5",
+							JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
+
+				}
+
+
+
 			}
 		}
 	}
@@ -494,7 +541,6 @@ public class GameView extends JFrame implements ActionListener {
 		public void keyTyped(KeyEvent e) {
 
 		}
-
 		public boolean checkKey(KeyEvent e) {
 			int pressed = e.getKeyCode();
 

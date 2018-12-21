@@ -181,6 +181,12 @@ public class GameManager {
 			myComponents = new MyComponents(gv, model, cardLayout, card, levelNo);
 
 		}
+<<<<<<< HEAD
+=======
+		fileSystem.resetSize();
+		
+		myComponents = new MyComponents(gv, model, cardLayout, card, levelNo);
+>>>>>>> 24f16d704b382f6e4da443c5f8e7856161561160
 
 	}
 
@@ -226,13 +232,3 @@ public class GameManager {
 		model.stopTimers();
 	}
 }
-
-// void occupiedLine(int xInd, int yInd, int x1, int y1, int x2, int y2) {
-//
-// int leftOne = (x1==x2) ? x1 : ((x1>x2) ? x2 : x1);
-// int topOne = (y1==y2) ? y1 : ((y1>y2) ? y2 : y1);
-// if(x1==x2)
-// verLines[xInd + leftOne][yInd + topOne] = true;
-// else
-// horLines[xInd + leftOne][yInd + topOne] = true;
-// }

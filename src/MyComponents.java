@@ -72,7 +72,11 @@ public class MyComponents extends JComponent {
 							JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[1]);
 
 					if (n == JOptionPane.YES_OPTION) {
+<<<<<<< HEAD
 						cardLayout.show(card, "Level Menu");
+=======
+						cardLayout.show(card, "Game Level Menu");
+>>>>>>> 24f16d704b382f6e4da443c5f8e7856161561160
 						model.reset();
 					} else if (n == JOptionPane.NO_OPTION) {
 						restart();
@@ -82,7 +86,11 @@ public class MyComponents extends JComponent {
 			}
 		});
 
+<<<<<<< HEAD
 		// backButton = new JButton("Home");
+=======
+//		 backButton = new JButton("Home");
+>>>>>>> 24f16d704b382f6e4da443c5f8e7856161561160
 		backButton = new MyButton("Home", "Game Menu", 30, 40, new ActionListener() {
 
 			@Override
