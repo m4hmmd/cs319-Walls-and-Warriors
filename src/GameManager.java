@@ -85,7 +85,7 @@ public class GameManager {
 			model.addForest(a, b);
 		}
 
-		for(int i = 0; i < 6; i++)
+		for(int i = 0; i < fileSystem.getNumberOfWalls(); i++)
 		{
 			shape = fileSystem.getDataStructure().getShape();
 			int listToArray [] = new int [shape.size()];
@@ -146,8 +146,8 @@ public class GameManager {
 //			model.addForest(7, 5);
 //			model.addForest(7, 6);
 //
-//			for (int i = 1; i < model.mapWidth - 1; i++) {
-//				model.addForest(i, 7);
+//			for (int numberOfWalls = 1; numberOfWalls < model.mapWidth - 1; numberOfWalls++) {
+//				model.addForest(numberOfWalls, 7);
 //			}
 //
 //			myComponents = new MyComponents(gv, model, cardLayout, card, levelNo);

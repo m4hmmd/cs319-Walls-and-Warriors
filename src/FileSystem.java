@@ -14,6 +14,7 @@ public class FileSystem
 	int mapLength;
 	int size = 0;
 	int sizeX = 0;
+	int numberOfWalls;
 	
 	public void setState(int level)throws IOException
 	{
@@ -102,6 +103,8 @@ public class FileSystem
 	{
 		return armada;
 	}
+
+	public int getNumberOfWalls() { return numberOfWalls + 1; }
 	
 	public void createLevel(int level)throws IOException
 	{
@@ -192,14 +195,14 @@ public class FileSystem
 		System.out.println("read all forests");
 
 		valid = in.next();
-		int i = 0;
+		numberOfWalls = 0;
 		while(!(valid.equals("levelEnd")))
 		{
-			x[i].setChainOrWall(Boolean.parseBoolean(valid));
+			x[numberOfWalls].setChainOrWall(Boolean.parseBoolean(valid));
 			valid = in.next();
 			while(true)
 			{
-				x[i].setShape(Integer.parseInt(valid));
+				x[numberOfWalls].setShape(Integer.parseInt(valid));
 				valid = in.next();
 				
 				if(valid.equals("levelEnd"))
@@ -208,7 +211,7 @@ public class FileSystem
 				if(((valid.equals("true"))) || ((valid.equals("false"))))
 					break;
 			}
-			i++;
+			numberOfWalls++;
 		}
 	}
 }
