@@ -173,7 +173,7 @@ public class MyComponents extends JComponent {
 		super.paintComponent(g);
 
 		try {
-			g.drawImage(ImageIO.read(new File("src/img/img1.jpeg")), 0, 0, getWidth(), getHeight(), null);
+			g.drawImage(ImageIO.read(new File("src/img/img0.jpeg")), 0, 0, getWidth(), getHeight(), null);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
