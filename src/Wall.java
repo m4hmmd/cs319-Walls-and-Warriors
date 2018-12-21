@@ -38,9 +38,9 @@ public class Wall extends WallOrChain {
                 int B = p&0xff; 
   
                 //calculate newRed, newGreen, newBlue 
-                int newRed = (int)((getColor().getRed()/255.0)*R); 
-                int newGreen = (int)((getColor().getGreen()/255.0)*G); 
-                int newBlue = (int)((getColor().getBlue()/255.0)*B); 
+                int newRed = (int)((getColor().getRed()/300.0)*R); 
+                int newGreen = (int)((getColor().getGreen()/300.0)*G); 
+                int newBlue = (int)((getColor().getBlue()/300.0)*B); 
   
                 //check condition 
                 if (newRed > 255) 
@@ -88,9 +88,9 @@ public class Wall extends WallOrChain {
                 int B = p&0xff; 
   
                 //calculate newRed, newGreen, newBlue 
-                int newRed = (int)((getColor().getRed()/255.0)*R); 
-                int newGreen = (int)((getColor().getGreen()/255.0)*G); 
-                int newBlue = (int)((getColor().getBlue()/255.0)*B); 
+                int newRed = (int)((getColor().getRed()/300.0)*R); 
+                int newGreen = (int)((getColor().getGreen()/300.0)*G); 
+                int newBlue = (int)((getColor().getBlue()/300.0)*B); 
   
                 //check condition 
                 if (newRed > 255) 
@@ -277,7 +277,7 @@ public class Wall extends WallOrChain {
 		} else if (!visible)
 			g.setColor(Color.GRAY.brighter());
 		else
-			g.setColor(Color.GRAY.darker());
+			g.setColor(Color.GRAY);
 		g.fillRect(wallContainer.x, wallContainer.y, wallContainer.width, wallContainer.height);
 
 		g.setColor(Color.GRAY);
