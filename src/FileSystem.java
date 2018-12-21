@@ -3,13 +3,17 @@ import java.util.*;
 public class FileSystem 
 {	
 	private int castle [] = new int [4];
-	private int forestAndLake [] = new int [9];
+	private int forest [];
+	private int lake [];
 	private boolean armada;
 	private int numberOfSoldiers;
+	private int numberOfArmada;
 	private FileDataStructure x [];
+	private FileDataStructure armadaX [];
 	int mapWidth;
 	int mapLength;
 	int size = 0;
+	int sizeX = 0;
 	
 	public void setState(int level)throws IOException
 	{
@@ -33,6 +37,11 @@ public class FileSystem
 	{
 		return x[size];
 	}
+
+	public FileDataStructure getDataStructureX()
+	{
+		return armadaX[sizeX];
+	}
 	
 	public void incrementSize()
 	{
@@ -43,10 +52,25 @@ public class FileSystem
 	{
 		size = 0;
 	}
+
+	public void incrementSizeX()
+	{
+		sizeX++;
+	}
+
+	public void resetSizeX()
+	{
+		sizeX = 0;
+	}
 	
 	public int getNumberOfSoldiers()
 	{
 		return numberOfSoldiers;
+	}
+
+	public int getNumberOfArmada()
+	{
+		return numberOfArmada;
 	}
 	
 	public int [] getCastle()
@@ -63,13 +87,17 @@ public class FileSystem
 	{
 		return mapLength;
 	}
-	
-	
-	public int []  getForestAndLake()
+
+	public int []  getForest()
 	{
-		return forestAndLake;
+		return forest;
 	}
-	
+
+	public int []  getLake()
+	{
+		return lake;
+	}
+
 	public boolean getArmada()
 	{
 		return armada;
@@ -124,17 +152,45 @@ public class FileSystem
 				}
 				x[i].setSoldier(ally, true, xx, y, route);
 			}
+		}
 
-			
-		}
-		
-		for(int i = 0; i < 9; i++)
+		numberOfArmada = Integer.parseInt(in.next());
+
+		armadaX = new FileDataStructure[numberOfArmada];
+		for(int i = 0; i < numberOfArmada; i++)
 		{
-			forestAndLake[i] = Integer.parseInt(in.next());
+			armadaX[i] = new FileDataStructure();
+			boolean ally = Boolean.parseBoolean(in.next());
+			boolean movable = Boolean.parseBoolean(in.next());
+			if (!movable) {
+				armadaX[i].setSoldier(ally, false, Integer.parseInt(in.next()), Integer.parseInt(in.next()), null);
+			} else {
+				int xx = Integer.parseInt(in.next());
+				int y = Integer.parseInt(in.next());
+				int routeLength = Integer.parseInt(in.next());
+				ArrayList<Integer> route = new ArrayList<>();
+				for (int j = 0; j < routeLength; j++) {
+					route.add(Integer.parseInt(in.next()));
+				}
+				armadaX[i].setSoldier(ally, true, xx, y, route);
+			}
 		}
-		
-		armada = Boolean.parseBoolean(in.next());
-		
+
+		int numberOfLake = Integer.parseInt(in.next());
+		lake = new int[2 * numberOfLake];
+		for(int i = 0; i < 2 * numberOfLake; i++)
+		{
+			lake[i] = Integer.parseInt(in.next());
+		}
+
+		int numberOfForest = Integer.parseInt(in.next());
+		forest = new int[2 * numberOfForest];
+		for(int i = 0; i < 2 * numberOfForest; i++)
+		{
+			forest[i] = Integer.parseInt(in.next());
+		}
+		System.out.println("read all forests");
+
 		valid = in.next();
 		int i = 0;
 		while(!(valid.equals("levelEnd")))

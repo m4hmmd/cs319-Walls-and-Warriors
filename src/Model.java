@@ -161,17 +161,17 @@ public class Model {
 		}
 	}
 
-	public void addSoldier(boolean ally, boolean movable, int i, int j) {
+	public void addSoldier(boolean ally, boolean movable, int i, int j, ArrayList<Integer> route) {
 		Soldier s = null;
 		if (ally)
-			s = new Ally(movable, i, j);
+			s = new Ally(movable, i, j, route);
 		else {
-			s = new Enemy(movable, i, j);
+			s = new Enemy(movable, i, j, route);
 			noOfEnemies++;
 		}
 		if (movable) {
 			movables.add(s);
-			s.addActionListener(new MovableTimerActionListener(s));
+			s.addActionListener(new MovableTimerActionListener(s, route));
 		}
 		soldiers.add(s);
 		gameObjects[i][j] = s;
@@ -190,15 +190,15 @@ public class Model {
 				} else if (gameObjects[i][j] instanceof AllyArmada) {
 					Soldier s = (Soldier) (gameObjects[i][j]);
 					gameObjects[i][j] = null;
-					addAllyArmada(i, j, s.movable);
+					addAllyArmada(i, j, s.movable, s.route);
 				} else if (gameObjects[i][j] instanceof EnemyArmada) {
 					Soldier s = (Soldier) (gameObjects[i][j]);
 					gameObjects[i][j] = null;
-					addEnemyArmada(i, j, s.movable);
+					addEnemyArmada(i, j, s.movable, s.route);
 				} else if (gameObjects[i][j] instanceof Soldier) {
 					Soldier s = (Soldier) (gameObjects[i][j]);
 					gameObjects[i][j] = null;
-					addSoldier(s instanceof Ally, s.movable, i, j);
+					addSoldier(s instanceof Ally, s.movable, i, j, s.route);
 				}
 			}
 		}
@@ -606,17 +606,17 @@ public class Model {
 		map[2 * i + 2][2 * j + 1] = EDGE_OF_LAKE;
 
 		if (i != 0) {
-			left = map[2 * i - 1][2 * j + 1] == LAKE || map[2 * i - 1][2 * j + 1] == ENEMY_ARMADA || map[2 * i - 1][2 * j + 1] == ALLY_ARMADA;
+			left = map[2 * i - 1][2 * j + 1] == LAKE;
 		}
 		if (i < mapWidth - 1) {
-			right = map[2 * i + 3][2 * j + 1] == LAKE || map[2 * i + 3][2 * j + 1] == ENEMY_ARMADA || map[2 * i + 3][2 * j + 1] == ALLY_ARMADA;
+			right = map[2 * i + 3][2 * j + 1] == LAKE;
 		}
 
 		if (j != 0) {
-			up = map[2 * i + 1][2 * j - 1] == LAKE || map[2 * i + 1][2 * j - 1] == ENEMY_ARMADA || map[2 * i + 1][2 * j - 1] == ALLY_ARMADA;
+			up = map[2 * i + 1][2 * j - 1] == LAKE;
 		}
 		if (j < mapLength - 1) {
-			down = map[2 * i + 1][2 * j + 3] == LAKE || map[2 * i + 1][2 * j + 3] == ENEMY_ARMADA || map[2 * i + 1][2 * j + 3] == ALLY_ARMADA;
+			down = map[2 * i + 1][2 * j + 3] == LAKE;
 		}
 
 		if (up) {
@@ -636,17 +636,17 @@ public class Model {
 		}
 	}
 
-	public void addAllyArmada(int i, int j, boolean movable) {
+	public void addAllyArmada(int i, int j, boolean movable, ArrayList<Integer> route) {
 		if (gameObjects[i][j] != null)
 			return;
 
-		gameObjects[i][j] = new AllyArmada(movable, i, j);
+		gameObjects[i][j] = new AllyArmada(movable, i, j, route);
 		map[2 * i + 1][2 * j + 1] = ALLY_ARMADA;
 
 		if (movable) {
 			movables.add((Soldier) gameObjects[i][j]);
 			((Soldier) gameObjects[i][j])
-					.addActionListener(new MovableTimerActionListener((Soldier) gameObjects[i][j]));
+					.addActionListener(new MovableTimerActionListener((Soldier) gameObjects[i][j], route));
 		}
 		soldiers.add((Soldier) gameObjects[i][j]);
 
@@ -695,17 +695,17 @@ public class Model {
 		}
 	}
 
-	public void addEnemyArmada(int i, int j, boolean movable) {
+	public void addEnemyArmada(int i, int j, boolean movable, ArrayList<Integer> route) {
 		if (gameObjects[i][j] != null)
 			return;
-		gameObjects[i][j] = new EnemyArmada(movable, i, j);
+		gameObjects[i][j] = new EnemyArmada(movable, i, j, route);
 		noOfEnemies++;
 		map[2 * i + 1][2 * j + 1] = ENEMY_ARMADA;
 
 		if (movable) {
 			movables.add((Soldier) gameObjects[i][j]);
 			((Soldier) gameObjects[i][j])
-					.addActionListener(new MovableTimerActionListener((Soldier) gameObjects[i][j]));
+					.addActionListener(new MovableTimerActionListener((Soldier) gameObjects[i][j], route));
 		}
 		soldiers.add((Soldier) gameObjects[i][j]);
 
@@ -818,10 +818,10 @@ public class Model {
 			lineWidth = (squareWidth + squareHeight) / 10;
 		else
 			lineWidth = 1;
-
-		if (lineWidth % 2 != 0)
+		
+		if(lineWidth % 2 != 0)
 			lineWidth++;
-
+		
 		for (WallOrChain w : walls) {
 			w.setLineWidthOnBar((lineWidth / 2) % 2 == 0 ? lineWidth / 2 : lineWidth / 2 - 1);
 			w.setSquareHeightOnBar(squareHeight / 4);
@@ -969,31 +969,48 @@ public class Model {
 
 	class MovableTimerActionListener implements ActionListener {
 		Soldier s;
+		ArrayList<Integer> route;
+		int pos = 0, dir = 1;
 
-		public MovableTimerActionListener(Soldier s) {
+		public MovableTimerActionListener(Soldier s, ArrayList<Integer> route) {
 			this.s = s;
+			this.route = route;
 		}
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			ArrayList<Integer> dirs = new ArrayList<Integer>();
-			dirs.add(-1);
-			if (isAvailable(s, Model.UP)) {
-				dirs.add(Model.UP);
-			}
-			if (isAvailable(s, Model.DOWN)) {
-				dirs.add(Model.DOWN);
-			}
-			if (isAvailable(s, Model.LEFT)) {
-				dirs.add(Model.LEFT);
-			}
-			if (isAvailable(s, Model.RIGHT)) {
-				dirs.add(Model.RIGHT);
-			}
+//			ArrayList<Integer> dirs = new ArrayList<Integer>();
+//			dirs.add(-1);
+//			if (isAvailable(s, Model.UP)) {
+//				dirs.add(Model.UP);
+//			}
+//			if (isAvailable(s, Model.DOWN)) {
+//				dirs.add(Model.DOWN);
+//			}
+//			if (isAvailable(s, Model.LEFT)) {
+//				dirs.add(Model.LEFT);
+//			}
+//			if (isAvailable(s, Model.RIGHT)) {
+//				dirs.add(Model.RIGHT);
+//			}
 
-			int dir = dirs.get((int) (Math.random() * dirs.size()));
-			if(dir!=-1)
-				move(s, dir);
+//			int dir = (int) (Math.random() * dirs.size());
+
+			// if dir == 1 => route[pos], if dir == 0 => (1-route[pos]) + 4 * (route[pos]/2)
+			move(s, dir == 1 ? route.get(pos): (1-route.get(pos)) + 4 * (route.get(pos)/2));
+			if (dir == 1) {
+				if (pos == route.size() - 1) {
+					dir = 1 - dir;
+				} else {
+					pos++;
+				}
+			} else {
+				if (pos == 0) {
+					dir = 1 - dir;
+				} else {
+					pos--;
+				}
+			}
 		}
 	}
 

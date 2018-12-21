@@ -274,10 +274,6 @@ public class GameView extends JFrame implements ActionListener {
 	}
 
 	public void loadGame() {
-<<<<<<< HEAD
-		// code loads the game
-=======
->>>>>>> 24f16d704b382f6e4da443c5f8e7856161561160
 		try {
 			FileInputStream fileIn = new FileInputStream("game.txt"); // this codes take the inforations from txt file
 			ObjectInputStream in = new ObjectInputStream(fileIn);
@@ -323,10 +319,7 @@ public class GameView extends JFrame implements ActionListener {
 			}
 		});
 
-<<<<<<< HEAD
-=======
 
->>>>>>> 24f16d704b382f6e4da443c5f8e7856161561160
 		sound.addActionListener(new ActionListener() {
 
 			@Override
