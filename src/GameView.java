@@ -66,8 +66,9 @@ public class GameView extends JFrame implements ActionListener {
 		card.setLayout(cardLayout = new CardLayout());
 
 		setMinimumSize(new Dimension(1024, 576));
-		managers[0] = new GameManager(this, 1, cardLayout, card);
-		managers[1] = new GameManager(this, 2, cardLayout, card);
+		for (int i = 0; i < managers.length; i++) {
+			managers[i] = new GameManager(this, i + 1, cardLayout, card);
+		}
 
 		createPanels();
 
@@ -108,6 +109,9 @@ public class GameView extends JFrame implements ActionListener {
 	private void createLevelPanels() {
 		card.add("Level 1", managers[0].getPanel());
 		card.add("Level 2", managers[1].getPanel());
+		card.add("Level 3", managers[2].getPanel());
+		card.add("Level 4", managers[3].getPanel());
+		card.add("Level 5", managers[4].getPanel());
 	}
 
 	private void createCreditsPanel() throws IOException {
