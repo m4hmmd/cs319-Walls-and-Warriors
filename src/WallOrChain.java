@@ -198,6 +198,7 @@ public abstract class WallOrChain {
 		xInd = newInd.x;
 		yInd = newInd.y;
 		setEdges();
+		setRectangles();
 	}
 
 	void turnLeft() {
@@ -221,6 +222,7 @@ public abstract class WallOrChain {
 		xInd = newInd.x;
 		yInd = newInd.y;
 		setEdges();
+		setRectangles();
 	}
 
 	public Point rotateAroundPoint(Point p, Point c, int turn) {
