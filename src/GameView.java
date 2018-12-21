@@ -535,7 +535,6 @@ public class GameView extends JFrame implements ActionListener {
 		public void keyTyped(KeyEvent e) {
 
 		}
-
 		public boolean checkKey(KeyEvent e) {
 			int pressed = e.getKeyCode();
 
