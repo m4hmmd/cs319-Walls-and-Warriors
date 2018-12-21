@@ -68,13 +68,13 @@ public class MyComponents extends JComponent {
 				else {
 					pause();
 					repaint();
-					Object[] options = { "Return Home", "Restart" };
+					Object[] options = { "Return Level Menu", "Restart" };
 
-					int n = JOptionPane.showOptionDialog(null, "A Wall or a Chain was collapsed", "Game Over",
+					int n = JOptionPane.showOptionDialog(null, "A Wall was collapsed", "Game Over",
 							JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[1]);
 
 					if (n == JOptionPane.YES_OPTION) {
-						cardLayout.show(card, "Game Menu");
+						cardLayout.show(card, "Game Level Menu");
 						model.reset();
 					} else if (n == JOptionPane.NO_OPTION) {
 						restart();
@@ -84,23 +84,13 @@ public class MyComponents extends JComponent {
 			}
 		});
 
-		// backButton = new JButton("Home");
-		/*backButton = new MyButton("Home", "Game Menu", 30, 40, new ActionListener() {
+//		 backButton = new JButton("Home");
+		backButton = new MyButton("Home", "Game Menu", 30, 40, new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				cardLayout.show(card, "Game Menu");
 				returnHome();
-			}
-		});
-		*/
-		backButton = new MyButton("Level Menu", "Level Menu", 30, 40, new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				cardLayout.show(card, "Level Menu");
-				returnLevelMenu();
-				//returnHome();
 			}
 		});
 		
@@ -155,13 +145,6 @@ public class MyComponents extends JComponent {
 	}
 	
 	public void returnHome() {
-		model.reset();
-		stopTimer();
-		timer.stop();
-		selectedKey = null;
-		selectedMouse = null;
-	}
-	public void returnLevelMenu() {
 		model.reset();
 		stopTimer();
 		timer.stop();
@@ -527,7 +510,7 @@ public class MyComponents extends JComponent {
 			model.stopTimers();
 			SoundManager.gameWon();
 
-			Object[] options = { "Return Home", "Next Level" };
+			Object[] options = { "Return Level Menu", "Next Level" };
 
 			int n = JOptionPane.showOptionDialog(null, "You have completed this level!", "Congratulations!!",
 					JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[1]);

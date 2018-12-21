@@ -273,7 +273,7 @@ public class GameView extends JFrame implements ActionListener {
 		out.close();
 	}
 
-	public void loadGame() throws IOException {
+	public void loadGame() {
 		try {
 			FileInputStream fileIn = new FileInputStream("game.txt"); // this codes take the inforations from txt file
 			ObjectInputStream in = new ObjectInputStream(fileIn);
