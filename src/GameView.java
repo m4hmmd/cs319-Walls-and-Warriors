@@ -15,7 +15,7 @@ import java.util.Scanner;
 
 public class GameView extends JFrame implements ActionListener {
 
-	//SoundManager sm = new SoundManager();
+	SoundManager sm = new SoundManager();
 	private static int newKey;
 	private static int clicked = 0;
 	private boolean paused = false;
@@ -33,10 +33,10 @@ public class GameView extends JFrame implements ActionListener {
 			new MyButton("Level 3", "Level 3", btnSizeL, btnSizeScaledL, this),
 			new MyButton("Level 4", "Level 4", btnSizeL, btnSizeScaledL, this),
 			new MyButton("Level 5", "Level 5", btnSizeL, btnSizeScaledL, this) };
-	//MyButton music = new MyButton("Music: " + (SoundManager.playing ? "ON" : "OFF"), "Settings", btnSizeM,
-	//		btnSizeScaledM, this);
-	//MyButton sound = new MyButton("Sound: " + (SoundManager.sound ? "ON" : "OFF"), "Settings", btnSizeM, btnSizeScaledM,
-	//		this);
+	MyButton music = new MyButton("Music: " + (SoundManager.playing ? "ON" : "OFF"), "Settings", btnSizeM,
+			btnSizeScaledM, this);
+	MyButton sound = new MyButton("Sound: " + (SoundManager.sound ? "ON" : "OFF"), "Settings", btnSizeM, btnSizeScaledM,
+			this);
 	MyButton setRotationAnticlockwise = new MyButton(
 			"Left Rotation: \t" + KeyEvent.getKeyText(MyComponents.wallLeftRotation), "Settings", btnSizeM,
 			btnSizeScaledM, this);
@@ -85,14 +85,14 @@ public class GameView extends JFrame implements ActionListener {
 		cardLayout.show(card, "Game Menu");
 		add(card);
 		loadGame();
-		//music.setText("Music: " + (SoundManager.playing ? "ON" : "OFF"));
-		//sound.setText("Sound: " + (SoundManager.sound ? "ON" : "OFF"));
+		music.setText("Music: " + (SoundManager.playing ? "ON" : "OFF"));
+		sound.setText("Sound: " + (SoundManager.sound ? "ON" : "OFF"));
 		setRotationAnticlockwise.setText("Left Rotation: \t" + KeyEvent.getKeyText(MyComponents.wallLeftRotation));
 		setRotationClockwise.setText("Right Rotation: \t" + KeyEvent.getKeyText(MyComponents.wallRightRotation));
 		setDrop.setText("Wall Drop: \t" + KeyEvent.getKeyText(MyComponents.wallDrop));
 		setPlace.setText("Wall Place: \t" + KeyEvent.getKeyText(MyComponents.wallPlace));
 		setPrevLocation.setText("Wall Previous Location: \t" + KeyEvent.getKeyText(MyComponents.wallPrevLocation));
-		//SoundManager.start();
+		SoundManager.start();
 	}
 
 	private void createPanels() throws IOException {
@@ -263,8 +263,8 @@ public class GameView extends JFrame implements ActionListener {
 		// code saves the game
 		FileOutputStream fileOut = new FileOutputStream("game.txt");
 		ObjectOutputStream out = new ObjectOutputStream(fileOut);
-		//out.writeObject(SoundManager.playing);
-		//out.writeObject(SoundManager.sound);
+		out.writeObject(SoundManager.playing);
+		out.writeObject(SoundManager.sound);
 		out.writeObject(MyComponents.wallDrop);
 		out.writeObject(MyComponents.wallLeftRotation);
 		out.writeObject(MyComponents.wallPlace);
@@ -278,8 +278,8 @@ public class GameView extends JFrame implements ActionListener {
 		try {
 			FileInputStream fileIn = new FileInputStream("game.txt"); // this codes take the inforations from txt file
 			ObjectInputStream in = new ObjectInputStream(fileIn);
-			//SoundManager.playing = ((Boolean) in.readObject());
-			//SoundManager.sound = ((Boolean) in.readObject());
+			SoundManager.playing = ((Boolean) in.readObject());
+			SoundManager.sound = ((Boolean) in.readObject());
 			MyComponents.wallDrop = ((Integer) in.readObject());
 			MyComponents.wallLeftRotation = ((Integer) in.readObject());
 			MyComponents.wallPlace = ((Integer) in.readObject());
@@ -311,12 +311,12 @@ public class GameView extends JFrame implements ActionListener {
 		setPlace.addKeyListener(new customizeKeys());
 		setPrevLocation.addKeyListener(new customizeKeys());
 
-		/*music.addActionListener(new ActionListener() {
+		music.addActionListener(new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				//SoundManager.switchPlay();
-				//music.setText("Music: " + (SoundManager.playing ? "ON" : "OFF"));
+				SoundManager.switchPlay();
+				music.setText("Music: " + (SoundManager.playing ? "ON" : "OFF"));
 			}
 		});
 
@@ -328,10 +328,10 @@ public class GameView extends JFrame implements ActionListener {
 				SoundManager.switchSound();
 				sound.setText("Sound: " + (SoundManager.sound ? "ON" : "OFF"));
 			}
-		});		*/
+		});		
 
-		//settingsMenu.addButton(music);
-		//settingsMenu.addButton(sound);
+		settingsMenu.addButton(music);
+		settingsMenu.addButton(sound);
 		settingsMenu.addButton(setRotationAnticlockwise);
 		settingsMenu.addButton(setRotationClockwise);
 		settingsMenu.addButton(setDrop);
