@@ -27,7 +27,7 @@ public class GameManager {
 	private int mapWidth;
 	private int mapLength;
 	private int size_of_soldiers;
-	private ArrayList <Integer> shape = new ArrayList <Integer>();
+	private ArrayList <Integer> shape = new ArrayList <>();
 	
 
 	public GameManager(GameView gv, int levelNo, CardLayout cardLayout, JPanel card)throws IOException {
@@ -68,9 +68,6 @@ public class GameManager {
 		}
 		fileSystem.resetSizeX();
 
-//		if (levelNo == 1)
-//			model.addEnemyArmada(5, 3, false, null);
-
 		lake = fileSystem.getLake();
 		for (int i = 0; i < lake.length; i+=2) {
 			int a = lake[i];
@@ -85,13 +82,15 @@ public class GameManager {
 			model.addForest(a, b);
 		}
 
+		ArrayList<Integer>[] walls = fileSystem.getWalls();
 		for(int i = 0; i < fileSystem.getNumberOfWalls(); i++)
 		{
-			shape = fileSystem.getDataStructure().getShape();
-			int listToArray [] = new int [shape.size()];
-			for(int r = 0; r < shape.size(); r++)
-				listToArray[r] = shape.get(r);
-			model.addWallOrChain(fileSystem.getDataStructure().getChainOrWall(),listToArray);
+			int listToArray [] = new int [walls[i].size()-1];
+			for(int r = 1; r < walls[i].size(); r++)
+				listToArray[r-1] = walls[i].get(r);
+
+			boolean isWall = walls[i].get(0) == 1 ? true : false;
+			model.addWallOrChain(isWall,listToArray);
 			fileSystem.incrementSize();
 		}
 		fileSystem.resetSize();

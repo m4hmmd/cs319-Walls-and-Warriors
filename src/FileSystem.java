@@ -5,7 +5,6 @@ public class FileSystem
 	private int castle [] = new int [4];
 	private int forest [];
 	private int lake [];
-	private boolean armada;
 	private int numberOfSoldiers;
 	private int numberOfArmada;
 	private FileDataStructure x [];
@@ -15,6 +14,7 @@ public class FileSystem
 	int size = 0;
 	int sizeX = 0;
 	int numberOfWalls;
+	private ArrayList<Integer>[] walls;
 	
 	public void setState(int level)throws IOException
 	{
@@ -99,20 +99,18 @@ public class FileSystem
 		return lake;
 	}
 
-	public boolean getArmada()
-	{
-		return armada;
-	}
+	public int getNumberOfWalls() { return numberOfWalls; }
 
-	public int getNumberOfWalls() { return numberOfWalls + 1; }
+	public ArrayList<Integer> []  getWalls()
+	{
+		return walls;
+	}
 	
 	public void createLevel(int level)throws IOException
 	{
 		
 		String lvl = "level" + level;
-		
-		Scanner scan = new Scanner(System.in);
-		
+
 		File read = new File("Map.txt");
 		Scanner in = new Scanner(read);
 		
@@ -192,17 +190,27 @@ public class FileSystem
 		{
 			forest[i] = Integer.parseInt(in.next());
 		}
-		System.out.println("read all forests");
+
+		numberOfWalls = Integer.parseInt(in.next());
 
 		valid = in.next();
-		numberOfWalls = 0;
+		int i = 0;
+		FileDataStructure[] y = new FileDataStructure[numberOfWalls];
+		for (int k = 0; k < numberOfWalls; k++) {
+			y[k] = new FileDataStructure();
+		}
+
+		walls = new ArrayList[numberOfWalls];
 		while(!(valid.equals("levelEnd")))
 		{
-			x[numberOfWalls].setChainOrWall(Boolean.parseBoolean(valid));
+			walls[i] = new ArrayList<>();
+			boolean isWall = Boolean.parseBoolean(valid);
+			walls[i].add(isWall ? 1 : 0);
+
 			valid = in.next();
 			while(true)
 			{
-				x[numberOfWalls].setShape(Integer.parseInt(valid));
+				walls[i].add(Integer.parseInt(valid));
 				valid = in.next();
 				
 				if(valid.equals("levelEnd"))
@@ -211,7 +219,7 @@ public class FileSystem
 				if(((valid.equals("true"))) || ((valid.equals("false"))))
 					break;
 			}
-			numberOfWalls++;
+			i++;
 		}
 	}
 }
