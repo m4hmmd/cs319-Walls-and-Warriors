@@ -189,6 +189,9 @@ public abstract class WallOrChain {
 		turn++;
 		turn = turn % 4;
 
+		if(turn < 0)
+			turn = turn + 4;
+		
 		double centX = centerX;
 		double centY = centerY;
 		centerX = -centY;
@@ -213,6 +216,9 @@ public abstract class WallOrChain {
 		turn--;
 		turn = turn % 4;
 
+		if(turn < 0)
+			turn = turn + 4;
+		
 		double centX = centerX;
 		double centY = centerY;
 		centerX = centY;
