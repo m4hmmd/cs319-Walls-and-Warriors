@@ -1,5 +1,6 @@
 import java.awt.*;
 import java.awt.geom.AffineTransform;
+import java.awt.image.BufferedImage;
 
 public class Wall extends WallOrChain {
 
@@ -14,6 +15,106 @@ public class Wall extends WallOrChain {
 		setTheRectanglePoints(squareHeight, squareWidth, shiftY);
 		g.setColor(getColor());
 
+		BufferedImage imgLine = new BufferedImage(wallLine.getWidth(null), wallLine.getHeight(null), BufferedImage.TYPE_INT_ARGB);
+
+	    // Draw the image on to the buffered image
+	    Graphics2D bGr = imgLine.createGraphics();
+	    bGr.drawImage(wallLine, 0, 0, null);
+	    bGr.dispose();
+
+		// get width and height of the image 
+        int width = imgLine.getWidth(); 
+        int height = imgLine.getHeight(); 
+        //convert to sepia 
+        for(int y = 0; y < height; y++) 
+        { 
+            for(int x = 0; x < width; x++) 
+            { 
+                int p = imgLine.getRGB(x,y); 
+  
+                int a = (p>>24)&0xff; 
+                int R = (p>>16)&0xff; 
+                int G = (p>>8)&0xff; 
+                int B = p&0xff; 
+  
+                //calculate newRed, newGreen, newBlue 
+                int newRed = (int)((getColor().getRed()/255.0)*R); 
+                int newGreen = (int)((getColor().getGreen()/255.0)*G); 
+                int newBlue = (int)((getColor().getBlue()/255.0)*B); 
+  
+                //check condition 
+                if (newRed > 255) 
+                    R = 255; 
+                else
+                    R = newRed; 
+  
+                if (newGreen > 255) 
+                    G = 255; 
+                else
+                    G = newGreen; 
+  
+                if (newBlue > 255) 
+                    B = 255; 
+                else
+                    B = newBlue; 
+  
+                //set new RGB value 
+                p = (a<<24) | (R<<16) | (G<<8) | B; 
+  
+                imgLine.setRGB(x, y, p); 
+            } 
+        } 
+        
+        BufferedImage imgEdge = new BufferedImage(wallEdge.getWidth(null), wallEdge.getHeight(null), BufferedImage.TYPE_INT_ARGB);
+
+	    // Draw the image on to the buffered image
+	    Graphics2D bGr2 = imgEdge.createGraphics();
+	    bGr2.drawImage(wallEdge, 0, 0, null);
+	    bGr2.dispose();
+
+		// get width and height of the image 
+        width = imgEdge.getWidth(); 
+        height = imgEdge.getHeight(); 
+        //convert to sepia 
+        for(int y = 0; y < height; y++) 
+        { 
+            for(int x = 0; x < width; x++) 
+            { 
+                int p = imgEdge.getRGB(x,y); 
+  
+                int a = (p>>24)&0xff; 
+                int R = (p>>16)&0xff; 
+                int G = (p>>8)&0xff; 
+                int B = p&0xff; 
+  
+                //calculate newRed, newGreen, newBlue 
+                int newRed = (int)((getColor().getRed()/255.0)*R); 
+                int newGreen = (int)((getColor().getGreen()/255.0)*G); 
+                int newBlue = (int)((getColor().getBlue()/255.0)*B); 
+  
+                //check condition 
+                if (newRed > 255) 
+                    R = 255; 
+                else
+                    R = newRed; 
+  
+                if (newGreen > 255) 
+                    G = 255; 
+                else
+                    G = newGreen; 
+  
+                if (newBlue > 255) 
+                    B = 255; 
+                else
+                    B = newBlue; 
+  
+                //set new RGB value 
+                p = (a<<24) | (R<<16) | (G<<8) | B; 
+  
+                imgEdge.setRGB(x, y, p); 
+            } 
+        } 
+
 		if (visible) {
 
 			Graphics2D g2d = (Graphics2D) g;
@@ -23,11 +124,11 @@ public class Wall extends WallOrChain {
 					AffineTransform trans = new AffineTransform();
 					trans.rotate(Math.PI / 2, r.x + lineWidth / 2, r.y + lineWidth / 2);
 					g2d.transform(trans);
-					g2d.drawImage(wallLine, r.x, r.y, r.height, r.width, null);
+					g2d.drawImage(imgLine, r.x, r.y, r.height, r.width, null);
 
 					g2d.setTransform(backup); // restore previous transform
 				} else
-					g.drawImage(wallLine, r.x, r.y, r.width, r.height, null);
+					g.drawImage(imgLine, r.x, r.y, r.width, r.height, null);
 			}
 			for (int i = 0; i < edgesX.length; i++) {
 				int xEdgeCoor = xCoor + squareWidth * (edgesX[i]) - lineWidth / 2;
@@ -46,7 +147,7 @@ public class Wall extends WallOrChain {
 				}
 
 				g2d.transform(trans);
-				g.drawImage(wallEdge, xEdgeCoor, yEdgeCoor, lineWidth, lineWidth, null);
+				g.drawImage(imgEdge, xEdgeCoor, yEdgeCoor, lineWidth, lineWidth, null);
 
 				g2d.setTransform(backup);
 			}
@@ -72,11 +173,11 @@ public class Wall extends WallOrChain {
 				AffineTransform trans = new AffineTransform();
 				trans.rotate(Math.PI / 2, r.x + lineWidthOnBar / 2, r.y + lineWidthOnBar / 2);
 				g2d.transform(trans);
-				g2d.drawImage(wallLine, r.x, r.y, r.height, r.width, null);
+				g2d.drawImage(imgLine, r.x, r.y, r.height, r.width, null);
 
 				g2d.setTransform(backup); // restore previous transform
 			} else
-				g.drawImage(wallLine, r.x, r.y, r.width, r.height, null);
+				g.drawImage(imgLine, r.x, r.y, r.width, r.height, null);
 		}
 		
 		for (int i = 0; i < edgesX.length; i++) {
@@ -98,7 +199,7 @@ public class Wall extends WallOrChain {
 			}
 
 			g2d.transform(trans);
-			g.drawImage(wallEdge, xEdgeCoor, yEdgeCoor, lineWidthOnBar, lineWidthOnBar, null);
+			g.drawImage(imgEdge, xEdgeCoor, yEdgeCoor, lineWidthOnBar, lineWidthOnBar, null);
 
 			g2d.setTransform(backup);
 		}
@@ -193,3 +294,4 @@ public class Wall extends WallOrChain {
 		return Model.WALL;
 	}
 }
+
