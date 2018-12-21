@@ -9,12 +9,14 @@ public abstract class Soldier extends GameObject {
 
 	int power = 2;
 	boolean movable;
+	ArrayList<Integer> route;
 	Point initialPoint;
 	Timer t;
 
-	Soldier(boolean movable, int x, int y) {
+	Soldier(boolean movable, int x, int y, ArrayList<Integer> route) {
 		super(x, y);
 		this.movable = movable;
+		this.route = route;
 		initialPoint = new Point(x, y);
 		t = new Timer(3000, null);
 	}

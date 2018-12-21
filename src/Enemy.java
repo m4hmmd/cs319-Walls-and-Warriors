@@ -5,8 +5,8 @@ import java.util.ArrayList;
 
 public class Enemy extends Soldier {
 
-	public Enemy(boolean movable, int x, int y) {
-		super(movable, x, y);
+	public Enemy(boolean movable, int x, int y, ArrayList<Integer> route) {
+		super(movable, x, y, route);
 
 		try
 		{
