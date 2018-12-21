@@ -41,15 +41,11 @@ public class MyComponents extends JComponent {
 	protected static int wallPlace = KeyEvent.VK_ENTER;
 	protected static int wallPrevLocation = KeyEvent.VK_Z;
 
-
 	public MyComponents(GameView gv, Model model, CardLayout cardLayout, JPanel card, int levelNo) {
-		try
-		{
+		try {
 			File file = new File("src/img/grass.png");
 			mapTile = ImageIO.read(file);
-		}
-		catch ( Exception e )
-		{
+		} catch (Exception e) {
 			System.out.println("Couldn't find file: " + e);
 		}
 		this.model = model;
@@ -84,7 +80,9 @@ public class MyComponents extends JComponent {
 		});
 
 		// backButton = new JButton("Home");
-//		 backButton = new JButton("Home");
+
+		// backButton = new JButton("Home");
+
 		backButton = new MyButton("Home", "Game Menu", 30, 40, new ActionListener() {
 
 			@Override
@@ -200,7 +198,8 @@ public class MyComponents extends JComponent {
 		drawWalls(g);
 
 		backButton.setBounds(0, (int) (getHeight() / 10 * 0.5), getWidth() / 5, getHeight() / 10);
-		pauseButton.setBounds((int) (getWidth() / 10 * 7.5), (int) (getHeight() / 10 * 0.5), getWidth() / 4, getHeight() / 10);
+		pauseButton.setBounds((int) (getWidth() / 10 * 7.5), (int) (getHeight() / 10 * 0.5), getWidth() / 4,
+				getHeight() / 10);
 		pWidth = getWidth();
 		pHeight = getHeight();
 	}
@@ -216,8 +215,8 @@ public class MyComponents extends JComponent {
 	}
 
 	void drawGrid(Graphics g) {
-//		g.setColor(Color.gray);
-		g.setColor(new Color(102,59, 22));
+		// g.setColor(Color.gray);
+		g.setColor(new Color(102, 59, 22));
 		g.fillRect(model.initialXShift + model.squareWidth - model.lineWidth / 2,
 				model.initialYShift - model.lineWidth / 2, model.squareWidth * (model.mapWidth - 2) + model.lineWidth,
 				model.squareHeight * model.mapLength + model.lineWidth);
@@ -233,17 +232,19 @@ public class MyComponents extends JComponent {
 				} else if (i == 0 && j == model.mapLength - 1) {
 				} else if (i == model.mapWidth - 1 && j == model.mapLength - 1) {
 				} else {
-//					g.setColor(Color.gray.brighter());
-//					g.fillRect(model.initialXShift + model.squareWidth * i + model.lineWidth / 2,
-//							model.initialYShift + model.squareHeight * j + model.lineWidth / 2,
-//							model.squareWidth - model.lineWidth + 1, model.squareHeight - model.lineWidth + 1);
+					// g.setColor(Color.gray.brighter());
+					// g.fillRect(model.initialXShift + model.squareWidth * i + model.lineWidth / 2,
+					// model.initialYShift + model.squareHeight * j + model.lineWidth / 2,
+					// model.squareWidth - model.lineWidth + 1, model.squareHeight - model.lineWidth
+					// + 1);
 					float alpha = 0.7f;
 					Graphics2D g2d = (Graphics2D) g;
 					AlphaComposite acomp = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, alpha);
 					g2d.setComposite(acomp);
 					if (mapTile != null)
 						g2d.drawImage(mapTile, model.initialXShift + model.squareWidth * i,
-								model.initialYShift + model.squareHeight * j, model.squareWidth + 1, model.squareHeight + 1, null);
+								model.initialYShift + model.squareHeight * j, model.squareWidth + 1,
+								model.squareHeight + 1, null);
 
 					alpha = 1f;
 					acomp = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, alpha);
@@ -309,35 +310,39 @@ public class MyComponents extends JComponent {
 				}
 				i++;
 			}
-
-			for (WallOrChain w : model.getWalls()) {
-				if (w.visible && w.contains(e.getX(), e.getY())) {
-					if (selectedKey != null) {
-						placeTheWall(selectedKey);
+			if (SwingUtilities.isLeftMouseButton(e)) {
+				for (WallOrChain w : model.getWalls()) {
+					if (w.visible && w.contains(e.getX(), e.getY())) {
+						if (selectedKey != null) {
+							placeTheWall(selectedKey);
+						}
+						if (selectedKey != w) {
+							selectedKey = w;
+							model.removeFromLines(selectedKey);
+							wallStartX_KEY = selectedKey.xCoor;
+							wallStartY_KEY = selectedKey.yCoor;
+							wallStartXInd_KEY = selectedKey.xInd;
+							wallStartYInd_KEY = selectedKey.yInd;
+							turnStart = selectedKey.turn;
+						} else
+							selectedKey = null;
+						emptyPlace = false;
+						break;
 					}
-					if (selectedKey != w) {
-						selectedKey = w;
-						model.removeFromLines(selectedKey);
-						wallStartX_KEY = selectedKey.xCoor;
-						wallStartY_KEY = selectedKey.yCoor;
-						wallStartXInd_KEY = selectedKey.xInd;
-						wallStartYInd_KEY = selectedKey.yInd;
-						turnStart = selectedKey.turn;
-					} else
-						selectedKey = null;
-					emptyPlace = false;
-					break;
 				}
 			}
-
 			if (emptyPlace) {
 				placeTheWall(selectedKey);
 				selectedKey = null;
 			}
+
 			repaint();
 		}
 
 		public void mousePressed(MouseEvent e) {
+			if (SwingUtilities.isRightMouseButton(e)) {
+				return;
+			}
 			clickedX = e.getX();
 			clickedY = e.getY();
 			boolean isWall = false;
@@ -386,6 +391,9 @@ public class MyComponents extends JComponent {
 
 		@Override
 		public void mouseDragged(MouseEvent e) {
+			if (SwingUtilities.isRightMouseButton(e)) {
+				return;
+			}
 			if (selectedMouse != null) {
 				if (!selectedMouse.visible)
 					selectedMouse.appear();
@@ -418,6 +426,9 @@ public class MyComponents extends JComponent {
 		}
 
 		public void mouseReleased(MouseEvent e) {
+			if (SwingUtilities.isRightMouseButton(e)) {
+				return;
+			}
 			if (selectedMouse != null) {
 				selectedMouse.setColorToOriginal();
 				selectedMouse.setThePositionAgain(model.getInitialXShift(), model.getInitialYShift(),
@@ -530,16 +541,15 @@ public class MyComponents extends JComponent {
 			selectedKey = null;
 			selectedMouse = null;
 
-
 			try {
 
-                Writer wr = new FileWriter("savedLevelNo.txt");
-                wr.write(GameView.lastCompletedLevel+""); // write string
-                wr.flush();
-                wr.close();
+				Writer wr = new FileWriter("savedLevelNo.txt");
+				wr.write(GameView.lastCompletedLevel + ""); // write string
+				wr.flush();
+				wr.close();
 
-
-            }catch (Exception ea){}
+			} catch (Exception ea) {
+			}
 
 		}
 
@@ -739,7 +749,7 @@ public class MyComponents extends JComponent {
 		}
 
 		private void numberPressed(int i) {
-			if(i > model.getWalls().length || i <= 0)
+			if (i > model.getWalls().length || i <= 0)
 				return;
 			boolean bool = selectedKey != model.getWalls()[i - 1];
 
