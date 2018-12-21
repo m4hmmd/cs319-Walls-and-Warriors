@@ -65,7 +65,7 @@ public class GameView extends JFrame implements ActionListener {
 		}));
 		card.setLayout(cardLayout = new CardLayout());
 
-		setMinimumSize(new Dimension(800, 600));
+		setMinimumSize(new Dimension(1024, 576));
 		managers[0] = new GameManager(this, 1, cardLayout, card);
 		managers[1] = new GameManager(this, 2, cardLayout, card);
 
