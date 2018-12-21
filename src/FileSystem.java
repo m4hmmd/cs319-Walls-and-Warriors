@@ -194,12 +194,8 @@ public class FileSystem
 		numberOfWalls = Integer.parseInt(in.next());
 
 		valid = in.next();
+		
 		int i = 0;
-		FileDataStructure[] y = new FileDataStructure[numberOfWalls];
-		for (int k = 0; k < numberOfWalls; k++) {
-			y[k] = new FileDataStructure();
-		}
-
 		walls = new ArrayList[numberOfWalls];
 		while(!(valid.equals("levelEnd")))
 		{
