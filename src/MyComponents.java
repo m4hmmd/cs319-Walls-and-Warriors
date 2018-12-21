@@ -11,11 +11,9 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionAdapter;
 import java.awt.event.MouseMotionListener;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.Writer;
+import java.io.*;
 import java.util.ArrayList;
+import java.util.Scanner;
 
 @SuppressWarnings("serial")
 public class MyComponents extends JComponent {
@@ -74,7 +72,11 @@ public class MyComponents extends JComponent {
 							JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[1]);
 
 					if (n == JOptionPane.YES_OPTION) {
+<<<<<<< HEAD
+						cardLayout.show(card, "Level Menu");
+=======
 						cardLayout.show(card, "Game Level Menu");
+>>>>>>> 24f16d704b382f6e4da443c5f8e7856161561160
 						model.reset();
 					} else if (n == JOptionPane.NO_OPTION) {
 						restart();
@@ -84,6 +86,11 @@ public class MyComponents extends JComponent {
 			}
 		});
 
+<<<<<<< HEAD
+		// backButton = new JButton("Home");
+=======
+//		 backButton = new JButton("Home");
+>>>>>>> 24f16d704b382f6e4da443c5f8e7856161561160
 		backButton = new MyButton("Home", "Game Menu", 30, 40, new ActionListener() {
 
 			@Override
@@ -215,6 +222,7 @@ public class MyComponents extends JComponent {
 	}
 
 	void drawGrid(Graphics g) {
+//		g.setColor(Color.gray);
 		g.setColor(new Color(102,59, 22));
 		g.fillRect(model.initialXShift + model.squareWidth - model.lineWidth / 2,
 				model.initialYShift - model.lineWidth / 2, model.squareWidth * (model.mapWidth - 2) + model.lineWidth,
@@ -231,6 +239,10 @@ public class MyComponents extends JComponent {
 				} else if (i == 0 && j == model.mapLength - 1) {
 				} else if (i == model.mapWidth - 1 && j == model.mapLength - 1) {
 				} else {
+//					g.setColor(Color.gray.brighter());
+//					g.fillRect(model.initialXShift + model.squareWidth * i + model.lineWidth / 2,
+//							model.initialYShift + model.squareHeight * j + model.lineWidth / 2,
+//							model.squareWidth - model.lineWidth + 1, model.squareHeight - model.lineWidth + 1);
 					float alpha = 0.7f;
 					Graphics2D g2d = (Graphics2D) g;
 					AlphaComposite acomp = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, alpha);
@@ -515,7 +527,7 @@ public class MyComponents extends JComponent {
 			gv.levelButtons[levelNo].setEnabled(true);
 			gv.levelButtons[levelNo].setIcon(null);
 			if (n == JOptionPane.YES_OPTION) {
-				cardLayout.show(card, "Game Menu");
+				cardLayout.show(card, "Level Menu");
 				model.reset();
 			} else if (n == JOptionPane.NO_OPTION) {
 				cardLayout.show(card, "Level " + (levelNo + 1));
@@ -523,17 +535,19 @@ public class MyComponents extends JComponent {
 			}
 			selectedKey = null;
 			selectedMouse = null;
-			
+
+
 			try {
 
-                	Writer wr = new FileWriter("savedLevelNo.txt");
-               	 	wr.write(GameView.lastCompletedLevel+""); // write string
-			wr.flush();
-			wr.close();
+                Writer wr = new FileWriter("savedLevelNo.txt");
+                wr.write(GameView.lastCompletedLevel+""); // write string
+                wr.flush();
+                wr.close();
 
 
-          		  }catch (Exception ea){}
-			}
+            }catch (Exception ea){}
+
+		}
 
 		public void mouseExited(MouseEvent e) {
 
@@ -673,6 +687,18 @@ public class MyComponents extends JComponent {
 				numberPressed(6);
 			}
 
+			else if (key == KeyEvent.VK_7) {
+				numberPressed(7);
+			}
+
+			else if (key == KeyEvent.VK_8) {
+				numberPressed(8);
+			}
+
+			else if (key == KeyEvent.VK_9) {
+				numberPressed(9);
+			}
+
 			else if (key == KeyEvent.VK_NUMPAD1) {
 				numberPressed(1);
 			}
@@ -697,6 +723,18 @@ public class MyComponents extends JComponent {
 				numberPressed(6);
 			}
 
+			else if (key == KeyEvent.VK_NUMPAD7) {
+				numberPressed(7);
+			}
+
+			else if (key == KeyEvent.VK_NUMPAD8) {
+				numberPressed(8);
+			}
+
+			else if (key == KeyEvent.VK_NUMPAD9) {
+				numberPressed(9);
+			}
+
 			else if (key == wallDrop) {
 				if (selectedKey != null) {
 					selectedKey.remove();
@@ -707,7 +745,8 @@ public class MyComponents extends JComponent {
 		}
 
 		private void numberPressed(int i) {
-
+			if(i > model.getWalls().length || i <= 0)
+				return;
 			boolean bool = selectedKey != model.getWalls()[i - 1];
 			
 			if (selectedKey != null) {
