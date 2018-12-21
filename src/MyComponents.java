@@ -19,7 +19,7 @@ import java.util.Scanner;
 public class MyComponents extends JComponent {
 
 	private Image mapTile;
-	
+
 	public Model model;
 	private CardLayout cardLayout;
 	private JPanel card;
@@ -34,13 +34,13 @@ public class MyComponents extends JComponent {
 	GameView gv;
 	Timer t;
 	Timer timer = new Timer(500, null);
-	
+
 	protected static int wallLeftRotation = KeyEvent.VK_A;
 	protected static int wallRightRotation = KeyEvent.VK_D;
 	protected static int wallDrop = KeyEvent.VK_Q;
 	protected static int wallPlace = KeyEvent.VK_ENTER;
 	protected static int wallPrevLocation = KeyEvent.VK_Z;
-	
+
 
 	public MyComponents(GameView gv, Model model, CardLayout cardLayout, JPanel card, int levelNo) {
 		try
@@ -93,7 +93,7 @@ public class MyComponents extends JComponent {
 				returnHome();
 			}
 		});
-		
+
 		pauseButton = new MyButton("Pause", "Level " + levelNo, 30, 40, new ActionListener() {
 
 			@Override
@@ -103,7 +103,7 @@ public class MyComponents extends JComponent {
 				cardLayout.show(card, "Pause");
 			}
 		});
-		
+
 		// back = new MyButton("Back", "Game Menu", btnSizeS, btnSizeScaledS,this);
 
 		// backButton.setForeground(Color.WHITE);
@@ -143,7 +143,7 @@ public class MyComponents extends JComponent {
 		selectedKey = null;
 		selectedMouse = null;
 	}
-	
+
 	public void returnHome() {
 		model.reset();
 		stopTimer();
@@ -151,7 +151,7 @@ public class MyComponents extends JComponent {
 		selectedKey = null;
 		selectedMouse = null;
 	}
-	
+
 	public void startTimer() {
 		t.start();
 	}
@@ -169,7 +169,7 @@ public class MyComponents extends JComponent {
 		startTimer();
 		model.resume();
 	}
-	
+
 	@Override
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
@@ -626,11 +626,11 @@ public class MyComponents extends JComponent {
 						selectedKey = null;
 					} else {
 						Point startPoint = new Point(selectedKey.xInd, selectedKey.yInd);
-						
+
 						for (int i = 0; i < timer.getActionListeners().length; i++) {
 							timer.removeActionListener(timer.getActionListeners()[i]);
 						}
-						
+
 						timer.addActionListener(new ActionListener() {
 
 							@Override
@@ -742,7 +742,7 @@ public class MyComponents extends JComponent {
 			if(i > model.getWalls().length || i <= 0)
 				return;
 			boolean bool = selectedKey != model.getWalls()[i - 1];
-			
+
 			if (selectedKey != null) {
 				placeSelectedKey();
 			}
@@ -819,11 +819,11 @@ public class MyComponents extends JComponent {
 							selectedKey = null;
 						} else {
 							Point startPoint = new Point(selectedKey.xInd, selectedKey.yInd);
-							
+
 							for (int i = 0; i < timer.getActionListeners().length; i++) {
 								timer.removeActionListener(timer.getActionListeners()[i]);
 							}
-							
+
 							timer.addActionListener(new ActionListener() {
 
 								@Override
