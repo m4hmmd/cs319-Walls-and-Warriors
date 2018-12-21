@@ -15,7 +15,7 @@ import java.util.Scanner;
 
 public class GameView extends JFrame implements ActionListener {
 
-	SoundManager sm = new SoundManager();
+	//SoundManager sm = new SoundManager();
 	private static int newKey;
 	private static int clicked = 0;
 	private boolean paused = false;
@@ -33,10 +33,10 @@ public class GameView extends JFrame implements ActionListener {
 			new MyButton("Level 3", "Level 3", btnSizeL, btnSizeScaledL, this),
 			new MyButton("Level 4", "Level 4", btnSizeL, btnSizeScaledL, this),
 			new MyButton("Level 5", "Level 5", btnSizeL, btnSizeScaledL, this) };
-	MyButton music = new MyButton("Music: " + (SoundManager.playing ? "ON" : "OFF"), "Settings", btnSizeM,
-			btnSizeScaledM, this);
-	MyButton sound = new MyButton("Sound: " + (SoundManager.sound ? "ON" : "OFF"), "Settings", btnSizeM,
-			btnSizeScaledM, this);
+	//MyButton music = new MyButton("Music: " + (SoundManager.playing ? "ON" : "OFF"), "Settings", btnSizeM,
+	//		btnSizeScaledM, this);
+	//MyButton sound = new MyButton("Sound: " + (SoundManager.sound ? "ON" : "OFF"), "Settings", btnSizeM, btnSizeScaledM,
+	//		this);
 	MyButton setRotationAnticlockwise = new MyButton(
 			"Left Rotation: \t" + KeyEvent.getKeyText(MyComponents.wallLeftRotation), "Settings", btnSizeM,
 			btnSizeScaledM, this);
@@ -52,7 +52,7 @@ public class GameView extends JFrame implements ActionListener {
 			btnSizeScaledM, this);
 
 	boolean listenKey;
-	
+
 	public GameView() throws IOException {
 		Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
 			public void run() {
@@ -85,14 +85,14 @@ public class GameView extends JFrame implements ActionListener {
 		cardLayout.show(card, "Game Menu");
 		add(card);
 		loadGame();
-		music.setText("Music: " + (SoundManager.playing ? "ON" : "OFF"));
-		sound.setText("Sound: " + (SoundManager.sound ? "ON" : "OFF"));
+		//music.setText("Music: " + (SoundManager.playing ? "ON" : "OFF"));
+		//sound.setText("Sound: " + (SoundManager.sound ? "ON" : "OFF"));
 		setRotationAnticlockwise.setText("Left Rotation: \t" + KeyEvent.getKeyText(MyComponents.wallLeftRotation));
 		setRotationClockwise.setText("Right Rotation: \t" + KeyEvent.getKeyText(MyComponents.wallRightRotation));
 		setDrop.setText("Wall Drop: \t" + KeyEvent.getKeyText(MyComponents.wallDrop));
 		setPlace.setText("Wall Place: \t" + KeyEvent.getKeyText(MyComponents.wallPlace));
 		setPrevLocation.setText("Wall Previous Location: \t" + KeyEvent.getKeyText(MyComponents.wallPrevLocation));
-		SoundManager.start();
+		//SoundManager.start();
 	}
 
 	private void createPanels() throws IOException {
@@ -196,9 +196,9 @@ public class GameView extends JFrame implements ActionListener {
 							levelButtons[i].setIcon(new ImageIcon(newimg));
 							Writer wr = new FileWriter("savedLevelNo.txt");
 							lastCompletedLevel = 0;
-			                		wr.write(GameView.lastCompletedLevel+""); // write string
-			                		wr.flush();
-			                		wr.close();
+							wr.write(GameView.lastCompletedLevel + ""); // write string
+							wr.flush();
+							wr.close();
 						} catch (Exception ex) {
 							System.out.println(ex);
 						}
@@ -208,7 +208,7 @@ public class GameView extends JFrame implements ActionListener {
 			MyButton loadGame = new MyButton("Load Game", "Level Menu", btnSizeL, btnSizeScaledL, this);
 			loadGame.addActionListener(new ActionListener() {
 
- 				@Override
+				@Override
 				public void actionPerformed(ActionEvent e) {
 					int last = 0;
 					try {
@@ -217,11 +217,11 @@ public class GameView extends JFrame implements ActionListener {
 						Scanner s = new Scanner(f);
 						last = (Integer) s.nextInt();
 
-					} catch (  IOException e1) {
+					} catch (IOException e1) {
 						e1.printStackTrace();
 					}
 
-					for(int i=0;i< last + 1;i++){
+					for (int i = 0; i < last + 1; i++) {
 						levelButtons[i].setIcon(null);
 						levelButtons[i].setEnabled(true);
 					}
@@ -238,7 +238,7 @@ public class GameView extends JFrame implements ActionListener {
 					}
 				}
 			});
-			
+
 			MyButton settings = new MyButton("Settings", "Settings", btnSizeL, btnSizeScaledL, this);
 			MyButton howToPlay = new MyButton("How To Play", "How To Play", btnSizeL, btnSizeScaledL, this);
 			MyButton credits = new MyButton("Credits", "Credits", btnSizeL, btnSizeScaledL, this);
@@ -258,13 +258,13 @@ public class GameView extends JFrame implements ActionListener {
 
 		}
 	}
-	
+
 	public void saveGame() throws IOException {
 		// code saves the game
 		FileOutputStream fileOut = new FileOutputStream("game.txt");
 		ObjectOutputStream out = new ObjectOutputStream(fileOut);
-		out.writeObject(SoundManager.playing);
-		out.writeObject(SoundManager.sound);
+		//out.writeObject(SoundManager.playing);
+		//out.writeObject(SoundManager.sound);
 		out.writeObject(MyComponents.wallDrop);
 		out.writeObject(MyComponents.wallLeftRotation);
 		out.writeObject(MyComponents.wallPlace);
@@ -273,12 +273,13 @@ public class GameView extends JFrame implements ActionListener {
 		out.close();
 	}
 
-	public void loadGame() throws IOException {
+	public void loadGame() {
+		// code loads the game
 		try {
 			FileInputStream fileIn = new FileInputStream("game.txt"); // this codes take the inforations from txt file
 			ObjectInputStream in = new ObjectInputStream(fileIn);
-			SoundManager.playing = ((Boolean) in.readObject());
-			SoundManager.sound = ((Boolean) in.readObject());
+			//SoundManager.playing = ((Boolean) in.readObject());
+			//SoundManager.sound = ((Boolean) in.readObject());
 			MyComponents.wallDrop = ((Integer) in.readObject());
 			MyComponents.wallLeftRotation = ((Integer) in.readObject());
 			MyComponents.wallPlace = ((Integer) in.readObject());
@@ -310,15 +311,16 @@ public class GameView extends JFrame implements ActionListener {
 		setPlace.addKeyListener(new customizeKeys());
 		setPrevLocation.addKeyListener(new customizeKeys());
 
-		music.addActionListener(new ActionListener() {
+		/*music.addActionListener(new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				SoundManager.switchPlay();
-				music.setText("Music: " + (SoundManager.playing ? "ON" : "OFF"));
+				//SoundManager.switchPlay();
+				//music.setText("Music: " + (SoundManager.playing ? "ON" : "OFF"));
 			}
 		});
-		
+
+
 		sound.addActionListener(new ActionListener() {
 
 			@Override
@@ -326,10 +328,10 @@ public class GameView extends JFrame implements ActionListener {
 				SoundManager.switchSound();
 				sound.setText("Sound: " + (SoundManager.sound ? "ON" : "OFF"));
 			}
-		});
-		
-		settingsMenu.addButton(music);
-		settingsMenu.addButton(sound);
+		});		*/
+
+		//settingsMenu.addButton(music);
+		//settingsMenu.addButton(sound);
 		settingsMenu.addButton(setRotationAnticlockwise);
 		settingsMenu.addButton(setRotationClockwise);
 		settingsMenu.addButton(setDrop);
@@ -349,7 +351,7 @@ public class GameView extends JFrame implements ActionListener {
 		MyButton returnHome = new MyButton("Return Home", "Game Menu", btnSizeM, btnSizeScaledM, this);
 
 		restart.addActionListener(new ActionListener() {
-			
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				managers[currentLevelIndex - 1].reset();
@@ -359,7 +361,7 @@ public class GameView extends JFrame implements ActionListener {
 			}
 		});
 		resume.addActionListener(new ActionListener() {
-			
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				managers[currentLevelIndex - 1].startTimers();
@@ -368,7 +370,7 @@ public class GameView extends JFrame implements ActionListener {
 			}
 		});
 		returnHome.addActionListener(new ActionListener() {
-			
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				cardLayout.show(card, "Game Menu");
@@ -389,11 +391,51 @@ public class GameView extends JFrame implements ActionListener {
 			System.exit(0);
 		}
 		cardLayout.show(card, ((MyButton) e.getSource()).getNextPanelName());
+
 		for (int i = 0; i < managers.length; i++) {
 			if (((MyButton) e.getSource()).getNextPanelName().equals("Level " + (i + 1))) {
 				managers[i].getPanel().requestFocusInWindow();
 				managers[i].startTimers();
 				currentLevelIndex = i + 1;
+
+				// description of Levels
+				if(currentLevelIndex==1) {
+					repaint();
+					Object[] options = {"Close"};
+					int n = JOptionPane.showOptionDialog(null, "Description of game objects", "Level 1",
+							JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
+
+				}
+				if(currentLevelIndex==2) {
+					repaint();
+					Object[] options = {"Close"};
+					int n = JOptionPane.showOptionDialog(null, "Description of game objects", "Level 2",
+							JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
+
+				}
+				if(currentLevelIndex==3) {
+					repaint();
+					Object[] options = {"Close"};
+					int n = JOptionPane.showOptionDialog(null, "Description of game objects", "Level 3",
+							JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
+
+				}
+				if(currentLevelIndex==4) {
+					repaint();
+					Object[] options = {"Close"};
+					int n = JOptionPane.showOptionDialog(null, "Description of game objects", "Level 4",
+							JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
+
+				}if(currentLevelIndex==5) {
+					repaint();
+					Object[] options = {"Close"};
+					int n = JOptionPane.showOptionDialog(null, "Description of game objects", "Level 5",
+							JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
+
+				}
+
+
+
 			}
 		}
 	}
@@ -451,6 +493,7 @@ public class GameView extends JFrame implements ActionListener {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+
 	}
 
 	public class customizeKeys implements KeyListener {
