@@ -502,6 +502,13 @@ public abstract class WallOrChain {
 		int alpha = (int) (MIN_ALPHA + (255 - MIN_ALPHA) * (health * 1.0 / initialHealth));
 		if (alpha > 0)
 			c = new Color(r, g, b, alpha);
+		if(2*health == initialHealth ){
+
+            	Object[] options = {"Close"};
+
+           	 int n = JOptionPane.showOptionDialog(null, "Wall or Chain is under the attacking of enemies. ", "Hurry Up!",
+                    JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
+		}
 	}
 
 	private Rectangle getNearestRectangleToCenter(int squareWidth, int squareHeight) {
