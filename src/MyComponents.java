@@ -291,10 +291,15 @@ public class MyComponents extends JComponent {
 	private void drawGameObjects(Graphics g) {
 		for (GameObject[] gm : model.getMap()) {
 			for (GameObject gmo : gm) {
-				if (gmo != null)
+				if (gmo != null && !model.movables.contains(gmo))
 					gmo.draw(g, model.getInitialXShift(), model.getInitialYShift(), model.getSquareHeight(),
 							model.getSquareWidth());
 			}
+		}
+		
+		for (Soldier soldier : model.movables) {
+				soldier.draw(g, model.getInitialXShift(), model.getInitialYShift(), model.getSquareHeight(),
+						model.getSquareWidth());
 		}
 	}
 
