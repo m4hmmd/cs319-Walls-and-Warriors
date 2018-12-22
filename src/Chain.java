@@ -182,20 +182,6 @@ public class Chain extends WallOrChain {
 
 				g2d.setTransform(backup);
 			}
-
-			int healthWidth = squareWidth / 3;
-			int healthHeight = squareWidth / 8;
-			Rectangle nearestToCenter = getNearestRectToCenter();
-			int CoorX = (int) nearestToCenter.getCenterX();
-			int CoorY = (int) nearestToCenter.getCenterY();
-
-			g.setColor(Color.GREEN);
-			g.drawRect(CoorX - healthWidth / 2, CoorY - healthHeight / 2 - lineWidth, healthWidth, healthHeight);
-			int r = (int) (510 * (1 - health * 1.0 / initialHealth));
-			int gr = (int) (510 * (health * 1.0 / initialHealth));
-			g.setColor(new Color(r >= 255 ? 255 : r, gr >= 255 ? 255 : gr, 0));
-			g.fillRect(CoorX - healthWidth / 2, CoorY - healthHeight / 2 - lineWidth,
-					(int) (healthWidth * (health * 1.0 / initialHealth)), healthHeight);
 		}
 		Graphics2D g2d = (Graphics2D) g;
 		for (Rectangle r : rectsOnBar) {
