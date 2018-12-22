@@ -83,12 +83,12 @@ public class MyComponents extends JComponent {
 
 		// backButton = new JButton("Home");
 
-		backButton = new MyButton("Home", "Game Menu", 30, 40, new ActionListener() {
+		backButton = new MyButton("Level Menu", "Level Menu", 30, 40, new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				cardLayout.show(card, "Game Menu");
-				returnHome();
+				cardLayout.show(card, "Level Menu");
+				returnLevelMenu();
 			}
 		});
 
@@ -141,6 +141,13 @@ public class MyComponents extends JComponent {
 		selectedKey = null;
 		selectedMouse = null;
 	}
+	public void returnLevelMenu() {
+        model.reset();
+        stopTimer();
+        timer.stop();
+        selectedKey = null;
+        selectedMouse = null;
+        }
 
 	public void returnHome() {
 		model.reset();
