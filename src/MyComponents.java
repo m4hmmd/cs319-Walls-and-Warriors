@@ -670,26 +670,38 @@ public class MyComponents extends JComponent {
 			model.stopTimers();
 			SoundManager.gameWon();
 
-			Object[] options = { "Return Level Menu", "Next Level" };
-
-			int n = JOptionPane.showOptionDialog(null, "You have completed this level!", "Congratulations!!",
-					JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[1]);
-
 			if (GameView.lastCompletedLevel < levelNo)
 				GameView.lastCompletedLevel = levelNo;
+			if (gv.managers.length == GameView.lastCompletedLevel) {
 
-			gv.levelButtons[levelNo].setEnabled(true);
-			gv.levelButtons[levelNo].setIcon(null);
-			if (n == JOptionPane.YES_OPTION) {
-				cardLayout.show(card, "Level Menu");
-				model.reset();
-			} else if (n == JOptionPane.NO_OPTION) {
-				cardLayout.show(card, "Level " + (levelNo + 1));
-				model.reset();
+				Object[] options = { "Return Level Menu"};
+				int n = JOptionPane.showOptionDialog(null, "You have finished the game!", "Congratulations!",
+						JOptionPane.OK_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
+
+				if (n == JOptionPane.OK_OPTION) {
+					cardLayout.show(card, "Level Menu");
+					model.reset();
+				}
+				selectedKey = null;
+				selectedMouse = null;
+			} else {
+
+				Object[] options = { "Return Level Menu", "Next Level" };
+				int n = JOptionPane.showOptionDialog(null, "You have completed this level!", "Congratulations!",
+						JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[1]);
+
+				gv.levelButtons[levelNo].setEnabled(true);
+				gv.levelButtons[levelNo].setIcon(null);
+				if (n == JOptionPane.YES_OPTION) {
+					cardLayout.show(card, "Level Menu");
+					model.reset();
+				} else if (n == JOptionPane.NO_OPTION) {
+					cardLayout.show(card, "Level " + (levelNo + 1));
+					model.reset();
+				}
+				selectedKey = null;
+				selectedMouse = null;
 			}
-			selectedKey = null;
-			selectedMouse = null;
-
 			try {
 
 				Writer wr = new FileWriter("savedLevelNo.txt");
