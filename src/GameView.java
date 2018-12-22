@@ -200,10 +200,11 @@ public class GameView extends JFrame implements ActionListener {
 			 * ImageIcon(newimg)); Writer wr = new FileWriter("savedLevelNo.txt");
 			 * lastCompletedLevel = 0; wr.write(GameView.lastCompletedLevel + ""); // write
 			 * string wr.flush(); wr.close(); } catch (Exception ex) {
-			 * System.out.println(ex); } } } });
+			 * 
+.out.println(ex); } } } });
 			 */
-			MyButton loadGame = new MyButton("Load Game", "Level Menu", btnSizeL, btnSizeScaledL, this);
-			loadGame.addActionListener(new ActionListener() {
+			MyButton play = new MyButton("Play", "Level Menu", btnSizeL, btnSizeScaledL, this);
+			play.addActionListener(new ActionListener() {
 
 				@Override
 				public void actionPerformed(ActionEvent e) {
@@ -244,7 +245,7 @@ public class GameView extends JFrame implements ActionListener {
 			MyPanel gameMenu = new MyPanel("Game Menu", "src/img/img1.jpeg");
 
 			// gameMenu.addButton(play);
-			gameMenu.addButton(loadGame);
+			gameMenu.addButton(play);
 			gameMenu.addButton(settings);
 			gameMenu.addButton(howToPlay);
 			gameMenu.addButton(credits);
@@ -394,46 +395,7 @@ public class GameView extends JFrame implements ActionListener {
 				currentLevelIndex = i + 1;
 
 				// description of Levels
-				if (currentLevelIndex == 1) {
-					repaint();
-					Object[] options = { "Close" };
-					int n = JOptionPane.showOptionDialog(null, "Try to surround your soldiers with the walls",
-							"Level 1", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options,
-							options[0]);
-
-				}
-				if (currentLevelIndex == 2) {
-					repaint();
-					Object[] options = { "Close" };
-					int n1 = JOptionPane.showOptionDialog(null, "Be careful! Some enemies are moving", "Level 2",
-							JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
-					int n2 = JOptionPane.showOptionDialog(null, "Use chain for the lake", "Level 2",
-							JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
-					int n3 = JOptionPane.showOptionDialog(null,
-							"You cannot place wall or chain on edge of lake\n" + "However you can place wall next to forests but not inside!", "Level 2",
-							JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
-				}
-				if (currentLevelIndex == 3) {
-					repaint();
-//					Object[] options = { "Close" };
-//					int n = JOptionPane.showOptionDialog(null, "Description of game objects", "Level 3",
-//							JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
-
-				}
-				if (currentLevelIndex == 4) {
-					repaint();
-//					Object[] options = { "Close" };
-//					int n = JOptionPane.showOptionDialog(null, "Description of game objects", "Level 4",
-//							JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
-
-				}
-				if (currentLevelIndex == 5) {
-					repaint();
-//					Object[] options = { "Close" };
-//					int n = JOptionPane.showOptionDialog(null, "Description of game objects", "Level 5",
-//							JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
-
-				}
+				showDescription(currentLevelIndex);
 
 			}
 		}
@@ -554,5 +516,50 @@ public class GameView extends JFrame implements ActionListener {
 			} else
 				return false;
 		}
+	}
+
+	public void showDescription(int levelNo) {
+		if (levelNo == 1) {
+			repaint();
+			Object[] options = { "Close" };
+			int n = JOptionPane.showOptionDialog(null, "Try to surround your soldiers with the walls",
+					"Level 1", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options,
+					options[0]);
+
+		}
+		if (levelNo == 2) {
+			repaint();
+			Object[] options = { "Close" };
+			int n1 = JOptionPane.showOptionDialog(null, "Be careful! Some enemies are moving", "Level 2",
+					JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
+			int n2 = JOptionPane.showOptionDialog(null, "Use chain for the lake", "Level 2",
+					JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
+			int n3 = JOptionPane.showOptionDialog(null,
+					"You cannot place wall or chain on edge of lake\n" + "However you can place wall next to forests but not inside!", "Level 2",
+					JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
+		}
+		if (levelNo == 3) {
+			repaint();
+//			Object[] options = { "Close" };
+//			int n = JOptionPane.showOptionDialog(null, "Description of game objects", "Level 3",
+//					JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
+
+		}
+		if (levelNo == 4) {
+			repaint();
+//			Object[] options = { "Close" };
+//			int n = JOptionPane.showOptionDialog(null, "Description of game objects", "Level 4",
+//					JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
+
+		}
+		if (levelNo == 5) {
+			repaint();
+//			Object[] options = { "Close" };
+//			int n = JOptionPane.showOptionDialog(null, "Description of game objects", "Level 5",
+//					JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
+
+		}
+		
+		currentLevelIndex = levelNo;
 	}
 }
