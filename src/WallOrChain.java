@@ -37,6 +37,8 @@ public abstract class WallOrChain {
 	Area areaForSquare = null;
 	Image wallLine = null;
 	Image wallEdge = null;
+	Image chainLine = null;
+	Image chainEdge = null;
 
 	public WallOrChain(int x_Ind, int y_Ind, int[] xCoors, int[] yCoors, Color c, int index, int initialXShift,
 			int initialYShift, int squareHeight, int squareWidth, int mapHeight, int mapWidth) {
@@ -125,6 +127,8 @@ public abstract class WallOrChain {
 		try {
 			wallLine = ImageIO.read(new File("src/img/wall.png"));
 			wallEdge = ImageIO.read(new File("src/img/edge.png"));
+			chainLine = ImageIO.read(new File("src/img/chain.png"));
+			chainEdge = ImageIO.read(new File("src/img/chain-edge.png"));
 		} catch (IOException e) {}
 		
 		nearestRectToCenter = getNearestRectangleToCenter(squareWidth, squareHeight);
