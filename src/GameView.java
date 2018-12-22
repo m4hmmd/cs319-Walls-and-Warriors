@@ -1,563 +1,1021 @@
 import javax.imageio.ImageIO;
 import javax.swing.*;
 
-import javax.swing.table.*;
-import javax.swing.text.JTextComponent;
-
-//import com.sun.org.glassfish.gmbal.GmbalMBeanNOPImpl;
-
 import java.awt.*;
-import java.awt.event.*;
-import java.awt.image.BufferedImage;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionAdapter;
+import java.awt.event.MouseMotionListener;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Scanner;
 
-public class GameView extends JFrame implements ActionListener {
+@SuppressWarnings("serial")
+public class MyComponents extends JComponent {
 
-	SoundManager sm = new SoundManager();
-	private static int newKey;
-	private static int clicked = 0;
-	private boolean paused = false;
+	private Image mapTile;
 
-	static int lastCompletedLevel = 0;
-	int currentLevelIndex = 0;
+	public Model model;
+	private CardLayout cardLayout;
+	private JPanel card;
+	int levelNo;
+	WallOrChain selectedMouse;
+	WallOrChain selectedKey;
 
-	int btnSizeL = 40, btnSizeScaledL = 45, btnSizeM = 30, btnSizeScaledM = 35, btnSizeS = 25, btnSizeScaledS = 30;
+	JButton backButton;
+	JButton pauseButton;
+	JButton hintButton;
+	private int pWidth = 0;
+	private int pHeight = 0;
+	GameView gv;
+	Timer t;
+	Timer timer = new Timer(500, null);
 
-	CardLayout cardLayout;
-	JPanel card = new JPanel();
-	GameManager managers[] = new GameManager[5];
-	MyButton[] levelButtons = { new MyButton("Level 1", "Level 1", btnSizeL, btnSizeScaledL, this),
-			new MyButton("Level 2", "Level 2", btnSizeL, btnSizeScaledL, this),
-			new MyButton("Level 3", "Level 3", btnSizeL, btnSizeScaledL, this),
-			new MyButton("Level 4", "Level 4", btnSizeL, btnSizeScaledL, this),
-			new MyButton("Level 5", "Level 5", btnSizeL, btnSizeScaledL, this) };
-	MyButton music = new MyButton("Music: " + (SoundManager.playing ? "ON" : "OFF"), "Settings", btnSizeM,
-			btnSizeScaledM, this);
-	MyButton sound = new MyButton("Sound: " + (SoundManager.sound ? "ON" : "OFF"), "Settings", btnSizeM, btnSizeScaledM,
-			this);
-	MyButton setRotationAnticlockwise = new MyButton(
-			"Left Rotation: \t" + KeyEvent.getKeyText(MyComponents.wallLeftRotation), "Settings", btnSizeM,
-			btnSizeScaledM, this);
-	MyButton setRotationClockwise = new MyButton(
-			"Right Rotation: \t" + KeyEvent.getKeyText(MyComponents.wallRightRotation), "Settings", btnSizeM,
-			btnSizeScaledM, this);
-	MyButton setDrop = new MyButton("Wall Drop: \t" + KeyEvent.getKeyText(MyComponents.wallDrop), "Settings", btnSizeM,
-			btnSizeScaledM, this);
-	MyButton setPlace = new MyButton("Wall Place: \t" + KeyEvent.getKeyText(MyComponents.wallPlace), "Settings",
-			btnSizeM, btnSizeScaledM, this);
-	MyButton setPrevLocation = new MyButton(
-			"Wall Previous Location: \t" + KeyEvent.getKeyText(MyComponents.wallPrevLocation), "Settings", btnSizeM,
-			btnSizeScaledM, this);
+	protected static int wallLeftRotation = KeyEvent.VK_A;
+	protected static int wallRightRotation = KeyEvent.VK_D;
+	protected static int wallDrop = KeyEvent.VK_Q;
+	protected static int wallPlace = KeyEvent.VK_ENTER;
+	protected static int wallPrevLocation = KeyEvent.VK_Z;
 
-	boolean listenKey;
+	public MyComponents(GameView gv, Model model, CardLayout cardLayout, JPanel card, int levelNo) {
+		try {
+			File file = new File("src/img/grass.png");
+			mapTile = ImageIO.read(file);
+		} catch (Exception e) {
+			System.out.println("Couldn't find file: " + e);
+		}
+		this.model = model;
+		this.cardLayout = cardLayout;
+		this.card = card;
+		this.levelNo = levelNo;
+		this.gv = gv;
+		t = new Timer(100, new ActionListener() {
 
-	public GameView() throws IOException {
-		Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
-			public void run() {
-				try {
-					saveGame();
-				} catch (IOException e) {
-					e.printStackTrace();
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if (model.update())
+					repaint();
+				else {
+					pause();
+					repaint();
+					Object[] options = { "Return Level Menu", "Restart" };
+
+					int n = JOptionPane.showOptionDialog(null, "A Wall was collapsed", "Game Over",
+							JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[1]);
+
+					if (n == JOptionPane.YES_OPTION) {
+						cardLayout.show(card, "Level Menu");
+						cardLayout.show(card, "Game Level Menu");
+						model.reset();
+					} else if (n == JOptionPane.NO_OPTION) {
+						restart();
+						requestFocusInWindow();
+					}
 				}
 			}
-		}));
-		card.setLayout(cardLayout = new CardLayout());
+		});
 
-		setMinimumSize(new Dimension(1024, 576));
-		for (int i = 0; i < managers.length; i++) {
-			managers[i] = new GameManager(this, i + 1, cardLayout, card);
-		}
+		// backButton = new JButton("Home");
 
-		createPanels();
+		// backButton = new JButton("Home");
 
-		for (int i = 1; i < levelButtons.length; i++) {
-			levelButtons[i].setEnabled(false);
-			try {
-				Image img = ImageIO.read(new File("src/img/locked.png"));
-				Image newimg = img.getScaledInstance(50, 50, Image.SCALE_SMOOTH); // scale it the smooth way
-				levelButtons[i].setIcon(new ImageIcon(newimg));
-			} catch (Exception ex) {
-				System.out.println(ex);
+		backButton = new MyButton("Level Menu", "Level Menu", 30, 40, new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				cardLayout.show(card, "Level Menu");
+				returnLevelMenu();
 			}
-		}
+		});
 
-		cardLayout.show(card, "Game Menu");
-		add(card);
-		loadGame();
-		music.setText("Music: " + (SoundManager.playing ? "ON" : "OFF"));
-		sound.setText("Sound: " + (SoundManager.sound ? "ON" : "OFF"));
-		setRotationAnticlockwise.setText("Left Rotation: \t" + KeyEvent.getKeyText(MyComponents.wallLeftRotation));
-		setRotationClockwise.setText("Right Rotation: \t" + KeyEvent.getKeyText(MyComponents.wallRightRotation));
-		setDrop.setText("Wall Drop: \t" + KeyEvent.getKeyText(MyComponents.wallDrop));
-		setPlace.setText("Wall Place: \t" + KeyEvent.getKeyText(MyComponents.wallPlace));
-		setPrevLocation.setText("Wall Previous Location: \t" + KeyEvent.getKeyText(MyComponents.wallPrevLocation));
-		SoundManager.start();
+		hintButton = new MyButton("Hint", "Level " + levelNo, 30, 40, new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				pause();
+				repaint();
+
+				model.reset();
+				// random 1
+				int randomWallIndex = (int) (Math.random() * model.getWalls().length);
+
+				System.out.println("Random wall index: " + randomWallIndex);
+				int hintXCoor = hintX_Y_Turn(randomWallIndex)[0];
+				int hintYCoor = hintX_Y_Turn(randomWallIndex)[1];
+				int hintTurn = hintX_Y_Turn(randomWallIndex)[2];
+				model.getWalls()[randomWallIndex].appear();
+				model.getWalls()[randomWallIndex].setTurn(hintTurn);
+				model.getWalls()[randomWallIndex].setIndexes(hintXCoor, hintYCoor);
+				model.getWalls()[randomWallIndex].setThePositionAgainByIndex(model.initialXShift, model.initialYShift,
+						model.squareHeight, model.squareWidth);
+				model.addToLines(model.getWalls()[randomWallIndex]);
+				model.getWalls()[randomWallIndex].setRectangles();
+				model.getWalls()[randomWallIndex].setTheRectanglePoints(model.squareHeight, model.squareWidth,
+						model.initialYShift);
+				resume();
+				repaint();
+				// model.getWalls()[2].setThePositionAgainByIndex();
+				// hintButton.setEnabled(false);
+
+			}
+		});
+
+		pauseButton = new MyButton("Pause", "Level " + levelNo, 30, 40, new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				pause();
+				repaint();
+				cardLayout.show(card, "Pause");
+			}
+		});
+
+		// back = new MyButton("Back", "Game Menu", btnSizeS, btnSizeScaledS,this);
+
+		// backButton.setForeground(Color.WHITE);
+		// backButton.setFont(new Font("Arial", Font.PLAIN, 30));
+		// backButton.setOpaque(false);
+		// backButton.setContentAreaFilled(false);
+		// backButton.setBorderPainted(false);
+		// // backButton.setHorizontalAlignment(SwingConstants.LEFT);
+		//
+
+		// backButton.addActionListener(new ActionListener() {
+		//
+		// @Override
+		// public void actionPerformed(ActionEvent e) {
+		// cardLayout.show(card, "Game Menu");
+		// model.reset();
+		// selectedKey = null;
+		// selectedMouse = null;
+		// timer.stop();
+		// }
+		// });
+
+		add(hintButton);
+		add(backButton);
+		add(pauseButton);
+		Listeners listener = new Listeners();
+		requestFocusInWindow();
+		addKeyListener(listener);
+		addMouseListener(listener);
+		addMouseMotionListener(listener);
+		setMinimumSize(new Dimension(300, model.getBarShift() + 50));
+		setFocusable(true);
 	}
 
-	private void createPanels() throws IOException {
-		createGameMenu();
-		createPauseMenu();
-		createSettingsMenu();
-		createLevelMenu();
-		createHowToPanel();
-		createCreditsPanel();
-		createLevelPanels();
-	}
+	public int[] hintX_Y_Turn(int wallNumber) {
 
-	private void createLevelPanels() {
-		card.add("Level 1", managers[0].getPanel());
-		card.add("Level 2", managers[1].getPanel());
-		card.add("Level 3", managers[2].getPanel());
-		card.add("Level 4", managers[3].getPanel());
-		card.add("Level 5", managers[4].getPanel());
-	}
-
-	private void createCreditsPanel() throws IOException {
-
-		MyPanel creditsPanel = new MyPanel("Credits", "src/img/img1.jpeg");
-		JLabel credits = new JLabel(
-				"Creators:\nAhmet Malal\nHuseyn Allahyarov\nIbrahim Mammadov\n Mahammad Shirinov\n Samet Demir");
-		credits.setFont(new Font("Times", 1, 30));
-		credits.setForeground(Color.WHITE);
-		credits.setBounds(0, 0, getWidth(), getHeight());
-		credits.setVisible(true);
-		creditsPanel.addLabel(new JLabel("Contributors:"));
-		creditsPanel.addLabel(new JLabel(""));
-		creditsPanel.addLabel(new JLabel("Ahmet Malal"));
-		creditsPanel.addLabel(new JLabel("Huseyn Allahyarov"));
-		creditsPanel.addLabel(new JLabel("Ibrahim Mammadov"));
-		creditsPanel.addLabel(new JLabel("Mahammad Shirinov"));
-		creditsPanel.addLabel(new JLabel("Samet Demir"));
-
-		MyButton back = new MyButton("Back", "Game Menu", btnSizeS, btnSizeScaledS, this);
-		creditsPanel.addBackButton(back);
-
-		card.add("Credits", creditsPanel);
-	}
-
-	private void createHowToPanel() throws IOException {
-		MyPanel howToPanel = new MyPanel("How To Play", "src/img/img1.jpeg");
-
-		JLabel howToPlay = new JLabel(
-				"<html><center><h1>HOW TO PLAY</h1></center><br>" + "<u><h2>Description of the Game</h2></u><br>"
-						+ "Walls & Warriors is a board game played with warrior figures <br>"
-						+ "and walls placed under specific rules. The goal of this game place the <br>"
-						+ "four walls on the game board so that all the blue knights are inside the <br>"
-						+ "enclosure and all the red knights are on the outside to defend the castle <br>"
-						+ "to be left inside the walls.<br><br>" + "<u><h2>Gameplay</h2></u><br>"
-						+ "Given a board with red and blue soldiers and, on higher levels, lakes and <br>"
-						+ "special soldiers, the player needs to select one of the provided wall shapes, <br>"
-						+ "rotate it as needed and put onto the board, so as to complete the castle <br>"
-						+ "with all blue knights inside and red ones outside.</html>");
-		howToPlay.setFont(new Font("Times", 1, 30));
-		howToPlay.setForeground(Color.WHITE);
-		howToPlay.setBounds(0, 0, getWidth(), getHeight());
-		howToPlay.setVisible(true);
-		howToPanel.addOnlyOneLabel(howToPlay);
-
-		MyButton back = new MyButton("Back", "Game Menu", btnSizeS, btnSizeScaledS, this);
-
-		// back.setPreferredSize(new Dimension(20, 20));
-
-		howToPanel.addBackButton(back);
-
-		card.add("How To Play", howToPanel);
-
-	}
-
-	private void createLevelMenu() {
+		int[] xYturn = new int[3];
+		FileReader f = null;
 		try {
-
-			MyButton back = new MyButton("Back", "Game Menu", btnSizeS, btnSizeScaledS, this);
-			MyPanel levelMenu = new MyPanel("Game Menu", "src/img/img1.jpeg");
-
-			for (int i = 0; i < levelButtons.length; i++) {
-				levelMenu.addButton(levelButtons[i]);
-			}
-
-			levelMenu.addBackButton(back);
-			card.add("Level Menu", levelMenu);
-
-		} catch (IOException e) {
+			f = new FileReader("solution.txt");
+		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
-	}
-
-	private void createGameMenu() {
-		try {
-			/*
-			MyButton play = new MyButton("New Game", "Level Menu", btnSizeL, btnSizeScaledL, this);
-			play.addActionListener(new ActionListener() {
-				@Override
-				public void actionPerformed(ActionEvent e) {
-
-					for (int i = 1; i < levelButtons.length; i++) {
-						levelButtons[i].setEnabled(false);
-						try {
-							Image img = ImageIO.read(new File("src/img/locked.png"));
-							Image newimg = img.getScaledInstance(50, 50, Image.SCALE_SMOOTH); // scale it the smooth way
-							levelButtons[i].setIcon(new ImageIcon(newimg));
-							Writer wr = new FileWriter("savedLevelNo.txt");
-							lastCompletedLevel = 0;
-							wr.write(GameView.lastCompletedLevel + ""); // write string
-							wr.flush();
-							wr.close();
-						} catch (Exception ex) {
-							System.out.println(ex);
+		Scanner scan = new Scanner(f);
+		scan.useDelimiter(", *");
+		int x, y, t;
+		String level, wall;
+		scan.nextLine();
+		while (scan.hasNext()) {
+			if (scan.hasNext()) {
+				level = scan.next();
+				if (level.equalsIgnoreCase("Level " + levelNo)) {
+					while (scan.hasNext()) {
+						wall = scan.next();
+						int temp = wallNumber + 1;
+						if (level.equalsIgnoreCase("Level " + levelNo) && wall.equalsIgnoreCase("Wall " + temp)) {
+							xYturn[0] = Integer.parseInt(scan.next());
+							xYturn[1] = Integer.parseInt(scan.next());
+							xYturn[2] = Integer.parseInt(scan.next());
+							System.out.println(level + " Wall:" + temp + " x:" + xYturn[0] + " y:" + xYturn[1]
+									+ " Turn:" + xYturn[2]);
+							scan.close();
+							return xYturn;
+						} else {
+							scan.nextLine();
+							level = scan.next();
 						}
+
 					}
-				}
-			});
-			*/
-			MyButton loadGame = new MyButton("Load Game", "Level Menu", btnSizeL, btnSizeScaledL, this);
-			loadGame.addActionListener(new ActionListener() {
-
-				@Override
-				public void actionPerformed(ActionEvent e) {
-					int last = 0;
-					try {
-						// code loads the game
-						File f = new File("savedLevelNo.txt");
-						Scanner s = new Scanner(f);
-						last = (Integer) s.nextInt();
-
-					} catch (IOException e1) {
-						e1.printStackTrace();
-					}
-
-					for (int i = 0; i < last + 1; i++) {
-						levelButtons[i].setIcon(null);
-						levelButtons[i].setEnabled(true);
-					}
-
-					for (int i = last + 1; i < levelButtons.length; i++) {
-						levelButtons[i].setEnabled(false);
-						try {
-							Image img = ImageIO.read(new File("src/img/locked.png"));
-							Image newimg = img.getScaledInstance(50, 50, Image.SCALE_SMOOTH); // scale it the smooth way
-							levelButtons[i].setIcon(new ImageIcon(newimg));
-						} catch (Exception ex) {
-							System.out.println(ex);
-						}
-					}
-				}
-			});
-
-			MyButton settings = new MyButton("Settings", "Settings", btnSizeL, btnSizeScaledL, this);
-			MyButton howToPlay = new MyButton("How To Play", "How To Play", btnSizeL, btnSizeScaledL, this);
-			MyButton credits = new MyButton("Credits", "Credits", btnSizeL, btnSizeScaledL, this);
-			MyButton quit = new MyButton("Quit", "Quit", btnSizeL, btnSizeScaledL, this);
-
-			MyPanel gameMenu = new MyPanel("Game Menu", "src/img/img1.jpeg");
-
-			//gameMenu.addButton(play);
-			gameMenu.addButton(loadGame);
-			gameMenu.addButton(settings);
-			gameMenu.addButton(howToPlay);
-			gameMenu.addButton(credits);
-			gameMenu.addButton(quit);
-
-			card.add("Game Menu", gameMenu);
-		} catch (Exception e) {
-
+				} else
+					scan.nextLine();
+			} else {
+				break;
+			}
+			// scan.nextLine();
 		}
+		scan.close();
+		System.out.println("Level :" + levelNo + " Wall:" + wallNumber + " x:" + xYturn[0] + " y:" + xYturn[1]
+				+ " Turn:" + xYturn[2]);
+		System.out.println("ERROR IN hintX_Y_Turn");
+		return null;
 	}
 
-	public void saveGame() throws IOException {
-		// code saves the game
-		FileOutputStream fileOut = new FileOutputStream("game.txt");
-		ObjectOutputStream out = new ObjectOutputStream(fileOut);
-		out.writeObject(SoundManager.playing);
-		out.writeObject(SoundManager.sound);
-		out.writeObject(MyComponents.wallDrop);
-		out.writeObject(MyComponents.wallLeftRotation);
-		out.writeObject(MyComponents.wallPlace);
-		out.writeObject(MyComponents.wallPrevLocation);
-		out.writeObject(MyComponents.wallRightRotation);
-		out.close();
+	public void restart() {
+		model.reset();
+		t.restart();
+		selectedKey = null;
+		selectedMouse = null;
 	}
 
-	public void loadGame() {
-		try {
-			FileInputStream fileIn = new FileInputStream("game.txt"); // this codes take the inforations from txt file
-			ObjectInputStream in = new ObjectInputStream(fileIn);
-			SoundManager.playing = ((Boolean) in.readObject());
-			SoundManager.sound = ((Boolean) in.readObject());
-			MyComponents.wallDrop = ((Integer) in.readObject());
-			MyComponents.wallLeftRotation = ((Integer) in.readObject());
-			MyComponents.wallPlace = ((Integer) in.readObject());
-			MyComponents.wallPrevLocation = ((Integer) in.readObject());
-			MyComponents.wallRightRotation = ((Integer) in.readObject());
-			in.close();
-			fileIn.close();
-		} catch (ClassNotFoundException e1) {
-			return;
-		} catch (IOException e1) {
-			return;
-		}
+	public void returnLevelMenu() {
+		model.reset();
+		stopTimer();
+		timer.stop();
+		selectedKey = null;
+		selectedMouse = null;
 	}
 
-	private void createSettingsMenu() throws IOException {
-		MyPanel settingsMenu = new MyPanel("Settings", "src/img/img1.jpeg");
-
-		MyButton back = new MyButton("Back", "Game Menu", btnSizeS, btnSizeScaledS, this);
-
-		setRotationAnticlockwise.addActionListener(new CustomizeRotationAnticlockwiseButton());
-		setRotationClockwise.addActionListener(new CustomizeRotationClockwiseButton());
-		setDrop.addActionListener(new CustomizeDropButton());
-		setPlace.addActionListener(new CustomizePlaceButton());
-		setPrevLocation.addActionListener(new CustomizePrevLocationButton());
-
-		setRotationAnticlockwise.addKeyListener(new customizeKeys());
-		setRotationClockwise.addKeyListener(new customizeKeys());
-		setDrop.addKeyListener(new customizeKeys());
-		setPlace.addKeyListener(new customizeKeys());
-		setPrevLocation.addKeyListener(new customizeKeys());
-
-		music.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				SoundManager.switchPlay();
-				music.setText("Music: " + (SoundManager.playing ? "ON" : "OFF"));
-			}
-		});
-
-
-		sound.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				SoundManager.switchSound();
-				sound.setText("Sound: " + (SoundManager.sound ? "ON" : "OFF"));
-			}
-		});
-
-		settingsMenu.addButton(music);
-		settingsMenu.addButton(sound);
-		settingsMenu.addButton(setRotationAnticlockwise);
-		settingsMenu.addButton(setRotationClockwise);
-		settingsMenu.addButton(setDrop);
-		settingsMenu.addButton(setPlace);
-		settingsMenu.addButton(setPrevLocation);
-
-		settingsMenu.addBackButton(back);
-
-		card.add("Settings", settingsMenu);
+	public void startTimer() {
+		t.start();
 	}
 
-	private void createPauseMenu() throws IOException {
-		MyPanel pauseMenu = new MyPanel("Pause", "src/img/img1.jpeg");
+	public void stopTimer() {
+		t.stop();
+	}
 
-		MyButton restart = new MyButton("Restart", "Level " + currentLevelIndex, btnSizeM, btnSizeScaledM, this);
-		MyButton resume = new MyButton("Resume", "Level " + currentLevelIndex, btnSizeM, btnSizeScaledM, this);
-		MyButton returnHome = new MyButton("Return Home", "Game Menu", btnSizeM, btnSizeScaledM, this);
+	public void pause() {
+		stopTimer();
+		model.pause();
+	}
 
-		restart.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				managers[currentLevelIndex - 1].reset();
-				managers[currentLevelIndex - 1].startTimers();
-				cardLayout.show(card, "Level " + currentLevelIndex);
-				managers[currentLevelIndex - 1].getPanel().requestFocusInWindow();
-			}
-		});
-		resume.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				managers[currentLevelIndex - 1].startTimers();
-				cardLayout.show(card, "Level " + currentLevelIndex);
-				managers[currentLevelIndex - 1].getPanel().requestFocusInWindow();
-			}
-		});
-		returnHome.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				cardLayout.show(card, "Game Menu");
-				managers[currentLevelIndex - 1].reset();
-			}
-		});
-
-		pauseMenu.addButton(resume);
-		pauseMenu.addButton(restart);
-		pauseMenu.addButton(returnHome);
-
-		card.add("Pause", pauseMenu);
+	protected void resume() {
+		startTimer();
+		model.resume();
 	}
 
 	@Override
-	public void actionPerformed(ActionEvent e) {
-		if (((MyButton) e.getSource()).getNextPanelName().equals("Quit")) {
-			System.exit(0);
-		}
-		cardLayout.show(card, ((MyButton) e.getSource()).getNextPanelName());
+	public void paintComponent(Graphics g) {
+		super.paintComponent(g);
 
-		for (int i = 0; i < managers.length; i++) {
-			if (((MyButton) e.getSource()).getNextPanelName().equals("Level " + (i + 1))) {
-				managers[i].getPanel().requestFocusInWindow();
-				managers[i].startTimers();
-				currentLevelIndex = i + 1;
-
-				// description of Levels
-				if(currentLevelIndex==1) {
-					repaint();
-					Object[] options = {"Close"};
-					int n = JOptionPane.showOptionDialog(null, "Description of game objects", "Level 1",
-							JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
-
-				}
-				if(currentLevelIndex==2) {
-					repaint();
-					Object[] options = {"Close"};
-					int n = JOptionPane.showOptionDialog(null, "Description of game objects", "Level 2",
-							JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
-
-				}
-				if(currentLevelIndex==3) {
-					repaint();
-					Object[] options = {"Close"};
-					int n = JOptionPane.showOptionDialog(null, "Description of game objects", "Level 3",
-							JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
-
-				}
-				if(currentLevelIndex==4) {
-					repaint();
-					Object[] options = {"Close"};
-					int n = JOptionPane.showOptionDialog(null, "Description of game objects", "Level 4",
-							JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
-
-				}if(currentLevelIndex==5) {
-					repaint();
-					Object[] options = {"Close"};
-					int n = JOptionPane.showOptionDialog(null, "Description of game objects", "Level 5",
-							JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
-
-				}
-
-
-
-			}
-		}
-	}
-
-	public class CustomizeRotationAnticlockwiseButton implements ActionListener {
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			clicked = 1;
-			listenKey = true;
-		}
-	}
-
-	public class CustomizeRotationClockwiseButton implements ActionListener {
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			clicked = 2;
-			listenKey = true;
-		}
-	}
-
-	public class CustomizeDropButton implements ActionListener {
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			clicked = 3;
-			listenKey = true;
-		}
-	}
-
-	public class CustomizePlaceButton implements ActionListener {
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			clicked = 4;
-			listenKey = true;
-		}
-	}
-
-	public class CustomizePrevLocationButton implements ActionListener {
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			clicked = 5;
-			listenKey = true;
-		}
-	}
-
-	public void run() throws IOException {
-		setVisible(true);
-		setBounds(100, 100, 800, 500);
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-	}
-
-	public static void main(String[] args) throws IOException {
 		try {
-			GameView gameView = new GameView();
-			gameView.run();
+			g.drawImage(ImageIO.read(new File("src/img/img0.jpeg")), 0, 0, getWidth(), getHeight(), null);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		Graphics2D g2 = (Graphics2D) g;
+		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+		g2.setPaint(Color.gray);
 
+		if (pWidth != getWidth() || pHeight != getHeight()) {
+			model.setValues(getWidth(), getHeight());
+			model.centerTheGame(getWidth(), getHeight());
+			model.rearrangeWalls();
+		}
+
+		int fontSize = 20;
+		g.setFont(new Font("TimesRoman", Font.BOLD, fontSize));
+		g.setColor(Color.WHITE.darker());
+		g.drawString("LEVEL " + levelNo, getWidth() / 2 - 45, 50);
+
+		drawGrid(g);
+		drawGameObjects(g);
+
+		drawWalls(g);
+
+		backButton.setBounds(0, (int) (getHeight() / 10 * 0.5), getWidth() / 5, getHeight() / 10);
+		pauseButton.setBounds((int) (getWidth() / 10 * 7.5), (int) (getHeight() / 10 * 0.5), getWidth() / 4,
+				getHeight() / 10);
+		hintButton.setBounds(0, (int) (getHeight() / 10 * 0.5) + getHeight() / 10, getWidth() / 5, getHeight() / 10);
+		pWidth = getWidth();
+		pHeight = getHeight();
 	}
 
-	public class customizeKeys implements KeyListener {
+	private void drawGameObjects(Graphics g) {
+		for (GameObject[] gm : model.getMap()) {
+			for (GameObject gmo : gm) {
+				if (gmo != null)
+					gmo.draw(g, model.getInitialXShift(), model.getInitialYShift(), model.getSquareHeight(),
+							model.getSquareWidth());
+			}
+		}
+	}
+
+	void drawGrid(Graphics g) {
+		// g.setColor(Color.gray);
+		g.setColor(new Color(102, 59, 22));
+		g.fillRect(model.initialXShift + model.squareWidth - model.lineWidth / 2,
+				model.initialYShift - model.lineWidth / 2, model.squareWidth * (model.mapWidth - 2) + model.lineWidth,
+				model.squareHeight * model.mapLength + model.lineWidth);
+		g.fillRect(model.initialXShift - model.lineWidth / 2,
+				model.initialYShift + model.squareHeight - model.lineWidth / 2,
+				model.squareWidth * model.mapWidth + model.lineWidth,
+				model.squareHeight * (model.mapLength - 2) + model.lineWidth);
+
+		for (int i = 0; i < model.mapWidth; i++) {
+			for (int j = 0; j < model.mapLength; j++) {
+				if (i == 0 && j == 0) {
+				} else if (i == model.mapWidth - 1 && j == 0) {
+				} else if (i == 0 && j == model.mapLength - 1) {
+				} else if (i == model.mapWidth - 1 && j == model.mapLength - 1) {
+				} else {
+					// g.setColor(Color.gray.brighter());
+					// g.fillRect(model.initialXShift + model.squareWidth * i + model.lineWidth / 2,
+					// model.initialYShift + model.squareHeight * j + model.lineWidth / 2,
+					// model.squareWidth - model.lineWidth + 1, model.squareHeight - model.lineWidth
+					// + 1);
+					float alpha = 0.7f;
+					Graphics2D g2d = (Graphics2D) g;
+					AlphaComposite acomp = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, alpha);
+					g2d.setComposite(acomp);
+					if (mapTile != null)
+						g2d.drawImage(mapTile, model.initialXShift + model.squareWidth * i,
+								model.initialYShift + model.squareHeight * j, model.squareWidth + 1,
+								model.squareHeight + 1, null);
+
+					alpha = 1f;
+					acomp = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, alpha);
+					g2d.setComposite(acomp);
+				}
+			}
+		}
+	}
+
+	void drawSoldiers(Graphics g) {
+		for (int i = 0; i < model.getSoldiers().size(); i++) {
+			model.getSoldiers().get(i).draw(g, model.getInitialXShift(), model.getInitialYShift(),
+					model.getSquareHeight(), model.getSquareWidth());
+		}
+	}
+
+	void drawWalls(Graphics g) {
+		for (int i = 0; i < model.getWalls().length; i++) {
+			if (selectedMouse != model.getWalls()[i] && selectedKey != model.getWalls()[i])
+				model.getWalls()[i].draw(g, model.getInitialXShift(), model.getInitialYShift(), model.getSquareHeight(),
+						model.getSquareWidth(), 0);
+		}
+		if (selectedMouse != null) {
+			selectedMouse.draw(g, model.getInitialXShift(), model.getInitialYShift(), model.getSquareHeight(),
+					model.getSquareWidth(), 0);
+		}
+		if (selectedKey != null) {
+			selectedKey.draw(g, model.getInitialXShift(), model.getInitialYShift(), model.getSquareHeight(),
+					model.getSquareWidth(), -model.getSquareHeight() / 6);
+		}
+	}
+
+	class Listeners implements MouseListener, MouseMotionListener, KeyListener {
+
+		int indexOfGreenSquare;
+		int wallStartX_KEY;
+		int wallStartY_KEY;
+		int wallStartXInd_KEY;
+		int wallStartYInd_KEY;
+		int wallStartX_MOUSE;
+		int wallStartY_MOUSE;
+		int wallStartXInd_MOUSE;
+		int wallStartYInd_MOUSE;
+		int turnStartKey;
+		int turnStartMouse;
+		int clickedX;
+		int clickedY;
+		boolean wasInvisible_KEY;
+		boolean wasInvisible_MOUSE;
+
+		public void mouseClicked(MouseEvent e) {
+			int i = 0;
+			boolean emptyPlace = true;
+			for (WallOrChain wall : model.getWalls()) {
+				Rectangle r = wall.wallContainer;
+				if (r.contains(e.getX(), e.getY()) && !model.getWalls()[i].visible) {
+					if (SwingUtilities.isLeftMouseButton(e))
+						model.getWalls()[i].turnLeft();
+					else if (SwingUtilities.isRightMouseButton(e))
+						model.getWalls()[i].turnRight();
+					model.getWalls()[i].setRectangles();
+					emptyPlace = false;
+				}
+				i++;
+			}
+			if (SwingUtilities.isRightMouseButton(e)) {
+				return;
+			}
+			if (SwingUtilities.isLeftMouseButton(e)) {
+				for (WallOrChain w : model.getWalls()) {
+					if (w.visible && w.contains(e.getX(), e.getY())) {
+						if (selectedKey != null) {
+							placeTheWall(selectedKey);
+						}
+						if (selectedKey != w) {
+							selectedKey = w;
+							model.removeFromLines(selectedKey);
+							wallStartX_KEY = selectedKey.xCoor;
+							wallStartY_KEY = selectedKey.yCoor;
+							wallStartXInd_KEY = selectedKey.xInd;
+							wallStartYInd_KEY = selectedKey.yInd;
+							turnStartKey = selectedKey.turn;
+						} else
+							selectedKey = null;
+						emptyPlace = false;
+						break;
+					}
+				}
+			}
+			if (emptyPlace) {
+				placeTheWall(selectedKey);
+				selectedKey = null;
+			}
+
+			repaint();
+		}
+
+		public void mousePressed(MouseEvent e) {
+			if (SwingUtilities.isRightMouseButton(e)) {
+				if (selectedMouse != null) {
+					selectedMouse.turnLeft();
+					selectedMouse.xCoor = (int) (wallStartX_MOUSE + e.getX() - clickedX
+							- selectedMouse.centerX * model.getSquareWidth());
+					selectedMouse.yCoor = (int) (wallStartY_MOUSE + e.getY() - clickedY
+							- selectedMouse.centerY * model.getSquareHeight());
+
+					setColor(selectedMouse);
+				}
+				return;
+			} else {
+				clickedX = e.getX();
+				clickedY = e.getY();
+				boolean isWall = false;
+				for (WallOrChain w : model.getWalls()) {
+					if (!w.collapsed) {
+						if (w != selectedKey && w.visible && w.contains(e.getX(), e.getY())) {
+							selectedMouse = w;
+							model.removeFromLines(selectedMouse);
+							wallStartX_MOUSE = (int) (e.getX());
+							wallStartY_MOUSE = (int) (e.getY());
+							wallStartXInd_MOUSE = selectedMouse.xInd;
+							wallStartYInd_MOUSE = selectedMouse.yInd;
+							turnStartMouse = selectedMouse.turn;
+							isWall = true;
+							break;
+						}
+
+						else if (w == selectedKey && w.visible && w.contains(e.getX(), e.getY())) {
+							selectedMouse = w;
+							selectedKey = null;
+							wallStartX_MOUSE = selectedMouse.xCoor;
+							wallStartY_MOUSE = selectedMouse.yCoor;
+							wallStartXInd_MOUSE = wallStartXInd_KEY;
+							wallStartYInd_MOUSE = wallStartYInd_KEY;
+							turnStartMouse = selectedMouse.turn;
+							isWall = true;
+							break;
+						}
+					}
+				}
+
+				if (!isWall) {
+					for (int i = 0; i < model.getWalls().length; i++) {
+
+						if (!model.getWalls()[i].collapsed) {
+							if (model.getWalls()[i].wallContainer.contains(clickedX, clickedY)
+									&& !model.getWalls()[i].visible) {
+								selectedMouse = model.getWalls()[i];
+								indexOfGreenSquare = i;
+								wallStartX_MOUSE = (int) model.getWalls()[i].wallContainer.getCenterX();
+								wallStartY_MOUSE = (int) model.getWalls()[i].wallContainer.getCenterY();
+								wasInvisible_MOUSE = true;
+							}
+						}
+					}
+				}
+			}
+			repaint();
+		}
+
+		@Override
+		public void mouseDragged(MouseEvent e) {
+			if (SwingUtilities.isRightMouseButton(e)) {
+				return;
+			}
+			if (selectedMouse != null) {
+				if (!selectedMouse.visible)
+					selectedMouse.appear();
+				selectedMouse.xCoor = (int) (wallStartX_MOUSE + e.getX() - clickedX
+						- selectedMouse.centerX * model.getSquareWidth());
+				selectedMouse.yCoor = (int) (wallStartY_MOUSE + e.getY() - clickedY
+						- selectedMouse.centerY * model.getSquareHeight());
+				setColor(selectedMouse);
+			}
+			repaint();
+		}
+
+		private void setColor(WallOrChain w) {
+
+			w.setThePositionAgain(model.initialXShift, model.initialYShift, model.squareHeight, model.squareWidth);
+			if (model.outOfScreen(w)) {
+				w.setColor(Color.BLACK);
+			} else if (!model.onAvailablePlace(w)) {
+				w.setColor(Color.RED);
+			} else {
+				w.setColorToOriginal();
+			}
+
+		}
+
+		public void mouseReleased(MouseEvent e) {
+			if (SwingUtilities.isRightMouseButton(e)) {
+				return;
+			}
+			// if (selectedMouse != null) {
+			// selectedMouse.setColorToOriginal();
+			// selectedMouse.setThePositionAgain(model.getInitialXShift(),
+			// model.getInitialYShift(),
+			// model.getSquareHeight(), model.getSquareWidth());
+			//
+			// if (model.outOfScreen(selectedMouse)) {
+			// selectedMouse.remove();
+			// selectedMouse.setRectangles();
+			// } else {
+			// if (!model.onAvailablePlace(selectedMouse)) {
+			// if (wasInvisible_MOUSE) {
+			// selectedMouse.remove();
+			// selectedMouse.setRectangles();
+			//
+			// } else {
+			// if (model.isAvailablePlaceFor(selectedMouse, wallStartXInd_MOUSE,
+			// wallStartYInd_MOUSE)) {
+			// selectedMouse.xCoor = wallStartX_MOUSE;
+			// selectedMouse.yCoor = wallStartY_MOUSE;
+			// selectedMouse.setThePositionAgain(model.getInitialXShift(),
+			// model.getInitialYShift(),
+			// model.getSquareHeight(), model.getSquareWidth());
+			// model.addToLines(selectedMouse);
+			// } else {
+			// selectedMouse.remove();
+			// }
+			// }
+			//
+			// } else {
+			// selectedMouse.setThePositionAgain(model.getInitialXShift(),
+			// model.getInitialYShift(),
+			// model.getSquareHeight(), model.getSquareWidth());
+			// model.addToLines(selectedMouse);
+			// SoundManager.wallPlaced();
+			//
+			// if (model.isGameFinished()) {
+			// gameFinished();
+			// }
+			// }
+			// }
+			// }
+			// wasInvisible_MOUSE = false;
+			// selectedMouse = null;
+			if (selectedMouse != null) {
+				selectedMouse.setColorToOriginal();
+				selectedMouse.setThePositionAgain(model.getInitialXShift(), model.getInitialYShift(),
+						model.getSquareHeight(), model.getSquareWidth());
+
+				if (model.outOfScreen(selectedMouse)) {
+					selectedMouse.remove();
+					selectedMouse.setRectangles();
+					selectedMouse = null;
+				} else {
+					if (!model.onAvailablePlace(selectedMouse)) {
+						if (wasInvisible_MOUSE) {
+							selectedMouse.remove();
+							selectedMouse.setRectangles();
+							selectedMouse = null;
+						} else {
+							selectedMouse.setTurn(turnStartMouse);
+							if (model.isAvailablePlaceFor(selectedMouse, wallStartXInd_MOUSE, wallStartYInd_MOUSE)) {
+								selectedMouse.xInd = wallStartXInd_MOUSE;
+								selectedMouse.yInd = wallStartYInd_MOUSE;
+								selectedMouse.setThePositionAgainByIndex(model.getInitialXShift(),
+										model.getInitialYShift(), model.getSquareHeight(), model.getSquareWidth());
+								model.addToLines(selectedMouse);
+								selectedMouse = null;
+							} else {
+								selectedMouse.remove();
+								selectedMouse = null;
+							}
+						}
+
+					} else {
+						selectedMouse.setThePositionAgain(model.getInitialXShift(), model.getInitialYShift(),
+								model.getSquareHeight(), model.getSquareWidth());
+						model.addToLines(selectedMouse);
+						SoundManager.wallPlaced();
+
+						if (model.isGameFinished()) {
+							gameFinished();
+						}
+						selectedMouse = null;
+					}
+				}
+			}
+			wasInvisible_MOUSE = false;
+			selectedMouse = null;
+			repaint();
+		}
+
+		private void placeTheWall(WallOrChain wall) {
+			if (wall != null) {
+				wall.setColorToOriginal();
+				wall.setThePositionAgain(model.getInitialXShift(), model.getInitialYShift(), model.getSquareHeight(),
+						model.getSquareWidth());
+
+				if (model.outOfScreen(wall)) {
+					wall.remove();
+					wall.setRectangles();
+				} else {
+					if (!model.onAvailablePlace(wall)) {
+						if (wasInvisible_KEY) {
+							wall.remove();
+							wall.setRectangles();
+						} else {
+							wall.xCoor = wallStartX_KEY;
+							wall.yCoor = wallStartY_KEY;
+							wall.setTurn(turnStartKey);
+							wall.setThePositionAgain(model.getInitialXShift(), model.getInitialYShift(),
+									model.getSquareHeight(), model.getSquareWidth());
+							model.addToLines(wall);
+
+						}
+
+					} else {
+						wall.setThePositionAgain(model.getInitialXShift(), model.getInitialYShift(),
+								model.getSquareHeight(), model.getSquareWidth());
+						model.addToLines(wall);
+						SoundManager.wallPlaced();
+
+						if (model.isGameFinished()) {
+							gameFinished();
+						}
+					}
+				}
+			}
+			wall = null;
+			repaint();
+		}
+
+		private void gameFinished() {
+			for (int i = 0; i < model.getWalls().length; i++) {
+				System.out.println("Wall " + (i + 1) + " ( " + model.getWalls()[i].xInd + ", "
+						+ model.getWalls()[i].yInd + ", " + model.getWalls()[i].turn + ") ");
+
+			}
+			selectedKey = null;
+			repaint();
+			model.gameFinished = true;
+			stopTimer();
+			model.stopTimers();
+			SoundManager.gameWon();
+
+			Object[] options = { "Return Level Menu", "Next Level" };
+
+			int n = JOptionPane.showOptionDialog(null, "You have completed this level!", "Congratulations!!",
+					JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[1]);
+
+			if (GameView.lastCompletedLevel < levelNo)
+				GameView.lastCompletedLevel = levelNo;
+
+			gv.levelButtons[levelNo].setEnabled(true);
+			gv.levelButtons[levelNo].setIcon(null);
+			if (n == JOptionPane.YES_OPTION) {
+				cardLayout.show(card, "Level Menu");
+				model.reset();
+			} else if (n == JOptionPane.NO_OPTION) {
+				cardLayout.show(card, "Level " + (levelNo + 1));
+				model.reset();
+			}
+			selectedKey = null;
+			selectedMouse = null;
+
+			try {
+
+				Writer wr = new FileWriter("savedLevelNo.txt");
+				wr.write(GameView.lastCompletedLevel + ""); // write string
+				wr.flush();
+				wr.close();
+
+			} catch (Exception ea) {
+			}
+
+		}
+
+		public void mouseExited(MouseEvent e) {
+
+		}
+
+		public void mouseMoved(MouseEvent e) {
+
+		}
+
+		public void mouseEntered(MouseEvent e) {
+
+		}
+
 		@Override
 		public void keyPressed(KeyEvent e) {
-			if (!listenKey || checkKey(e))
-				return;
+			int key = e.getKeyCode();
 
-			newKey = e.getKeyCode();
-			if (clicked == 1) {
-				MyComponents.wallLeftRotation = newKey;
-				setRotationAnticlockwise
-						.setText("Left Rotation: \t" + KeyEvent.getKeyText(MyComponents.wallLeftRotation));
-			} else if (clicked == 2) {
-				MyComponents.wallRightRotation = newKey;
-				setRotationClockwise
-						.setText("Right Rotation: \t" + KeyEvent.getKeyText(MyComponents.wallRightRotation));
-			} else if (clicked == 3) {
-				MyComponents.wallDrop = newKey;
-				setDrop.setText("Wall Drop: \t" + KeyEvent.getKeyText(MyComponents.wallDrop));
-			} else if (clicked == 4) {
-				MyComponents.wallPlace = newKey;
-				setPlace.setText("Wall Place: \t" + KeyEvent.getKeyText(MyComponents.wallPlace));
-			} else if (clicked == 5) {
-				MyComponents.wallPrevLocation = newKey;
-				setPrevLocation
-						.setText("Wall Previous Location: \t" + KeyEvent.getKeyText(MyComponents.wallPrevLocation));
+			if (selectedKey != null) {
+				if (key == KeyEvent.VK_LEFT) {
+					selectedKey.goLeft();
+					selectedKey.setThePositionAgainByIndex(model.initialXShift, model.initialYShift, model.squareHeight,
+							model.squareWidth);
+				}
+
+				else if (key == KeyEvent.VK_RIGHT) {
+					selectedKey.goRight();
+					selectedKey.setThePositionAgainByIndex(model.initialXShift, model.initialYShift, model.squareHeight,
+							model.squareWidth);
+				}
+
+				else if (key == KeyEvent.VK_UP) {
+					selectedKey.goUp();
+					selectedKey.setThePositionAgainByIndex(model.initialXShift, model.initialYShift, model.squareHeight,
+							model.squareWidth);
+				}
+
+				else if (key == KeyEvent.VK_DOWN) {
+					selectedKey.goDown();
+					selectedKey.setThePositionAgainByIndex(model.initialXShift, model.initialYShift, model.squareHeight,
+							model.squareWidth);
+				}
+
+				else if (key == wallPlace) {
+					if (selectedKey != null) {
+						placeSelectedKey();
+					}
+					wasInvisible_KEY = false;
+					repaint();
+				}
+
+				else if (key == wallRightRotation) {
+					selectedKey.turnRight();
+					selectedKey.setThePositionAgainByIndex(model.initialXShift, model.initialYShift, model.squareHeight,
+							model.squareWidth);
+					selectedKey.setRectangles();
+				}
+
+				else if (key == wallLeftRotation) {
+					selectedKey.turnLeft();
+					selectedKey.setThePositionAgainByIndex(model.initialXShift, model.initialYShift, model.squareHeight,
+							model.squareWidth);
+					selectedKey.setRectangles();
+				}
+
+				else if (key == wallPrevLocation) {
+					int turn = selectedKey.turn;
+					Color prevColor = selectedKey.c;
+					if (!wasInvisible_KEY) {
+						selectedKey.setTurn(turnStartKey);
+					}
+					if (wasInvisible_KEY) {
+						selectedKey.remove();
+						selectedKey.setRectangles();
+						selectedKey = null;
+					} else if (model.isAvailablePlaceFor(selectedKey, wallStartXInd_KEY, wallStartYInd_KEY)) {
+						selectedKey.xCoor = wallStartX_KEY;
+						selectedKey.yCoor = wallStartY_KEY;
+						selectedKey.setColorToOriginal();
+						selectedKey.setThePositionAgain(model.getInitialXShift(), model.getInitialYShift(),
+								model.getSquareHeight(), model.getSquareWidth());
+						model.addToLines(selectedKey);
+						selectedKey = null;
+					} else {
+						Point startPoint = new Point(selectedKey.xInd, selectedKey.yInd);
+
+						for (int i = 0; i < timer.getActionListeners().length; i++) {
+							timer.removeActionListener(timer.getActionListeners()[i]);
+						}
+
+						timer.addActionListener(new ActionListener() {
+
+							@Override
+							public void actionPerformed(ActionEvent e) {
+								selectedKey.setIndexes(startPoint.x, startPoint.y);
+								selectedKey.setTurn(turn);
+								selectedKey.setThePositionAgainByIndex(model.initialXShift, model.initialYShift,
+										model.squareHeight, model.squareWidth);
+								selectedKey.setColor(prevColor);
+								timer.stop();
+							}
+						});
+
+						selectedKey.setColor(Color.RED);
+						selectedKey.setIndexes(wallStartXInd_KEY, wallStartYInd_KEY);
+						selectedKey.setTurn(turnStartKey);
+						selectedKey.setThePositionAgainByIndex(model.initialXShift, model.initialYShift,
+								model.squareHeight, model.squareWidth);
+						timer.start();
+					}
+				}
+
+				if (selectedKey != null)
+					setColor(selectedKey);
 			}
-			listenKey = false;
-			clicked = 0;
+
+			if (key == KeyEvent.VK_1) {
+				numberPressed(1);
+			}
+
+			else if (key == KeyEvent.VK_2) {
+				numberPressed(2);
+			}
+
+			else if (key == KeyEvent.VK_3) {
+				numberPressed(3);
+			}
+
+			else if (key == KeyEvent.VK_4) {
+				numberPressed(4);
+			}
+
+			else if (key == KeyEvent.VK_5) {
+				numberPressed(5);
+			}
+
+			else if (key == KeyEvent.VK_6) {
+				numberPressed(6);
+			}
+
+			else if (key == KeyEvent.VK_7) {
+				numberPressed(7);
+			}
+
+			else if (key == KeyEvent.VK_8) {
+				numberPressed(8);
+			}
+
+			else if (key == KeyEvent.VK_9) {
+				numberPressed(9);
+			}
+
+			else if (key == KeyEvent.VK_NUMPAD1) {
+				numberPressed(1);
+			}
+
+			else if (key == KeyEvent.VK_NUMPAD2) {
+				numberPressed(2);
+			}
+
+			else if (key == KeyEvent.VK_NUMPAD3) {
+				numberPressed(3);
+			}
+
+			else if (key == KeyEvent.VK_NUMPAD4) {
+				numberPressed(4);
+			}
+
+			else if (key == KeyEvent.VK_NUMPAD5) {
+				numberPressed(5);
+			}
+
+			else if (key == KeyEvent.VK_NUMPAD6) {
+				numberPressed(6);
+			}
+
+			else if (key == KeyEvent.VK_NUMPAD7) {
+				numberPressed(7);
+			}
+
+			else if (key == KeyEvent.VK_NUMPAD8) {
+				numberPressed(8);
+			}
+
+			else if (key == KeyEvent.VK_NUMPAD9) {
+				numberPressed(9);
+			}
+
+			else if (key == wallDrop) {
+				if (selectedKey != null) {
+					selectedKey.remove();
+					selectedKey = null;
+				}
+			}
+			repaint();
+		}
+
+		private void numberPressed(int i) {
+			if (i > model.getWalls().length || i <= 0)
+				return;
+			boolean bool = selectedKey != model.getWalls()[i - 1];
+
+			if (selectedKey != null) {
+				placeSelectedKey();
+			}
+			if (selectedKey == null) {
+				if (i > 0 && i <= model.getWalls().length && model.getWalls()[i - 1] != null
+						&& model.getWalls()[i - 1] != selectedMouse && !model.getWalls()[i - 1].collapsed) {
+					if (bool) {
+						if (model.getWalls()[i - 1].visible) {
+							selectedKey = model.getWalls()[i - 1];
+							model.removeFromLines(selectedKey);
+							wallStartX_KEY = selectedKey.xCoor;
+							wallStartY_KEY = selectedKey.yCoor;
+							wallStartXInd_KEY = selectedKey.xInd;
+							wallStartYInd_KEY = selectedKey.yInd;
+							turnStartKey = selectedKey.turn;
+							wasInvisible_KEY = false;
+						} else {
+							model.getWalls()[i - 1].appear();
+							int indexX = (int) ((model.getWalls()[i - 1].wallContainer.getCenterX()
+									- model.initialXShift) / model.squareWidth);
+							int indexY = (int) ((model.getWalls()[i - 1].wallContainer.getCenterY()
+									- model.initialYShift) / model.squareHeight);
+							model.getWalls()[i - 1].setIndexes(indexX, indexY);
+							model.getWalls()[i - 1].setThePositionAgainByIndex(model.initialXShift, model.initialYShift,
+									model.squareHeight, model.squareWidth);
+							selectedKey = model.getWalls()[i - 1];
+							wallStartXInd_KEY = selectedKey.xInd;
+							wallStartYInd_KEY = selectedKey.yInd;
+							wasInvisible_KEY = true;
+							setColor(selectedKey);
+						}
+					} else {
+						selectedKey = null;
+					}
+				}
+				repaint();
+
+			}
 		}
 
 		@Override
-		public void keyReleased(KeyEvent e) {
-
+		public void keyReleased(KeyEvent arg0) {
 		}
 
 		@Override
-		public void keyTyped(KeyEvent e) {
-
+		public void keyTyped(KeyEvent arg0) {
 		}
-		public boolean checkKey(KeyEvent e) {
-			int pressed = e.getKeyCode();
 
-			if (pressed == MyComponents.wallLeftRotation || pressed == MyComponents.wallRightRotation
-					|| pressed == MyComponents.wallDrop || pressed == MyComponents.wallPlace
-					|| pressed == MyComponents.wallPrevLocation || pressed == KeyEvent.VK_1 || pressed == KeyEvent.VK_2
-					|| pressed == KeyEvent.VK_3 || pressed == KeyEvent.VK_4 || pressed == KeyEvent.VK_5
-					|| pressed == KeyEvent.VK_6 || pressed == KeyEvent.VK_NUMPAD1 || pressed == KeyEvent.VK_NUMPAD2
-					|| pressed == KeyEvent.VK_NUMPAD3 || pressed == KeyEvent.VK_NUMPAD4
-					|| pressed == KeyEvent.VK_NUMPAD5 || pressed == KeyEvent.VK_NUMPAD6 || pressed == KeyEvent.VK_UP
-					|| pressed == KeyEvent.VK_DOWN || pressed == KeyEvent.VK_LEFT || pressed == KeyEvent.VK_RIGHT
-					|| pressed == KeyEvent.VK_SPACE) {
+		public void placeSelectedKey() {
+			Color prevColor = selectedKey.c;
+			selectedKey.setColorToOriginal();
+			selectedKey.setThePositionAgain(model.getInitialXShift(), model.getInitialYShift(), model.getSquareHeight(),
+					model.getSquareWidth());
 
-				JOptionPane.showMessageDialog(null, "Entered key is in use!", "Used Key", JOptionPane.ERROR_MESSAGE);
+			if (model.outOfScreen(selectedKey)) {
+				selectedKey.remove();
+				selectedKey.setRectangles();
+				selectedKey = null;
+			} else {
+				if (!model.onAvailablePlace(selectedKey)) {
+					if (wasInvisible_KEY) {
+						selectedKey.remove();
+						selectedKey.setRectangles();
+						selectedKey = null;
+					} else {
+						int turn = selectedKey.turn;
+						selectedKey.setTurn(turnStartKey);
+						if (model.isAvailablePlaceFor(selectedKey, wallStartXInd_KEY, wallStartYInd_KEY)) {
+							selectedKey.xCoor = wallStartX_KEY;
+							selectedKey.yCoor = wallStartY_KEY;
+							selectedKey.setThePositionAgain(model.getInitialXShift(), model.getInitialYShift(),
+									model.getSquareHeight(), model.getSquareWidth());
+							model.addToLines(selectedKey);
+							selectedKey = null;
+						} else {
+							Point startPoint = new Point(selectedKey.xInd, selectedKey.yInd);
 
-				return true;
-			} else
-				return false;
+							for (int i = 0; i < timer.getActionListeners().length; i++) {
+								timer.removeActionListener(timer.getActionListeners()[i]);
+							}
+
+							timer.addActionListener(new ActionListener() {
+
+								@Override
+								public void actionPerformed(ActionEvent e) {
+									selectedKey.setIndexes(startPoint.x, startPoint.y);
+									selectedKey.setTurn(turn);
+									selectedKey.setThePositionAgainByIndex(model.initialXShift, model.initialYShift,
+											model.squareHeight, model.squareWidth);
+									selectedKey.setColor(prevColor);
+									timer.stop();
+								}
+							});
+
+							selectedKey.setColor(Color.RED);
+							selectedKey.setIndexes(wallStartXInd_KEY, wallStartYInd_KEY);
+							selectedKey.setTurn(turnStartKey);
+							selectedKey.setThePositionAgainByIndex(model.initialXShift, model.initialYShift,
+									model.squareHeight, model.squareWidth);
+							timer.start();
+						}
+					}
+
+				} else {
+					selectedKey.setThePositionAgain(model.getInitialXShift(), model.getInitialYShift(),
+							model.getSquareHeight(), model.getSquareWidth());
+					model.addToLines(selectedKey);
+					SoundManager.wallPlaced();
+
+					if (model.isGameFinished()) {
+						gameFinished();
+					}
+					selectedKey = null;
+				}
+			}
+			wasInvisible_KEY = false;
 		}
 	}
 }
