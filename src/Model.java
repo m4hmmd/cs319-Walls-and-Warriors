@@ -606,17 +606,21 @@ public class Model {
 		map[2 * i + 2][2 * j + 1] = EDGE_OF_LAKE;
 
 		if (i != 0) {
-			left = map[2 * i - 1][2 * j + 1] == LAKE || map[2 * i - 1][2 * j + 1] == ENEMY_ARMADA || map[2 * i - 1][2 * j + 1] == ALLY_ARMADA;
+			left = map[2 * i - 1][2 * j + 1] == LAKE || map[2 * i - 1][2 * j + 1] == ENEMY_ARMADA
+					|| map[2 * i - 1][2 * j + 1] == ALLY_ARMADA;
 		}
 		if (i < mapWidth - 1) {
-			right = map[2 * i + 3][2 * j + 1] == LAKE || map[2 * i + 3][2 * j + 1] == ENEMY_ARMADA || map[2 * i + 3][2 * j + 1] == ALLY_ARMADA;
+			right = map[2 * i + 3][2 * j + 1] == LAKE || map[2 * i + 3][2 * j + 1] == ENEMY_ARMADA
+					|| map[2 * i + 3][2 * j + 1] == ALLY_ARMADA;
 		}
 
 		if (j != 0) {
-			up = map[2 * i + 1][2 * j - 1] == LAKE || map[2 * i + 1][2 * j - 1] == ENEMY_ARMADA || map[2 * i + 1][2 * j - 1] == ALLY_ARMADA;
+			up = map[2 * i + 1][2 * j - 1] == LAKE || map[2 * i + 1][2 * j - 1] == ENEMY_ARMADA
+					|| map[2 * i + 1][2 * j - 1] == ALLY_ARMADA;
 		}
 		if (j < mapLength - 1) {
-			down = map[2 * i + 1][2 * j + 3] == LAKE || map[2 * i + 1][2 * j + 3] == ENEMY_ARMADA || map[2 * i + 1][2 * j + 3] == ALLY_ARMADA;
+			down = map[2 * i + 1][2 * j + 3] == LAKE || map[2 * i + 1][2 * j + 3] == ENEMY_ARMADA
+					|| map[2 * i + 1][2 * j + 3] == ALLY_ARMADA;
 		}
 
 		if (up) {
@@ -818,10 +822,10 @@ public class Model {
 			lineWidth = (squareWidth + squareHeight) / 10;
 		else
 			lineWidth = 1;
-		
-		if(lineWidth % 2 != 0)
+
+		if (lineWidth % 2 != 0)
 			lineWidth++;
-		
+
 		for (WallOrChain w : walls) {
 			w.setLineWidthOnBar((lineWidth / 2) % 2 == 0 ? lineWidth / 2 : lineWidth / 2 - 1);
 			w.setSquareHeightOnBar(squareHeight / 4);
@@ -856,7 +860,7 @@ public class Model {
 
 	public void startTimers() {
 		for (Soldier m : movables) {
-			if (canMove(m))
+			if (isAvailable(m, m.nextDir == 1 ? m.route.get( m.nextPos) : (1 - m.route.get(m.nextPos)) + 4 * (m.route.get(m.nextPos) / 2)))
 				m.start();
 		}
 	}
@@ -868,7 +872,7 @@ public class Model {
 					m.stop();
 				continue;
 			}
-			if (canMove(m)) {
+			if (isAvailable(m, m.nextDir == 1 ? m.route.get( m.nextPos) : (1 - m.route.get(m.nextPos)) + 4 * (m.route.get(m.nextPos) / 2))) {
 				if (!m.t.isRunning())
 					m.start();
 			} else {
@@ -971,6 +975,12 @@ public class Model {
 		Soldier s;
 		ArrayList<Integer> route;
 		int pos = 0, dir = 1;
+		int xShift = 0;
+		int yShift = 0;
+		boolean move = false;
+		boolean first = true;
+		int prev = 0;
+		int i = 0;
 
 		public MovableTimerActionListener(Soldier s, ArrayList<Integer> route) {
 			this.s = s;
@@ -979,36 +989,153 @@ public class Model {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-//			ArrayList<Integer> dirs = new ArrayList<Integer>();
-//			dirs.add(-1);
-//			if (isAvailable(s, Model.UP)) {
-//				dirs.add(Model.UP);
-//			}
-//			if (isAvailable(s, Model.DOWN)) {
-//				dirs.add(Model.DOWN);
-//			}
-//			if (isAvailable(s, Model.LEFT)) {
-//				dirs.add(Model.LEFT);
-//			}
-//			if (isAvailable(s, Model.RIGHT)) {
-//				dirs.add(Model.RIGHT);
-//			}
+			// ArrayList<Integer> dirs = new ArrayList<Integer>();
+			// dirs.add(-1);
+			// if (isAvailable(s, Model.UP)) {
+			// dirs.add(Model.UP);
+			// }
+			// if (isAvailable(s, Model.DOWN)) {
+			// dirs.add(Model.DOWN);
+			// }
+			// if (isAvailable(s, Model.LEFT)) {
+			// dirs.add(Model.LEFT);
+			// }
+			// if (isAvailable(s, Model.RIGHT)) {
+			// dirs.add(Model.RIGHT);
+			// }
 
-//			int dir = (int) (Math.random() * dirs.size());
+			// int dir = (int) (Math.random() * dirs.size());
 
 			// if dir == 1 => route[pos], if dir == 0 => (1-route[pos]) + 4 * (route[pos]/2)
-			move(s, dir == 1 ? route.get(pos): (1-route.get(pos)) + 4 * (route.get(pos)/2));
-			if (dir == 1) {
-				if (pos == route.size() - 1) {
-					dir = 1 - dir;
-				} else {
-					pos++;
+			int w = s.width;
+			int h = s.height;
+			int period = 70;
+
+			if ( move ) {
+				int direction = dir == 1 ? route.get(pos) : (1 - route.get(pos)) + 4 * (route.get(pos) / 2);
+				move = false;
+
+				if (direction == Model.UP) {
+					yShift += period;
 				}
-			} else {
-				if (pos == 0) {
-					dir = 1 - dir;
+				if (direction == Model.DOWN) {
+					yShift -= period;
+				}
+				if (direction == Model.LEFT) {
+					xShift += period;
+				}
+				if (direction == Model.RIGHT) {
+					xShift -= period;
+				}
+				if (dir == 1) {
+					if (s.nextPos == route.size() - 1) {
+						s.nextDir = 1 - s.nextDir;
+					} else {
+						s.nextPos = s.nextPos + 1;
+					}
 				} else {
-					pos--;
+					if (pos == 0) {
+						s.nextDir = 1 - s.nextDir;
+					} else {
+						s.nextPos = s.nextPos - 1;
+					}
+				}
+				move(s, dir == 1 ? route.get(pos) : (1 - route.get(pos)) + 4 * (route.get(pos) / 2));
+			}
+
+			i++;
+			i = i % period;
+
+			if (i == 0) {
+				dir = s.nextDir;
+				pos = s.nextPos;
+			}
+
+			int direction = dir == 1 ? route.get(pos) : (1 - route.get(pos)) + 4 * (route.get(pos) / 2);
+			if (direction == Model.UP) {
+				xShift = 0;
+				yShift--;
+			} else if (direction == Model.DOWN) {
+				xShift = 0;
+				yShift++;
+			} else if (direction == Model.LEFT) {
+				xShift--;
+				yShift = 0;
+			} else if (direction == Model.RIGHT) {
+				xShift++;
+				yShift = 0;
+			}
+
+			s.setXShift((int) (squareWidth * xShift / ((double) period)));
+			s.setYShift((int) (squareHeight * yShift / ((double) period)));
+
+			if (direction == Model.UP) {
+				if (s.yShift < -(squareHeight / 2 + h / 2)) {
+					if (prev != 1) {
+						move = true;
+					}
+					first = prev != 1;
+					map[s.getX() * 2 + 1][s.getY() * 2] = s.isArmada() ? VALID_FOR_CHAIN : VALID_FOR_WALL;
+					prev = 1;
+				} else if (s.yShift < -(squareHeight / 2 - h / 2)) {
+					map[s.getX() * 2 + 1][s.getY() * 2] = s.getWholeMapIndex();
+					first = prev != 2;
+					prev = 2;
+				} else {
+					map[s.getX() * 2 + 1][s.getY() * 2] = s.isArmada() ? VALID_FOR_CHAIN : VALID_FOR_WALL;
+					first = prev != 3;
+					prev = 3;
+				}
+			} else if (direction == Model.DOWN) {
+				if (s.yShift > (squareHeight / 2 + h / 2)) {
+					if (prev != 4) {
+						move = true;
+					}
+					first = prev != 4;
+					map[s.getX() * 2 + 1][s.getY() * 2 + 2] = s.isArmada() ? VALID_FOR_CHAIN : VALID_FOR_WALL;
+					prev = 4;
+				} else if (s.yShift > (squareHeight / 2 - h / 2)) {
+					first = prev != 5;
+					map[s.getX() * 2 + 1][s.getY() * 2 + 2] = s.getWholeMapIndex();
+					prev = 5;
+				} else {
+					map[s.getX() * 2 + 1][s.getY() * 2 + 2] = s.isArmada() ? VALID_FOR_CHAIN : VALID_FOR_WALL;
+					first = prev != 6;
+					prev = 6;
+				}
+			} else if (direction == Model.LEFT) {
+				if (s.xShift < -(squareWidth / 2 + w / 2)) {
+					if (prev != 7) {
+						move = true;
+					}
+					first = prev != 7;
+					map[s.getX() * 2][s.getY() * 2 + 1] = s.isArmada() ? VALID_FOR_CHAIN : VALID_FOR_WALL;
+					prev = 7;
+				} else if (s.xShift < -(squareWidth / 2 - w / 2)) {
+					first = prev != 8;
+					map[s.getX() * 2][s.getY() * 2 + 1] = s.getWholeMapIndex();
+					prev = 8;
+				} else {
+					first = prev != 9;
+					map[s.getX() * 2][s.getY() * 2 + 1] = s.isArmada() ? VALID_FOR_CHAIN : VALID_FOR_WALL;
+					prev = 9;
+				}
+			} else if (direction == Model.RIGHT) {
+				if (s.xShift > (squareWidth / 2 + w / 2)) {
+					if (prev != 10) {
+						move = true;
+					}
+					first = prev != 10;
+					map[s.getX() * 2 + 2][s.getY() * 2 + 1] = s.isArmada() ? VALID_FOR_CHAIN : VALID_FOR_WALL;
+					prev = 10;
+				} else if (s.xShift > (squareWidth / 2 - w / 2)) {
+					map[s.getX() * 2 + 2][s.getY() * 2 + 1] = s.getWholeMapIndex();
+					first = prev != 11;
+					prev = 11;
+				} else {
+					map[s.getX() * 2 + 2][s.getY() * 2 + 1] = s.isArmada() ? VALID_FOR_CHAIN : VALID_FOR_WALL;
+					first = prev != 12;
+					prev = 12;
 				}
 			}
 		}
