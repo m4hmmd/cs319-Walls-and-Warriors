@@ -102,26 +102,25 @@ public class MyComponents extends JComponent {
 
 				model.reset();
 				// random 1
-				//int randomWallIndex = (int) (Math.random() * model.getWalls().length);
-			  	int WallIndex = levelNo%model.getWalls().length -1 ;
-				
-				int hintXCoor = hintX_Y_Turn(WallIndex)[0];
-				int hintYCoor = hintX_Y_Turn(WallIndex)[1];
-				int hintTurn = hintX_Y_Turn(WallIndex)[2];
-				model.getWalls()[WallIndex].appear();
-				model.getWalls()[WallIndex].setTurn(hintTurn);
-				model.getWalls()[WallIndex].setIndexes(hintXCoor, hintYCoor);
-				model.getWalls()[WallIndex].setThePositionAgainByIndex(model.initialXShift, model.initialYShift,
+				int randomWallIndex = (int) (Math.random() * model.getWalls().length);
+
+				int hintXCoor = hintX_Y_Turn(randomWallIndex)[0];
+				int hintYCoor = hintX_Y_Turn(randomWallIndex)[1];
+				int hintTurn = hintX_Y_Turn(randomWallIndex)[2];
+				model.getWalls()[randomWallIndex].appear();
+				model.getWalls()[randomWallIndex].setTurn(hintTurn);
+				model.getWalls()[randomWallIndex].setIndexes(hintXCoor, hintYCoor);
+				model.getWalls()[randomWallIndex].setThePositionAgainByIndex(model.initialXShift, model.initialYShift,
 						model.squareHeight, model.squareWidth);
-				model.addToLines(model.getWalls()[WallIndex]);
-				model.getWalls()[WallIndex].setRectangles();
-				model.getWalls()[WallIndex].setTheRectanglePoints(model.squareHeight, model.squareWidth,
+				model.addToLines(model.getWalls()[randomWallIndex]);
+				model.getWalls()[randomWallIndex].setRectangles();
+				model.getWalls()[randomWallIndex].setTheRectanglePoints(model.squareHeight, model.squareWidth,
 						model.initialYShift);
 				resume();
 				hintButton.setEnabled(false);
 				repaint();
 				// model.getWalls()[2].setThePositionAgainByIndex();
-
+				// hintButton.setEnabled(false);
 
 			}
 		});
@@ -275,7 +274,10 @@ public class MyComponents extends JComponent {
 
 		drawGrid(g);
 		drawGameObjects(g);
-
+		if (selectedKey != null)
+			setColor(selectedKey);
+		if (selectedMouse != null)
+			setColor(selectedMouse);
 		drawWalls(g);
 
 		backButton.setBounds(0, (int) (getHeight() / 10 * 0.5), getWidth() / 5, getHeight() / 10);
@@ -511,19 +513,6 @@ public class MyComponents extends JComponent {
 			repaint();
 		}
 
-		private void setColor(WallOrChain w) {
-
-			w.setThePositionAgain(model.initialXShift, model.initialYShift, model.squareHeight, model.squareWidth);
-			if (model.outOfScreen(w)) {
-				w.setColor(Color.BLACK);
-			} else if (!model.onAvailablePlace(w)) {
-				w.setColor(Color.RED);
-			} else {
-				w.setColorToOriginal();
-			}
-
-		}
-
 		public void mouseReleased(MouseEvent e) {
 			if (SwingUtilities.isRightMouseButton(e)) {
 				return;
@@ -628,6 +617,8 @@ public class MyComponents extends JComponent {
 						SoundManager.wallPlaced();
 
 						if (model.isGameFinished()) {
+							selectedMouse = null;
+							selectedKey = null;
 							gameFinished();
 						}
 						selectedMouse = null;
@@ -926,6 +917,12 @@ public class MyComponents extends JComponent {
 				numberPressed(9);
 			}
 
+			else if (key == KeyEvent.VK_ESCAPE) {
+				pause();
+				repaint();
+				cardLayout.show(card, "Pause");
+			}
+
 			else if (key == wallDrop) {
 				if (selectedKey != null) {
 					selectedKey.remove();
@@ -1057,5 +1054,19 @@ public class MyComponents extends JComponent {
 			}
 			wasInvisible_KEY = false;
 		}
+	}
+
+	private void setColor(WallOrChain w) {
+		if (w.visible) {
+			w.setThePositionAgain(model.initialXShift, model.initialYShift, model.squareHeight, model.squareWidth);
+			if (model.outOfScreen(w)) {
+				w.setColor(Color.BLACK);
+			} else if (!model.onAvailablePlace(w)) {
+				w.setColor(Color.RED);
+			} else {
+				w.setColorToOriginal();
+			}
+		} else
+			w.setColorToOriginal();
 	}
 }
