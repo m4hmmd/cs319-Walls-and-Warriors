@@ -343,7 +343,7 @@ public class GameView extends JFrame implements ActionListener {
 
 		MyButton restart = new MyButton("Restart", "Level " + currentLevelIndex, btnSizeM, btnSizeScaledM, this);
 		MyButton resume = new MyButton("Resume", "Level " + currentLevelIndex, btnSizeM, btnSizeScaledM, this);
-		MyButton returnHome = new MyButton("Return Home", "Game Menu", btnSizeM, btnSizeScaledM, this);
+		MyButton returnLevelMenu = new MyButton("Return Level Menu", "Level Menu", btnSizeM, btnSizeScaledM, this);
 
 		restart.addActionListener(new ActionListener() {
 
@@ -364,7 +364,7 @@ public class GameView extends JFrame implements ActionListener {
 				managers[currentLevelIndex - 1].getPanel().requestFocusInWindow();
 			}
 		});
-		returnHome.addActionListener(new ActionListener() {
+		returnLevelMenu.addActionListener(new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -375,7 +375,7 @@ public class GameView extends JFrame implements ActionListener {
 
 		pauseMenu.addButton(resume);
 		pauseMenu.addButton(restart);
-		pauseMenu.addButton(returnHome);
+		pauseMenu.addButton(returnLevelMenu);
 
 		card.add("Pause", pauseMenu);
 	}
