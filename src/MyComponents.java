@@ -109,8 +109,8 @@ public class MyComponents extends JComponent {
 				int hintYCoor = hintX_Y_Turn(randomWallIndex)[1];
 				int hintTurn = hintX_Y_Turn(randomWallIndex)[2];
 				model.getWalls()[randomWallIndex].appear();
-				model.getWalls()[randomWallIndex].setIndexes(hintXCoor, hintYCoor);
 				model.getWalls()[randomWallIndex].setTurn(hintTurn);
+				model.getWalls()[randomWallIndex].setIndexes(hintXCoor, hintYCoor);
 				model.getWalls()[randomWallIndex].setThePositionAgainByIndex(model.initialXShift, model.initialYShift,
 						model.squareHeight, model.squareWidth);
 				model.addToLines(model.getWalls()[randomWallIndex]);
@@ -394,6 +394,7 @@ public class MyComponents extends JComponent {
 				}
 				i++;
 			}
+			repaint();
 			if (SwingUtilities.isRightMouseButton(e)) {
 				return;
 			}
@@ -437,6 +438,7 @@ public class MyComponents extends JComponent {
 
 					setColor(selectedMouse);
 				}
+				repaint();
 				return;
 			} else {
 				clickedX = e.getX();
