@@ -723,6 +723,7 @@ public class MyComponents extends JComponent {
 				} else if (n == JOptionPane.NO_OPTION) {
 					cardLayout.show(card, "Level " + (levelNo + 1));
 					model.reset();
+					gv.managers[levelNo].startTimers();
 				}
 				selectedKey = null;
 				selectedMouse = null;
