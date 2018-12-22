@@ -1073,16 +1073,16 @@ public class Model {
 				if (s.yShift < -(squareHeight / 2 + h / 2)) {
 					if (prev != 1) {
 						move = true;
+						map[s.getX() * 2 + 1][s.getY() * 2] = s.isArmada() ? VALID_FOR_CHAIN : VALID_FOR_WALL;
 					}
 					first = prev != 1;
-					map[s.getX() * 2 + 1][s.getY() * 2] = s.isArmada() ? VALID_FOR_CHAIN : VALID_FOR_WALL;
 					prev = 1;
 				} else if (s.yShift < -(squareHeight / 2 - h / 2)) {
 					map[s.getX() * 2 + 1][s.getY() * 2] = s.getWholeMapIndex();
 					first = prev != 2;
 					prev = 2;
 				} else {
-					map[s.getX() * 2 + 1][s.getY() * 2] = s.isArmada() ? VALID_FOR_CHAIN : VALID_FOR_WALL;
+					//map[s.getX() * 2 + 1][s.getY() * 2] = s.isArmada() ? VALID_FOR_CHAIN : VALID_FOR_WALL;
 					first = prev != 3;
 					prev = 3;
 				}
@@ -1090,16 +1090,16 @@ public class Model {
 				if (s.yShift > (squareHeight / 2 + h / 2)) {
 					if (prev != 4) {
 						move = true;
+						map[s.getX() * 2 + 1][s.getY() * 2 + 2] = s.isArmada() ? VALID_FOR_CHAIN : VALID_FOR_WALL;
 					}
 					first = prev != 4;
-					map[s.getX() * 2 + 1][s.getY() * 2 + 2] = s.isArmada() ? VALID_FOR_CHAIN : VALID_FOR_WALL;
 					prev = 4;
 				} else if (s.yShift > (squareHeight / 2 - h / 2)) {
 					first = prev != 5;
 					map[s.getX() * 2 + 1][s.getY() * 2 + 2] = s.getWholeMapIndex();
 					prev = 5;
 				} else {
-					map[s.getX() * 2 + 1][s.getY() * 2 + 2] = s.isArmada() ? VALID_FOR_CHAIN : VALID_FOR_WALL;
+					//map[s.getX() * 2 + 1][s.getY() * 2 + 2] = s.isArmada() ? VALID_FOR_CHAIN : VALID_FOR_WALL;
 					first = prev != 6;
 					prev = 6;
 				}
@@ -1107,9 +1107,9 @@ public class Model {
 				if (s.xShift < -(squareWidth / 2 + w / 2)) {
 					if (prev != 7) {
 						move = true;
+						map[s.getX() * 2][s.getY() * 2 + 1] = s.isArmada() ? VALID_FOR_CHAIN : VALID_FOR_WALL;
 					}
 					first = prev != 7;
-					map[s.getX() * 2][s.getY() * 2 + 1] = s.isArmada() ? VALID_FOR_CHAIN : VALID_FOR_WALL;
 					prev = 7;
 				} else if (s.xShift < -(squareWidth / 2 - w / 2)) {
 					first = prev != 8;
@@ -1117,23 +1117,23 @@ public class Model {
 					prev = 8;
 				} else {
 					first = prev != 9;
-					map[s.getX() * 2][s.getY() * 2 + 1] = s.isArmada() ? VALID_FOR_CHAIN : VALID_FOR_WALL;
+					//map[s.getX() * 2][s.getY() * 2 + 1] = s.isArmada() ? VALID_FOR_CHAIN : VALID_FOR_WALL;
 					prev = 9;
 				}
 			} else if (direction == Model.RIGHT) {
 				if (s.xShift > (squareWidth / 2 + w / 2)) {
 					if (prev != 10) {
 						move = true;
+						map[s.getX() * 2 + 2][s.getY() * 2 + 1] = s.isArmada() ? VALID_FOR_CHAIN : VALID_FOR_WALL;
 					}
 					first = prev != 10;
-					map[s.getX() * 2 + 2][s.getY() * 2 + 1] = s.isArmada() ? VALID_FOR_CHAIN : VALID_FOR_WALL;
 					prev = 10;
 				} else if (s.xShift > (squareWidth / 2 - w / 2)) {
 					map[s.getX() * 2 + 2][s.getY() * 2 + 1] = s.getWholeMapIndex();
 					first = prev != 11;
 					prev = 11;
 				} else {
-					map[s.getX() * 2 + 2][s.getY() * 2 + 1] = s.isArmada() ? VALID_FOR_CHAIN : VALID_FOR_WALL;
+					//map[s.getX() * 2 + 2][s.getY() * 2 + 1] = s.isArmada() ? VALID_FOR_CHAIN : VALID_FOR_WALL;
 					first = prev != 12;
 					prev = 12;
 				}
