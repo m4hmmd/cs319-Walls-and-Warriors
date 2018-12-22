@@ -201,7 +201,7 @@ public class GameView extends JFrame implements ActionListener {
 			 * lastCompletedLevel = 0; wr.write(GameView.lastCompletedLevel + ""); // write
 			 * string wr.flush(); wr.close(); } catch (Exception ex) {
 			 * 
-.out.println(ex); } } } });
+			 * .out.println(ex); } } } });
 			 */
 			MyButton play = new MyButton("Play", "Level Menu", btnSizeL, btnSizeScaledL, this);
 			play.addActionListener(new ActionListener() {
@@ -504,11 +504,13 @@ public class GameView extends JFrame implements ActionListener {
 					|| pressed == MyComponents.wallDrop || pressed == MyComponents.wallPlace
 					|| pressed == MyComponents.wallPrevLocation || pressed == KeyEvent.VK_1 || pressed == KeyEvent.VK_2
 					|| pressed == KeyEvent.VK_3 || pressed == KeyEvent.VK_4 || pressed == KeyEvent.VK_5
-					|| pressed == KeyEvent.VK_6 || pressed == KeyEvent.VK_NUMPAD1 || pressed == KeyEvent.VK_NUMPAD2
+					|| pressed == KeyEvent.VK_6 || pressed == KeyEvent.VK_7 || pressed == KeyEvent.VK_8
+					|| pressed == KeyEvent.VK_9 || pressed == KeyEvent.VK_NUMPAD1 || pressed == KeyEvent.VK_NUMPAD2
 					|| pressed == KeyEvent.VK_NUMPAD3 || pressed == KeyEvent.VK_NUMPAD4
-					|| pressed == KeyEvent.VK_NUMPAD5 || pressed == KeyEvent.VK_NUMPAD6 || pressed == KeyEvent.VK_UP
-					|| pressed == KeyEvent.VK_DOWN || pressed == KeyEvent.VK_LEFT || pressed == KeyEvent.VK_RIGHT
-					|| pressed == KeyEvent.VK_SPACE) {
+					|| pressed == KeyEvent.VK_NUMPAD5 || pressed == KeyEvent.VK_NUMPAD6
+					|| pressed == KeyEvent.VK_NUMPAD7 || pressed == KeyEvent.VK_NUMPAD8
+					|| pressed == KeyEvent.VK_NUMPAD9 || pressed == KeyEvent.VK_UP || pressed == KeyEvent.VK_DOWN
+					|| pressed == KeyEvent.VK_LEFT || pressed == KeyEvent.VK_RIGHT || pressed == KeyEvent.VK_ESCAPE) {
 
 				JOptionPane.showMessageDialog(null, "Entered key is in use!", "Used Key", JOptionPane.ERROR_MESSAGE);
 
@@ -522,9 +524,8 @@ public class GameView extends JFrame implements ActionListener {
 		if (levelNo == 1) {
 			repaint();
 			Object[] options = { "Close" };
-			int n = JOptionPane.showOptionDialog(null, "Try to surround your soldiers with the walls",
-					"Level 1", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options,
-					options[0]);
+			int n = JOptionPane.showOptionDialog(null, "Try to surround your soldiers with the walls", "Level 1",
+					JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
 
 		}
 		if (levelNo == 2) {
@@ -532,34 +533,41 @@ public class GameView extends JFrame implements ActionListener {
 			Object[] options = { "Close" };
 			int n1 = JOptionPane.showOptionDialog(null, "Be careful! Some enemies are moving", "Level 2",
 					JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
-			int n2 = JOptionPane.showOptionDialog(null, "Use chain for the lake", "Level 2",
-					JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
+			int n2 = JOptionPane.showOptionDialog(null, "Use chain for the lake", "Level 2", JOptionPane.YES_NO_OPTION,
+					JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
 			int n3 = JOptionPane.showOptionDialog(null,
-					"You cannot place wall or chain on edge of lake\n" + "However you can place wall next to forests but not inside!", "Level 2",
-					JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
+					"You cannot place wall or chain on edge of lake\n"
+							+ "However you can place wall next to forests but not inside!",
+					"Level 2", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
 		}
 		if (levelNo == 3) {
 			repaint();
-//			Object[] options = { "Close" };
-//			int n = JOptionPane.showOptionDialog(null, "Description of game objects", "Level 3",
-//					JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
+			// Object[] options = { "Close" };
+			// int n = JOptionPane.showOptionDialog(null, "Description of game objects",
+			// "Level 3",
+			// JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options,
+			// options[0]);
 
 		}
 		if (levelNo == 4) {
 			repaint();
-//			Object[] options = { "Close" };
-//			int n = JOptionPane.showOptionDialog(null, "Description of game objects", "Level 4",
-//					JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
+			// Object[] options = { "Close" };
+			// int n = JOptionPane.showOptionDialog(null, "Description of game objects",
+			// "Level 4",
+			// JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options,
+			// options[0]);
 
 		}
 		if (levelNo == 5) {
 			repaint();
-//			Object[] options = { "Close" };
-//			int n = JOptionPane.showOptionDialog(null, "Description of game objects", "Level 5",
-//					JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
+			// Object[] options = { "Close" };
+			// int n = JOptionPane.showOptionDialog(null, "Description of game objects",
+			// "Level 5",
+			// JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options,
+			// options[0]);
 
 		}
-		
+
 		currentLevelIndex = levelNo;
 	}
 }
