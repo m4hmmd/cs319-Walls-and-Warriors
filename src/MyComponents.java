@@ -102,19 +102,20 @@ public class MyComponents extends JComponent {
 
 				model.reset();
 				// random 1
-				int randomWallIndex = (int) (Math.random() * model.getWalls().length);
-
-				int hintXCoor = hintX_Y_Turn(randomWallIndex)[0];
-				int hintYCoor = hintX_Y_Turn(randomWallIndex)[1];
-				int hintTurn = hintX_Y_Turn(randomWallIndex)[2];
-				model.getWalls()[randomWallIndex].appear();
-				model.getWalls()[randomWallIndex].setTurn(hintTurn);
-				model.getWalls()[randomWallIndex].setIndexes(hintXCoor, hintYCoor);
-				model.getWalls()[randomWallIndex].setThePositionAgainByIndex(model.initialXShift, model.initialYShift,
+				//int randomWallIndex = (int) (Math.random() * model.getWalls().length);
+			  	int WallIndex = levelNo%model.getWalls().length -1 ;
+				
+				int hintXCoor = hintX_Y_Turn(WallIndex)[0];
+				int hintYCoor = hintX_Y_Turn(WallIndex)[1];
+				int hintTurn = hintX_Y_Turn(WallIndex)[2];
+				model.getWalls()[WallIndex].appear();
+				model.getWalls()[WallIndex].setTurn(hintTurn);
+				model.getWalls()[WallIndex].setIndexes(hintXCoor, hintYCoor);
+				model.getWalls()[WallIndex].setThePositionAgainByIndex(model.initialXShift, model.initialYShift,
 						model.squareHeight, model.squareWidth);
-				model.addToLines(model.getWalls()[randomWallIndex]);
-				model.getWalls()[randomWallIndex].setRectangles();
-				model.getWalls()[randomWallIndex].setTheRectanglePoints(model.squareHeight, model.squareWidth,
+				model.addToLines(model.getWalls()[WallIndex]);
+				model.getWalls()[WallIndex].setRectangles();
+				model.getWalls()[WallIndex].setTheRectanglePoints(model.squareHeight, model.squareWidth,
 						model.initialYShift);
 				resume();
 				hintButton.setEnabled(false);
