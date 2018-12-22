@@ -104,7 +104,6 @@ public class MyComponents extends JComponent {
 				// random 1
 				int randomWallIndex = (int) (Math.random() * model.getWalls().length);
 
-				System.out.println("Random wall index: " + randomWallIndex);
 				int hintXCoor = hintX_Y_Turn(randomWallIndex)[0];
 				int hintYCoor = hintX_Y_Turn(randomWallIndex)[1];
 				int hintTurn = hintX_Y_Turn(randomWallIndex)[2];
@@ -194,8 +193,6 @@ public class MyComponents extends JComponent {
 							xYturn[0] = Integer.parseInt(scan.next());
 							xYturn[1] = Integer.parseInt(scan.next());
 							xYturn[2] = Integer.parseInt(scan.next());
-							System.out.println(level + " Wall:" + temp + " x:" + xYturn[0] + " y:" + xYturn[1]
-									+ " Turn:" + xYturn[2]);
 							scan.close();
 							return xYturn;
 						} else {
@@ -212,9 +209,6 @@ public class MyComponents extends JComponent {
 			// scan.nextLine();
 		}
 		scan.close();
-		System.out.println("Level :" + levelNo + " Wall:" + wallNumber + " x:" + xYturn[0] + " y:" + xYturn[1]
-				+ " Turn:" + xYturn[2]);
-		System.out.println("ERROR IN hintX_Y_Turn");
 		return null;
 	}
 
@@ -296,10 +290,10 @@ public class MyComponents extends JComponent {
 							model.getSquareWidth());
 			}
 		}
-		
+
 		for (Soldier soldier : model.movables) {
-				soldier.draw(g, model.getInitialXShift(), model.getInitialYShift(), model.getSquareHeight(),
-						model.getSquareWidth());
+			soldier.draw(g, model.getInitialXShift(), model.getInitialYShift(), model.getSquareHeight(),
+					model.getSquareWidth());
 		}
 	}
 
@@ -619,7 +613,7 @@ public class MyComponents extends JComponent {
 								selectedMouse.setThePositionAgainByIndex(model.initialXShift, model.initialYShift,
 										model.squareHeight, model.squareWidth);
 								timer.start();
-								
+
 							}
 						}
 
@@ -637,7 +631,7 @@ public class MyComponents extends JComponent {
 				}
 			}
 			wasInvisible_MOUSE = false;
-			if(!timer.isRunning())
+			if (!timer.isRunning())
 				selectedMouse = null;
 			repaint();
 		}
@@ -683,11 +677,12 @@ public class MyComponents extends JComponent {
 		}
 
 		private void gameFinished() {
-			for (int i = 0; i < model.getWalls().length; i++) {
-				System.out.println("Wall " + (i + 1) + " ( " + model.getWalls()[i].xInd + ", "
-						+ model.getWalls()[i].yInd + ", " + model.getWalls()[i].turn + ") ");
-
-			}
+			// for (int i = 0; i < model.getWalls().length; i++) {
+			// System.out.println("Wall " + (i + 1) + " ( " + model.getWalls()[i].xInd + ",
+			// "
+			// + model.getWalls()[i].yInd + ", " + model.getWalls()[i].turn + ") ");
+			//
+			// }
 			selectedKey = null;
 			repaint();
 			model.gameFinished = true;
@@ -699,7 +694,7 @@ public class MyComponents extends JComponent {
 				GameView.lastCompletedLevel = levelNo;
 			if (gv.managers.length == GameView.lastCompletedLevel) {
 
-				Object[] options = { "Return Level Menu"};
+				Object[] options = { "Return Level Menu" };
 				int n = JOptionPane.showOptionDialog(null, "You have finished the game!", "Congratulations!",
 						JOptionPane.OK_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
 
@@ -724,6 +719,7 @@ public class MyComponents extends JComponent {
 					cardLayout.show(card, "Level " + (levelNo + 1));
 					model.reset();
 					gv.managers[levelNo].startTimers();
+					gv.showDescription(levelNo + 1);
 				}
 				selectedKey = null;
 				selectedMouse = null;
