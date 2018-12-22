@@ -594,8 +594,27 @@ public class MyComponents extends JComponent {
 								model.addToLines(selectedMouse);
 								selectedMouse = null;
 							} else {
-								selectedMouse.remove();
-								selectedMouse = null;
+								for (int i = 0; i < timer.getActionListeners().length; i++) {
+									timer.removeActionListener(timer.getActionListeners()[i]);
+								}
+
+								timer.addActionListener(new ActionListener() {
+
+									@Override
+									public void actionPerformed(ActionEvent e) {
+										selectedMouse.remove();
+										selectedMouse = null;
+										timer.stop();
+									}
+								});
+
+								selectedMouse.setColor(Color.RED);
+								selectedMouse.setIndexes(wallStartXInd_MOUSE, wallStartYInd_MOUSE);
+								selectedMouse.setTurn(turnStartMouse);
+								selectedMouse.setThePositionAgainByIndex(model.initialXShift, model.initialYShift,
+										model.squareHeight, model.squareWidth);
+								timer.start();
+								
 							}
 						}
 
@@ -613,7 +632,8 @@ public class MyComponents extends JComponent {
 				}
 			}
 			wasInvisible_MOUSE = false;
-			selectedMouse = null;
+			if(!timer.isRunning())
+				selectedMouse = null;
 			repaint();
 		}
 
