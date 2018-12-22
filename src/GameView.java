@@ -187,6 +187,7 @@ public class GameView extends JFrame implements ActionListener {
 
 	private void createGameMenu() {
 		try {
+			/*
 			MyButton play = new MyButton("New Game", "Level Menu", btnSizeL, btnSizeScaledL, this);
 			play.addActionListener(new ActionListener() {
 				@Override
@@ -209,6 +210,7 @@ public class GameView extends JFrame implements ActionListener {
 					}
 				}
 			});
+			*/
 			MyButton loadGame = new MyButton("Load Game", "Level Menu", btnSizeL, btnSizeScaledL, this);
 			loadGame.addActionListener(new ActionListener() {
 
@@ -250,7 +252,7 @@ public class GameView extends JFrame implements ActionListener {
 
 			MyPanel gameMenu = new MyPanel("Game Menu", "src/img/img1.jpeg");
 
-			gameMenu.addButton(play);
+			//gameMenu.addButton(play);
 			gameMenu.addButton(loadGame);
 			gameMenu.addButton(settings);
 			gameMenu.addButton(howToPlay);
