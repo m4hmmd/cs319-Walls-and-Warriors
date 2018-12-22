@@ -15,105 +15,103 @@ public class Wall extends WallOrChain {
 		setTheRectanglePoints(squareHeight, squareWidth, shiftY);
 		g.setColor(getColor());
 
-		BufferedImage imgLine = new BufferedImage(wallLine.getWidth(null), wallLine.getHeight(null), BufferedImage.TYPE_INT_ARGB);
+		BufferedImage imgLine = new BufferedImage(wallLine.getWidth(null), wallLine.getHeight(null),
+				BufferedImage.TYPE_INT_ARGB);
 
-	    // Draw the image on to the buffered image
-	    Graphics2D bGr = imgLine.createGraphics();
-	    bGr.drawImage(wallLine, 0, 0, null);
-	    bGr.dispose();
+		// Draw the image on to the buffered image
+		Graphics2D bGr = imgLine.createGraphics();
+		bGr.drawImage(wallLine, 0, 0, null);
+		bGr.dispose();
 
-		// get width and height of the image 
-        int width = imgLine.getWidth(); 
-        int height = imgLine.getHeight(); 
-        //convert to sepia 
-        for(int y = 0; y < height; y++) 
-        { 
-            for(int x = 0; x < width; x++) 
-            { 
-                int p = imgLine.getRGB(x,y); 
-  
-                int a = (p>>24)&0xff; 
-                int R = (p>>16)&0xff; 
-                int G = (p>>8)&0xff; 
-                int B = p&0xff; 
-  
-                //calculate newRed, newGreen, newBlue 
-                int newRed = (int)((getColor().getRed()/300.0)*R); 
-                int newGreen = (int)((getColor().getGreen()/300.0)*G); 
-                int newBlue = (int)((getColor().getBlue()/300.0)*B); 
-  
-                //check condition 
-                if (newRed > 255) 
-                    R = 255; 
-                else
-                    R = newRed; 
-  
-                if (newGreen > 255) 
-                    G = 255; 
-                else
-                    G = newGreen; 
-  
-                if (newBlue > 255) 
-                    B = 255; 
-                else
-                    B = newBlue; 
-  
-                //set new RGB value 
-                p = (a<<24) | (R<<16) | (G<<8) | B; 
-  
-                imgLine.setRGB(x, y, p); 
-            } 
-        } 
-        
-        BufferedImage imgEdge = new BufferedImage(wallEdge.getWidth(null), wallEdge.getHeight(null), BufferedImage.TYPE_INT_ARGB);
+		// get width and height of the image
+		int width = imgLine.getWidth();
+		int height = imgLine.getHeight();
+		// convert to sepia
+		for (int y = 0; y < height; y++) {
+			for (int x = 0; x < width; x++) {
+				int p = imgLine.getRGB(x, y);
 
-	    // Draw the image on to the buffered image
-	    Graphics2D bGr2 = imgEdge.createGraphics();
-	    bGr2.drawImage(wallEdge, 0, 0, null);
-	    bGr2.dispose();
+				int a = (p >> 24) & 0xff;
+				int R = (p >> 16) & 0xff;
+				int G = (p >> 8) & 0xff;
+				int B = p & 0xff;
 
-		// get width and height of the image 
-        width = imgEdge.getWidth(); 
-        height = imgEdge.getHeight(); 
-        //convert to sepia 
-        for(int y = 0; y < height; y++) 
-        { 
-            for(int x = 0; x < width; x++) 
-            { 
-                int p = imgEdge.getRGB(x,y); 
-  
-                int a = (p>>24)&0xff; 
-                int R = (p>>16)&0xff; 
-                int G = (p>>8)&0xff; 
-                int B = p&0xff; 
-  
-                //calculate newRed, newGreen, newBlue 
-                int newRed = (int)((getColor().getRed()/300.0)*R); 
-                int newGreen = (int)((getColor().getGreen()/300.0)*G); 
-                int newBlue = (int)((getColor().getBlue()/300.0)*B); 
-  
-                //check condition 
-                if (newRed > 255) 
-                    R = 255; 
-                else
-                    R = newRed; 
-  
-                if (newGreen > 255) 
-                    G = 255; 
-                else
-                    G = newGreen; 
-  
-                if (newBlue > 255) 
-                    B = 255; 
-                else
-                    B = newBlue; 
-  
-                //set new RGB value 
-                p = (a<<24) | (R<<16) | (G<<8) | B; 
-  
-                imgEdge.setRGB(x, y, p); 
-            } 
-        } 
+				// calculate newRed, newGreen, newBlue
+				int newRed = (int) ((getColor().getRed() / 300.0) * R);
+				int newGreen = (int) ((getColor().getGreen() / 300.0) * G);
+				int newBlue = (int) ((getColor().getBlue() / 300.0) * B);
+
+				// check condition
+				if (newRed > 255)
+					R = 255;
+				else
+					R = newRed;
+
+				if (newGreen > 255)
+					G = 255;
+				else
+					G = newGreen;
+
+				if (newBlue > 255)
+					B = 255;
+				else
+					B = newBlue;
+
+				// set new RGB value
+				p = (a << 24) | (R << 16) | (G << 8) | B;
+
+				imgLine.setRGB(x, y, p);
+			}
+		}
+
+		BufferedImage imgEdge = new BufferedImage(wallEdge.getWidth(null), wallEdge.getHeight(null),
+				BufferedImage.TYPE_INT_ARGB);
+
+		// Draw the image on to the buffered image
+		Graphics2D bGr2 = imgEdge.createGraphics();
+		bGr2.drawImage(wallEdge, 0, 0, null);
+		bGr2.dispose();
+
+		// get width and height of the image
+		width = imgEdge.getWidth();
+		height = imgEdge.getHeight();
+		// convert to sepia
+		for (int y = 0; y < height; y++) {
+			for (int x = 0; x < width; x++) {
+				int p = imgEdge.getRGB(x, y);
+
+				int a = (p >> 24) & 0xff;
+				int R = (p >> 16) & 0xff;
+				int G = (p >> 8) & 0xff;
+				int B = p & 0xff;
+
+				// calculate newRed, newGreen, newBlue
+				int newRed = (int) ((getColor().getRed() / 300.0) * R);
+				int newGreen = (int) ((getColor().getGreen() / 300.0) * G);
+				int newBlue = (int) ((getColor().getBlue() / 300.0) * B);
+
+				// check condition
+				if (newRed > 255)
+					R = 255;
+				else
+					R = newRed;
+
+				if (newGreen > 255)
+					G = 255;
+				else
+					G = newGreen;
+
+				if (newBlue > 255)
+					B = 255;
+				else
+					B = newBlue;
+
+				// set new RGB value
+				p = (a << 24) | (R << 16) | (G << 8) | B;
+
+				imgEdge.setRGB(x, y, p);
+			}
+		}
 
 		if (visible) {
 
@@ -157,14 +155,15 @@ public class Wall extends WallOrChain {
 			Rectangle nearestToCenter = getNearestRectToCenter();
 			int CoorX = (int) nearestToCenter.getCenterX();
 			int CoorY = (int) nearestToCenter.getCenterY();
-
-			g.setColor(Color.GREEN);
-			g.drawRect(CoorX - healthWidth / 2, CoorY - healthHeight / 2 - lineWidth, healthWidth, healthHeight);
-			int r = (int) (510 * (1 - health * 1.0 / initialHealth));
-			int gr = (int) (510 * (health * 1.0 / initialHealth));
-			g.setColor(new Color(r >= 255 ? 255 : r, gr >= 255 ? 255 : gr, 0));
-			g.fillRect(CoorX - healthWidth / 2, CoorY - healthHeight / 2 - lineWidth,
-					(int) (healthWidth * (health * 1.0 / initialHealth)), healthHeight);
+			if (health != initialHealth) {
+				g.setColor(Color.GREEN);
+				g.drawRect(CoorX - healthWidth / 2, CoorY - healthHeight / 2 - lineWidth, healthWidth, healthHeight);
+				int r = (int) (510 * (1 - health * 1.0 / initialHealth));
+				int gr = (int) (510 * (health * 1.0 / initialHealth));
+				g.setColor(new Color(r >= 255 ? 255 : r, gr >= 255 ? 255 : gr, 0));
+				g.fillRect(CoorX - healthWidth / 2, CoorY - healthHeight / 2 - lineWidth,
+						(int) (healthWidth * (health * 1.0 / initialHealth)), healthHeight);
+			}
 		}
 		Graphics2D g2d = (Graphics2D) g;
 		for (Rectangle r : rectsOnBar) {
@@ -179,7 +178,7 @@ public class Wall extends WallOrChain {
 			} else
 				g.drawImage(imgLine, r.x, r.y, r.width, r.height, null);
 		}
-		
+
 		for (int i = 0; i < edgesX.length; i++) {
 			int xEdgeCoor = (int) (wallContainer.getCenterX() - (centerX) * squareWidthOnBar)
 					+ squareWidthOnBar * (edgesX[i]) - lineWidthOnBar / 2;
@@ -270,7 +269,7 @@ public class Wall extends WallOrChain {
 		}
 		return 0;
 	}
-	
+
 	private void drawWallOption(Graphics g, int initialXShift, int initialYShift, int squareHeight, int squareWidth) {
 		if (collapsed) {
 			g.setColor(Color.RED.brighter());
@@ -288,10 +287,25 @@ public class Wall extends WallOrChain {
 
 		g.drawString("" + (index + 1), wallContainer.x + squareWidth / 14, wallContainer.y + squareHeight / 6);
 
+		int healthWidth = squareWidth / 10 * 7;
+		int healthHeight = squareWidth / 20;
+
+		int CoorX = (int) wallContainer.getX();
+		int CoorY = (int) wallContainer.getY() + 2 + squareHeight;
+
+		if (health != initialHealth) {
+			g.setColor(Color.GREEN);
+			g.drawRect(CoorX - healthWidth / 2 + squareWidth / 2, CoorY - healthHeight / 2 - lineWidthOnBar,
+					healthWidth, healthHeight);
+			int r = (int) (510 * (1 - health * 1.0 / initialHealth));
+			int gr = (int) (510 * (health * 1.0 / initialHealth));
+			g.setColor(new Color(r >= 255 ? 255 : r, gr >= 255 ? 255 : gr, 0));
+			g.fillRect(CoorX - healthWidth / 2 + squareWidth / 2, CoorY - healthHeight / 2 - lineWidthOnBar,
+					(int) (healthWidth * (health * 1.0 / initialHealth)), healthHeight);
+		}
 	}
 
 	public int getWholeMapIndex() {
 		return Model.WALL;
 	}
 }
-
