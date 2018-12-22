@@ -158,6 +158,8 @@ public class Model {
 				s.sendToInitialPosition();
 				gameObjects[s.getX()][s.getY()] = s;
 			}
+			s.nextDir = 1;
+			s.nextPos = 0;
 		}
 	}
 
@@ -336,7 +338,6 @@ public class Model {
 			if (map[map.length - 1][j] != WALL && map[map.length - 1][j] != CHAIN)
 				numberOfEnemies += numberOfEnemiesOutside(map.length - 2, j, visited);
 		}
-
 		return numberOfEnemies == noOfEnemies;
 	}
 
