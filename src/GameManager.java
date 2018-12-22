@@ -28,7 +28,6 @@ public class GameManager {
 	private int mapLength;
 	private int size_of_soldiers;
 	private ArrayList <Integer> shape = new ArrayList <>();
-	
 
 	public GameManager(GameView gv, int levelNo, CardLayout cardLayout, JPanel card)throws IOException {
 		this.cardLayout = cardLayout;
@@ -59,7 +58,6 @@ public class GameManager {
 
 		for(int i = 0; i < fileSystem.getNumberOfArmada(); i++)
 		{
-			System.out.println(fileSystem.getNumberOfArmada());
 			if (fileSystem.getDataStructureX().getInst()[0])
 				model.addAllyArmada(fileSystem.getDataStructureX().getNum()[0], fileSystem.getDataStructureX().getNum()[1], fileSystem.getDataStructureX().getInst()[1], fileSystem.getDataStructureX().getRoute());
 			else
