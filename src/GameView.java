@@ -188,29 +188,20 @@ public class GameView extends JFrame implements ActionListener {
 	private void createGameMenu() {
 		try {
 			/*
-			MyButton play = new MyButton("New Game", "Level Menu", btnSizeL, btnSizeScaledL, this);
-			play.addActionListener(new ActionListener() {
-				@Override
-				public void actionPerformed(ActionEvent e) {
-
-					for (int i = 1; i < levelButtons.length; i++) {
-						levelButtons[i].setEnabled(false);
-						try {
-							Image img = ImageIO.read(new File("src/img/locked.png"));
-							Image newimg = img.getScaledInstance(50, 50, Image.SCALE_SMOOTH); // scale it the smooth way
-							levelButtons[i].setIcon(new ImageIcon(newimg));
-							Writer wr = new FileWriter("savedLevelNo.txt");
-							lastCompletedLevel = 0;
-							wr.write(GameView.lastCompletedLevel + ""); // write string
-							wr.flush();
-							wr.close();
-						} catch (Exception ex) {
-							System.out.println(ex);
-						}
-					}
-				}
-			});
-			*/
+			 * MyButton play = new MyButton("New Game", "Level Menu", btnSizeL,
+			 * btnSizeScaledL, this); play.addActionListener(new ActionListener() {
+			 * 
+			 * @Override public void actionPerformed(ActionEvent e) {
+			 * 
+			 * for (int i = 1; i < levelButtons.length; i++) {
+			 * levelButtons[i].setEnabled(false); try { Image img = ImageIO.read(new
+			 * File("src/img/locked.png")); Image newimg = img.getScaledInstance(50, 50,
+			 * Image.SCALE_SMOOTH); // scale it the smooth way levelButtons[i].setIcon(new
+			 * ImageIcon(newimg)); Writer wr = new FileWriter("savedLevelNo.txt");
+			 * lastCompletedLevel = 0; wr.write(GameView.lastCompletedLevel + ""); // write
+			 * string wr.flush(); wr.close(); } catch (Exception ex) {
+			 * System.out.println(ex); } } } });
+			 */
 			MyButton loadGame = new MyButton("Load Game", "Level Menu", btnSizeL, btnSizeScaledL, this);
 			loadGame.addActionListener(new ActionListener() {
 
@@ -227,7 +218,7 @@ public class GameView extends JFrame implements ActionListener {
 						e1.printStackTrace();
 					}
 
-					for (int i = 0; i < (last + 1 < levelButtons.length ? last + 1: last ); i++) {
+					for (int i = 0; i < (last + 1 < levelButtons.length ? last + 1 : last); i++) {
 						levelButtons[i].setIcon(null);
 						levelButtons[i].setEnabled(true);
 					}
@@ -252,7 +243,7 @@ public class GameView extends JFrame implements ActionListener {
 
 			MyPanel gameMenu = new MyPanel("Game Menu", "src/img/img1.jpeg");
 
-			//gameMenu.addButton(play);
+			// gameMenu.addButton(play);
 			gameMenu.addButton(loadGame);
 			gameMenu.addButton(settings);
 			gameMenu.addButton(howToPlay);
@@ -324,7 +315,6 @@ public class GameView extends JFrame implements ActionListener {
 				music.setText("Music: " + (SoundManager.playing ? "ON" : "OFF"));
 			}
 		});
-
 
 		sound.addActionListener(new ActionListener() {
 
@@ -404,42 +394,46 @@ public class GameView extends JFrame implements ActionListener {
 				currentLevelIndex = i + 1;
 
 				// description of Levels
-				if(currentLevelIndex==1) {
+				if (currentLevelIndex == 1) {
 					repaint();
-					Object[] options = {"Close"};
-					int n = JOptionPane.showOptionDialog(null, "Description of game objects", "Level 1",
-							JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
+					Object[] options = { "Close" };
+					int n = JOptionPane.showOptionDialog(null, "Try to surround your soldiers with the walls",
+							"Level 1", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options,
+							options[0]);
 
 				}
-				if(currentLevelIndex==2) {
+				if (currentLevelIndex == 2) {
 					repaint();
-					Object[] options = {"Close"};
-					int n = JOptionPane.showOptionDialog(null, "Description of game objects", "Level 2",
+					Object[] options = { "Close" };
+					int n1 = JOptionPane.showOptionDialog(null, "Be careful! Some enemies are moving", "Level 2",
 							JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
+					int n2 = JOptionPane.showOptionDialog(null, "Use chain for the lake", "Level 2",
+							JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
+					int n3 = JOptionPane.showOptionDialog(null,
+							"You cannot place wall or chain on edge of lake\n" + "However you can place wall next to forests but not inside!", "Level 2",
+							JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
+				}
+				if (currentLevelIndex == 3) {
+					repaint();
+//					Object[] options = { "Close" };
+//					int n = JOptionPane.showOptionDialog(null, "Description of game objects", "Level 3",
+//							JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
 
 				}
-				if(currentLevelIndex==3) {
+				if (currentLevelIndex == 4) {
 					repaint();
-					Object[] options = {"Close"};
-					int n = JOptionPane.showOptionDialog(null, "Description of game objects", "Level 3",
-							JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
+//					Object[] options = { "Close" };
+//					int n = JOptionPane.showOptionDialog(null, "Description of game objects", "Level 4",
+//							JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
 
 				}
-				if(currentLevelIndex==4) {
+				if (currentLevelIndex == 5) {
 					repaint();
-					Object[] options = {"Close"};
-					int n = JOptionPane.showOptionDialog(null, "Description of game objects", "Level 4",
-							JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
-
-				}if(currentLevelIndex==5) {
-					repaint();
-					Object[] options = {"Close"};
-					int n = JOptionPane.showOptionDialog(null, "Description of game objects", "Level 5",
-							JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
+//					Object[] options = { "Close" };
+//					int n = JOptionPane.showOptionDialog(null, "Description of game objects", "Level 5",
+//							JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
 
 				}
-
-
 
 			}
 		}
@@ -540,6 +534,7 @@ public class GameView extends JFrame implements ActionListener {
 		public void keyTyped(KeyEvent e) {
 
 		}
+
 		public boolean checkKey(KeyEvent e) {
 			int pressed = e.getKeyCode();
 
