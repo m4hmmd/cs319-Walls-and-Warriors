@@ -117,9 +117,10 @@ public class MyComponents extends JComponent {
 				model.getWalls()[randomWallIndex].setTheRectanglePoints(model.squareHeight, model.squareWidth,
 						model.initialYShift);
 				resume();
+				hintButton.setEnabled(false);
 				repaint();
 				// model.getWalls()[2].setThePositionAgainByIndex();
-				// hintButton.setEnabled(false);
+
 
 			}
 		});
@@ -215,6 +216,7 @@ public class MyComponents extends JComponent {
 	public void restart() {
 		model.reset();
 		t.restart();
+		hintButton.setEnabled(true);
 		selectedKey = null;
 		selectedMouse = null;
 	}
@@ -222,6 +224,7 @@ public class MyComponents extends JComponent {
 	public void returnLevelMenu() {
 		model.reset();
 		stopTimer();
+		hintButton.setEnabled(true);
 		timer.stop();
 		selectedKey = null;
 		selectedMouse = null;
