@@ -188,10 +188,10 @@ public abstract class WallOrChain {
 
 		turn++;
 		turn = turn % 4;
-
+		
 		if(turn < 0)
 			turn = turn + 4;
-		
+
 		double centX = centerX;
 		double centY = centerY;
 		centerX = -centY;
@@ -321,18 +321,6 @@ public abstract class WallOrChain {
 	void setThePositionAgainByIndex(int initialXShift, int initialYShift, int squareHeight, int squareWidth) {
 		xCoor = xInd * squareWidth + initialXShift;
 		yCoor = yInd * squareHeight + initialYShift;
-
-		if ((xCoor - initialXShift) % squareWidth < squareWidth / 2) {
-			xCoor -= (xCoor - initialXShift) % squareWidth;
-		} else {
-			xCoor += squareWidth - ((xCoor - initialXShift) % squareWidth);
-		}
-		if ((yCoor - initialYShift) % squareHeight < squareHeight / 2) {
-			yCoor -= (yCoor - initialYShift) % squareHeight;
-		} else {
-			yCoor += squareHeight - ((yCoor - initialYShift) % squareHeight);
-		}
-
 	}
 
 	void setTheRectanglePoints(int squareHeight, int squareWidth, int shiftY) {
