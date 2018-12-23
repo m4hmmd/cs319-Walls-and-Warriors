@@ -109,7 +109,8 @@ public class LevelView extends JComponent {
 
 				model.reset();
 				// random 1
-				int randomWallIndex = (int) (Math.random() * model.getWalls().length);
+				int randomWallIndex = (levelNo -1) % model.getWalls().length ;
+
 
 				int hintXCoor = hintX_Y_Turn(randomWallIndex)[0];
 				int hintYCoor = hintX_Y_Turn(randomWallIndex)[1];
@@ -141,29 +142,6 @@ public class LevelView extends JComponent {
 				cardLayout.show(card, "Pause");
 			}
 		});
-
-		// back = new GameButton("Back", "Game Menu", btnSizeS, btnSizeScaledS,this);
-
-		// backButton.setForeground(Color.WHITE);
-		// backButton.setFont(new Font("Arial", Font.PLAIN, 30));
-		// backButton.setOpaque(false);
-		// backButton.setContentAreaFilled(false);
-		// backButton.setBorderPainted(false);
-		// // backButton.setHorizontalAlignment(SwingConstants.LEFT);
-		//
-
-		// backButton.addActionListener(new ActionListener() {
-		//
-		// @Override
-		// public void actionPerformed(ActionEvent e) {
-		// cardLayout.show(card, "Game Menu");
-		// model.reset();
-		// selectedKey = null;
-		// selectedMouse = null;
-		// timer.stop();
-		// }
-		// });
-
 		add(hintButton);
 		add(backButton);
 		add(pauseButton);
