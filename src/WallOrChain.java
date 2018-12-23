@@ -1,1222 +1,532 @@
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.geom.Area;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Iterator;
 
+import javax.imageio.ImageIO;
 import javax.swing.JOptionPane;
-import javax.swing.Timer;
 
-public class Model {
-	public static final int CORNER = -3;
-	public static final int EDGE_OF_LAKE = -2;
-	public static final int EDGE_POINTS = -1;
-	public static final int EMPTY = 0;
-	public static final int CASTLE = 1;
-	public static final int ALLY = 2;
-	public static final int ENEMY = 3;
-	public static final int FOREST = 4;
-	public static final int LAKE = 5;
-	public static final int WALL = 6;
-	public static final int CHAIN = 7;
-	public static final int VALID_FOR_WALL = 8;
-	public static final int VALID_FOR_CHAIN = 9;
-	public static final int ALLY_ARMADA = 10;
-	public static final int ENEMY_ARMADA = 11;
-	public static final int UP = 0;
-	public static final int DOWN = 1;
-	public static final int LEFT = 2;
-	public static final int RIGHT = 3;
+public abstract class WallOrChain {
 
-	private WallOrChain[] walls;
-	private ArrayList<Soldier> soldiers;
-	public ArrayList<Soldier> movables;
-	private Castle castle;
-	public GameObject[][] gameObjects;
-	int noOfEnemies;
+	private static final double MIN_ALPHA = 75;
 
-	int[][] map;
+	int lineWidthOnBar = 4, squareWidthOnBar = 20, squareHeightOnBar = 20;
 
-	int levelNo;
-	boolean gameFinished = false;
-	int squareHeight = 70, squareWidth = 80, lineWidth = squareWidth / 10, initialXShift = 200, initialYShift = 80,
-			mapWidth, mapLength, barShift = 75;
+	int index;
+	int health;
+	int initialHealth;
+	Color c;
+	Color originalColor;
+	int xInd, yInd, xCoor, yCoor, turn;
+	int[] initialXCoors;
+	int[] initialYCoors;
+	int[] edgesX, edgesY;
+	double centerX, centerY;
+	boolean visible = false;
+	ArrayList<Point> points = new ArrayList<Point>();
+	ArrayList<Rectangle> rects = new ArrayList<Rectangle>();
+	ArrayList<Rectangle> rectsOnBar = new ArrayList<Rectangle>();
+	Rectangle nearestRectToCenter;
+	Rectangle wallContainer = new Rectangle(0, 0, 0, 0);
+	int lineWidth;
+	int mapWidth;
+	int mapHeight;
+	boolean collapsed = false;
+	Area area = null;
+	Area areaForSquare = null;
+	Image wallLine = null;
+	Image wallEdge = null;
+	Image chainLine = null;
+	Image chainEdge = null;
+	boolean messageShown = false;
+	public WallOrChain(int x_Ind, int y_Ind, int[] xCoors, int[] yCoors, Color c, int index, int initialXShift,
+			int initialYShift, int squareHeight, int squareWidth, int mapHeight, int mapWidth) {
+		initialHealth = 500;
+		health = initialHealth;
+		initialXCoors = new int[xCoors.length];
+		for (int i = 0; i < xCoors.length; i++)
+			initialXCoors[i] = xCoors[i];
 
-	public Model(int mapWidth, int mapLength, Castle castle, int levelNo) {
-		this.mapLength = mapLength;
-		this.mapWidth = mapWidth;
-		this.castle = castle;
-		this.levelNo = levelNo;
-		soldiers = new ArrayList<>();
-		movables = new ArrayList<>();
+		initialYCoors = new int[yCoors.length];
+		for (int i = 0; i < yCoors.length; i++)
+			initialYCoors[i] = yCoors[i];
 
-		map = new int[2 * mapWidth + 1][2 * mapLength + 1];
+		edgesX = new int[xCoors.length - 1 >= 0 ? xCoors.length - 2 : 0];
+		edgesY = new int[xCoors.length - 1 >= 0 ? xCoors.length - 2 : 0];
 
-		gameObjects = new GameObject[mapWidth][mapLength];
+		double totalX = xCoors[0] / 2.0;
+		double totalY = yCoors[0] / 2.0;
+		points.add(new Point(xCoors[0], yCoors[0]));
 
-		for (int i = 0; i < map.length; i++) {
-			for (int j = 0; j < map[0].length; j++) {
-				if (i % 2 == 0 && j % 2 == 1 || i % 2 == 1 && j % 2 == 0)
-					map[i][j] = VALID_FOR_WALL;
-				else if (i % 2 == 0 && j % 2 == 0) {
-					map[i][j] = EDGE_POINTS;
-				}
-			}
+		for (int i = 1; i < xCoors.length - 1; i++) {
+			totalX += xCoors[i];
+			totalY += yCoors[i];
+			points.add(new Point(xCoors[i], yCoors[i]));
 		}
+		totalX += xCoors[xCoors.length - 1] / 2.0;
+		totalY += yCoors[yCoors.length - 1] / 2.0;
 
-		// unused lines
-		map[0][1] = CORNER;
-		map[1][0] = CORNER;
+		points.add(new Point(xCoors[xCoors.length - 1], yCoors[yCoors.length - 1]));
 
-		map[map.length - 2][0] = CORNER;
-		map[map.length - 1][1] = CORNER;
+		setEdges();
+		centerX = totalX / (xCoors.length - 1);
+		centerY = totalY / (yCoors.length - 1);
 
-		map[0][map[0].length - 2] = CORNER;
-		map[1][map[0].length - 1] = CORNER;
+		xInd = x_Ind;
+		yInd = y_Ind;
 
-		map[map.length - 1][map[0].length - 2] = CORNER;
-		map[map.length - 2][map[0].length - 1] = CORNER;
+		xCoor = initialXShift + xInd * squareWidth;
+		yCoor = initialYShift + yInd * squareHeight;
 
-		// Adding them to the Map
-		gameObjects[castle.getX()][castle.getY()] = castle;
-		gameObjects[castle.getX1()][castle.getY1()] = castle;
-
-		map[castle.getX() * 2 + 1][castle.getY() * 2 + 1] = CASTLE;
-		map[castle.getX1() * 2 + 1][castle.getY1() * 2 + 1] = CASTLE;
-
-		// invalidate the line segment occupied by the castle
-		int leftOne = (castle.x == castle.x1) ? castle.x : ((castle.x > castle.x1) ? castle.x1 : castle.x);
-		int topOne = (castle.y == castle.y1) ? castle.y : ((castle.y > castle.y1) ? castle.y1 : castle.y);
-		if (castle.x == castle.x1) {
-			map[leftOne * 2 + 1][topOne * 2 + 2] = CASTLE;
-		} else {
-			map[leftOne * 2 + 2][topOne * 2 + 1] = CASTLE;
-		}
-
-		walls = new WallOrChain[0];
-	}
-
-	void reset() { ///////
-		map = new int[2 * mapWidth + 1][2 * mapLength + 1];
-		soldiers.clear();
-		gameFinished = false;
-		noOfEnemies = 0;
-
-		for (int i = 0; i < map.length; i++) {
-			for (int j = 0; j < map[0].length; j++) {
-				if (i % 2 == 0 && j % 2 == 1 || i % 2 == 1 && j % 2 == 0)
-					map[i][j] = VALID_FOR_WALL;
-				else if (i % 2 == 0 && j % 2 == 0) {
-					map[i][j] = EDGE_POINTS;
-				}
-			}
-		}
-
-		// unused lines
-		map[0][1] = CORNER;
-		map[1][0] = CORNER;
-
-		map[map.length - 2][0] = CORNER;
-		map[map.length - 1][1] = CORNER;
-
-		map[0][map[0].length - 2] = CORNER;
-		map[1][map[0].length - 1] = CORNER;
-
-		map[map.length - 1][map[0].length - 2] = CORNER;
-		map[map.length - 2][map[0].length - 1] = CORNER;
-
-		map[castle.getX() * 2 + 1][castle.getY() * 2 + 1] = CASTLE;
-		map[castle.getX1() * 2 + 1][castle.getY1() * 2 + 1] = CASTLE;
-
-		resetMovableSoldiers();
-		stopTimers();
-		movables.clear();
-
-		// invalidate the line segment occupied by the castle
-		int leftOne = (castle.x == castle.x1) ? castle.x : ((castle.x > castle.x1) ? castle.x1 : castle.x);
-		int topOne = (castle.y == castle.y1) ? castle.y : ((castle.y > castle.y1) ? castle.y1 : castle.y);
-		if (castle.x == castle.x1) {
-			map[leftOne * 2 + 1][topOne * 2 + 2] = CASTLE;
-		} else {
-			map[leftOne * 2 + 2][topOne * 2 + 1] = CASTLE;
-		}
-
-		for (WallOrChain w : walls) {
-			w.reset(initialXShift, initialYShift, squareHeight, squareWidth, lineWidth);
-		}
-		resetWholeMapWithRespectToMap();
-	}
-
-	private void resetMovableSoldiers() {
-		for (Soldier s : movables) {
-			if (s.isArmada() && !s.isInInitialPosition()) {
-				gameObjects[s.getX()][s.getY()] = new Lake(s.getX(), s.getY());
-				s.sendToInitialPosition();
-				gameObjects[s.getX()][s.getY()] = s;
-			} else {
-				gameObjects[s.getX()][s.getY()] = null;
-				s.sendToInitialPosition();
-				gameObjects[s.getX()][s.getY()] = s;
-			}
-			s.nextDir = 1;
-			s.nextPos = 0;
-		}
-	}
-
-	public void addSoldier(boolean ally, boolean movable, int i, int j, ArrayList<Integer> route) {
-		Soldier s = null;
-		if (ally)
-			s = new Ally(movable, i, j, route);
-		else {
-			s = new Enemy(movable, i, j, route);
-			noOfEnemies++;
-		}
-		if (movable) {
-			movables.add(s);
-			s.addActionListener(new MovableTimerActionListener(s, route));
-		}
-		soldiers.add(s);
-		gameObjects[i][j] = s;
-		map[s.getX() * 2 + 1][s.getY() * 2 + 1] = s.getWholeMapIndex();
-	}
-
-	private void resetWholeMapWithRespectToMap() {
-		for (int i = 0; i < gameObjects.length; i++) {
-			for (int j = 0; j < gameObjects[0].length; j++) {
-				if (gameObjects[i][j] instanceof Lake) {
-					gameObjects[i][j] = null;
-					addLake(i, j);
-				} else if (gameObjects[i][j] instanceof Forest) {
-					gameObjects[i][j] = null;
-					addForest(i, j);
-				} else if (gameObjects[i][j] instanceof AllyArmada) {
-					Soldier s = (Soldier) (gameObjects[i][j]);
-					gameObjects[i][j] = null;
-					addAllyArmada(i, j, s.movable, s.route);
-				} else if (gameObjects[i][j] instanceof EnemyArmada) {
-					Soldier s = (Soldier) (gameObjects[i][j]);
-					gameObjects[i][j] = null;
-					addEnemyArmada(i, j, s.movable, s.route);
-				} else if (gameObjects[i][j] instanceof Soldier) {
-					Soldier s = (Soldier) (gameObjects[i][j]);
-					gameObjects[i][j] = null;
-					addSoldier(s instanceof Ally, s.movable, i, j, s.route);
-				}
-			}
-		}
-	}
-
-	void removeFromLines(WallOrChain w) {
-		for (int i = 0; i < w.points.size() - 1; i++) {
-			int leftOne = (w.points.get(i).x == w.points.get(i + 1).x) ? w.points.get(i).x
-					: ((w.points.get(i).x > w.points.get(i + 1).x) ? w.points.get(i + 1).x : w.points.get(i).x);
-			int topOne = (w.points.get(i).y == w.points.get(i + 1).y) ? w.points.get(i).y
-					: ((w.points.get(i).y > w.points.get(i + 1).y) ? w.points.get(i + 1).y : w.points.get(i).y);
-			if (w.points.get(i).x == w.points.get(i + 1).x) {
-				if (w instanceof Wall) {
-					map[(w.xInd + leftOne) * 2][(w.yInd + topOne) * 2 + 1] = VALID_FOR_WALL;
-				} else {
-					map[(w.xInd + leftOne) * 2][(w.yInd + topOne) * 2 + 1] = VALID_FOR_CHAIN;
-				}
-			} else {
-				if (w instanceof Wall) {
-					map[(w.xInd + leftOne) * 2 + 1][(w.yInd + topOne) * 2] = VALID_FOR_WALL;
-				} else {
-					map[(w.xInd + leftOne) * 2 + 1][(w.yInd + topOne) * 2] = VALID_FOR_CHAIN;
-				}
-			}
-		}
-
-		for (int i = 0; i < w.edgesX.length; i++) {
-			map[(w.xInd + w.edgesX[i]) * 2][(w.yInd + w.edgesY[i]) * 2] = EMPTY;
-		}
-	}
-
-	boolean onAvailablePlace(WallOrChain w) {
-		if (outOfScreen(w))
-			return false;
-		for (int i = 0; i < w.points.size() - 1; i++) {
-			int leftOne = (w.points.get(i).x == w.points.get(i + 1).x) ? w.points.get(i).x
-					: ((w.points.get(i).x > w.points.get(i + 1).x) ? w.points.get(i + 1).x : w.points.get(i).x);
-			int topOne = (w.points.get(i).y == w.points.get(i + 1).y) ? w.points.get(i).y
-					: ((w.points.get(i).y > w.points.get(i + 1).y) ? w.points.get(i + 1).y : w.points.get(i).y);
-			int valid = 0;
-
-			if (w instanceof Wall)
-				valid = VALID_FOR_WALL;
-			else
-				valid = VALID_FOR_CHAIN;
-			if (w.points.get(i).x == w.points.get(i + 1).x
-					&& (map[(w.xInd + leftOne) * 2][(w.yInd + topOne) * 2 + 1] != valid)) {
-				return false;
-			} else if (w.points.get(i).y == w.points.get(i + 1).y
-					&& (map[(w.xInd + leftOne) * 2 + 1][(w.yInd + topOne) * 2] != valid)) {
-				return false;
-			}
-		}
-		for (int i = 0; i < w.edgesX.length; i++) {
-			if (map[(w.xInd + w.edgesX[i]) * 2][(w.yInd + w.edgesY[i]) * 2] == WALL
-					|| map[(w.xInd + w.edgesX[i]) * 2][(w.yInd + w.edgesY[i]) * 2] == CHAIN) {
-				return false;
-			}
-		}
-		return true;
-	}
-
-	boolean isAvailablePlaceFor(WallOrChain w, int indexX, int indexY) {
-		if (indexX < 0 || indexY < 0)
-			return false;
-
-		for (int i = 0; i < w.points.size() - 1; i++) {
-			int leftOne = (w.points.get(i).x == w.points.get(i + 1).x) ? w.points.get(i).x
-					: ((w.points.get(i).x > w.points.get(i + 1).x) ? w.points.get(i + 1).x : w.points.get(i).x);
-			int topOne = (w.points.get(i).y == w.points.get(i + 1).y) ? w.points.get(i).y
-					: ((w.points.get(i).y > w.points.get(i + 1).y) ? w.points.get(i + 1).y : w.points.get(i).y);
-			int valid = 0;
-
-			if (w instanceof Wall)
-				valid = VALID_FOR_WALL;
-			else
-				valid = VALID_FOR_CHAIN;
-			if (w.points.get(i).x == w.points.get(i + 1).x
-					&& (map[(indexX + leftOne) * 2][(indexY + topOne) * 2 + 1] != valid)) {
-				return false;
-			} else if (w.points.get(i).y == w.points.get(i + 1).y
-					&& (map[(indexX + leftOne) * 2 + 1][(indexY + topOne) * 2] != valid)) {
-				return false;
-			}
-		}
-		for (int i = 0; i < w.edgesX.length; i++) {
-			if (map[(indexX + w.edgesX[i]) * 2][(indexY + w.edgesY[i]) * 2] == WALL
-					|| map[(w.xInd + w.edgesX[i]) * 2][(w.yInd + w.edgesY[i]) * 2] == CHAIN) {
-				return false;
-			}
-		}
-		return true;
-	}
-
-	void addToLines(WallOrChain w) {
-		int index = w.getWholeMapIndex();
-		for (int i = 0; i < w.points.size() - 1; i++) {
-			int leftOne = (w.points.get(i).x == w.points.get(i + 1).x) ? w.points.get(i).x
-					: ((w.points.get(i).x > w.points.get(i + 1).x) ? w.points.get(i + 1).x : w.points.get(i).x);
-			int topOne = (w.points.get(i).y == w.points.get(i + 1).y) ? w.points.get(i).y
-					: ((w.points.get(i).y > w.points.get(i + 1).y) ? w.points.get(i + 1).y : w.points.get(i).y);
-			if (w.points.get(i).x == w.points.get(i + 1).x) {
-				map[(w.xInd + leftOne) * 2][(w.yInd + topOne) * 2 + 1] = index;
-			} else {
-				map[(w.xInd + leftOne) * 2 + 1][(w.yInd + topOne) * 2] = index;
-			}
-		}
-
-		for (int i = 0; i < w.edgesX.length; i++) {
-			map[(w.xInd + w.edgesX[i]) * 2][(w.yInd + w.edgesY[i]) * 2] = index;
-		}
-	}
-
-	public boolean isGameFinished() {
-
-		ArrayList<Point> visited = new ArrayList<Point>();
-		int numberOfEnemies = 0;
-
-		for (int i = 1; i < map.length; i = i + 2) {
-			if (map[i][0] != WALL && map[i][0] != CHAIN)
-				numberOfEnemies += numberOfEnemiesOutside(i, 1, visited);
-		}
-
-		for (int i = 1; i < map.length; i = i + 2) {
-			if (map[i][map[0].length - 1] != WALL && map[i][map[0].length - 1] != CHAIN)
-				numberOfEnemies += numberOfEnemiesOutside(i, map[0].length - 2, visited);
-		}
-
-		for (int j = 1; j < map[0].length; j = j + 2) {
-			if (map[0][j] != WALL && map[0][j] != CHAIN)
-				numberOfEnemies += numberOfEnemiesOutside(1, j, visited);
-		}
-
-		for (int j = 1; j < map[0].length; j = j + 2) {
-			if (map[map.length - 1][j] != WALL && map[map.length - 1][j] != CHAIN)
-				numberOfEnemies += numberOfEnemiesOutside(map.length - 2, j, visited);
-		}
-		return numberOfEnemies == noOfEnemies;
-	}
-
-	public int numberOfEnemiesOutside(int i, int j, ArrayList<Point> visited) {
-		if (visited.contains(new Point(i, j)))
-			return 0;
-		if (j < 0)
-			return 0;
-		if (i < 0)
-			return 0;
-		if (j > map[0].length - 1)
-			return 0;
-		if (i > map.length - 1)
-			return 0;
-		if (map[i][j] == ALLY || map[i][j] == ALLY_ARMADA || map[i][j] == CASTLE)
-			return -80;
-
-		visited.add(new Point(i, j));
-		int cUp = 0;
-		int cDown = 0;
-		int cRight = 0;
-		int cLeft = 0;
-
-		if (map[i][j + 1] != WALL && map[i][j + 1] != CHAIN)
-			cUp = numberOfEnemiesOutside(i, j + 2, visited);
-		if (map[i][j - 1] != WALL && map[i][j - 1] != CHAIN)
-			cDown = numberOfEnemiesOutside(i, j - 2, visited);
-		if (map[i + 1][j] != WALL && map[i + 1][j] != CHAIN)
-			cRight = numberOfEnemiesOutside(i + 2, j, visited);
-		if (map[i - 1][j] != WALL && map[i - 1][j] != CHAIN)
-			cLeft = numberOfEnemiesOutside(i - 2, j, visited);
-
-		int thisCell = map[i][j] == ENEMY || map[i][j] == ENEMY_ARMADA ? 1 : 0;
-
-		if (cUp == -80 || cDown == -80 || cRight == -80 || cLeft == -80)
-			return -80;
-		return thisCell + cUp + cDown + cRight + cLeft;
-	}
-
-	public void printWholeMap() {
-
-		int[][] array = transpose(map);
-
-		System.out.println("---------------------------------------------------");
-
-		for (int i = 0; i < array.length; i++) {
-			for (int j = 0; j < array[0].length; j++) {
-				System.out.printf("%4d", array[i][j]);
-			}
-			System.out.println();
-		}
-		System.out.println("---------------------------------------------------");
-	}
-
-	public static int[][] transpose(int arr[][]) {
-		int m = arr.length;
-		int n = arr[0].length;
-		int ret[][] = new int[n][m];
-
-		for (int i = 0; i < m; i++) {
-			for (int j = 0; j < n; j++) {
-				ret[j][i] = arr[i][j];
-			}
-		}
-
-		return ret;
-	}
-
-	boolean outOfScreen(WallOrChain w) {
-		ArrayList<Point> points = w.points;
+		int nextXCoor = xCoor;
+		int nextYCoor = yCoor;
 		for (int i = 0; i < points.size() - 1; i++) {
-			int leftMost = points.get(i).x;
-			int rightMost = points.get(i).x;
-			int topMost = points.get(i).y;
-			int bottomMost = points.get(i).y;
-
-			if (leftMost > points.get(i + 1).x) {
-				leftMost = points.get(i + 1).x;
+			if (points.get(i).x < points.get(i + 1).x) {
+				rects.add(new Rectangle(nextXCoor, nextYCoor - lineWidth / 2, squareWidth, lineWidth));
+				nextXCoor = nextXCoor + squareWidth;
+			} else if (points.get(i).y < points.get(i + 1).y) {
+				rects.add(new Rectangle(nextXCoor - lineWidth / 2, nextYCoor, lineWidth, squareHeight));
+				nextYCoor = nextYCoor + squareHeight;
+			} else if (points.get(i).x > points.get(i + 1).x) {
+				rects.add(new Rectangle(nextXCoor - squareWidth, nextYCoor - lineWidth / 2, squareWidth, lineWidth));
+				nextXCoor = nextXCoor - squareWidth;
+			} else if (points.get(i).y > points.get(i + 1).y) {
+				rects.add(new Rectangle(nextXCoor - lineWidth / 2, nextYCoor - squareHeight, lineWidth, squareHeight));
+				nextYCoor = nextYCoor - squareHeight;
 			}
-			if (rightMost < points.get(i + 1).x) {
-				rightMost = points.get(i + 1).x;
-			}
-			if (topMost > points.get(i + 1).y) {
-				topMost = points.get(i + 1).y;
-			}
-			if (bottomMost < points.get(i + 1).y) {
-				bottomMost = points.get(i + 1).y;
-			}
-			if (leftMost + w.xInd == 0 && topMost + w.yInd == 0)
-				return true;
-			if (leftMost + w.xInd == 0 && bottomMost + w.yInd == mapLength)
-				return true;
-			if (rightMost + w.xInd == mapWidth && topMost + w.yInd == 0)
-				return true;
-			if (rightMost + w.xInd == mapWidth && bottomMost + w.yInd == mapLength)
-				return true;
-
-			if ((leftMost + w.xInd < 0) | (rightMost + w.xInd > mapWidth) | (topMost + w.yInd < 0)
-					| (bottomMost + w.yInd > mapLength))
-				return true;
 		}
-		return false;
-	}
 
-	public void setWalls(WallOrChain[] walls2) {
-		this.walls = walls2;
-	}
-
-	public void addWallOrChain(boolean wall, int... points) {
-		int[] yCoors = new int[points.length + 1];
-		int[] xCoors = new int[points.length + 1];
-
-		setXandYCoors(xCoors, yCoors, points);
-
-		WallOrChain w = null;
-
-		if (wall)
-			w = new Wall(-1, -1, xCoors, yCoors, getColor(walls.length), walls.length, initialXShift, initialYShift,
-					squareWidth, squareWidth, mapLength, mapWidth);
-		else
-			w = new Chain(-1, -1, xCoors, yCoors, getColor(walls.length), walls.length, initialXShift, initialYShift,
-					squareWidth, squareWidth, mapLength, mapWidth);
-
-		addWallOrChain(w);
-		updateWallContainers();
-
-	}
-
-	private void addWallOrChain(WallOrChain w) {
-		WallOrChain[] wallsTemp = new WallOrChain[walls.length + 1];
-		int i = 0;
-		for (WallOrChain wOrC : walls) {
-			wallsTemp[i++] = wOrC;
+		nextXCoor = (int) (wallContainer.getCenterX() - (centerX) * squareHeightOnBar);
+		nextYCoor = (int) (wallContainer.getCenterY() - (centerY) * squareHeightOnBar);
+		for (int i = 0; i < points.size() - 1; i++) {
+			if (points.get(i).x < points.get(i + 1).x) {
+				rectsOnBar.add(new Rectangle(nextXCoor, nextYCoor - lineWidthOnBar / 2,
+						squareWidthOnBar, lineWidthOnBar));
+				nextXCoor = nextXCoor + squareWidthOnBar;
+			} else if (points.get(i).y < points.get(i + 1).y) {
+				rectsOnBar.add(new Rectangle(nextXCoor - lineWidthOnBar / 2, nextYCoor,
+						lineWidthOnBar, squareHeightOnBar));
+				nextYCoor = nextYCoor + squareHeightOnBar;
+			} else if (points.get(i).x > points.get(i + 1).x) {
+				rectsOnBar.add(new Rectangle(nextXCoor - squareWidthOnBar,
+						nextYCoor - lineWidthOnBar / 2, squareWidthOnBar, lineWidthOnBar));
+				nextXCoor = nextXCoor - squareWidthOnBar;
+			} else if (points.get(i).y > points.get(i + 1).y) {
+				rectsOnBar.add(new Rectangle(nextXCoor - lineWidthOnBar / 2,
+						nextYCoor - squareHeightOnBar, lineWidthOnBar, squareHeightOnBar));
+				nextYCoor = nextYCoor - squareHeightOnBar;
+			}
 		}
-		wallsTemp[walls.length] = w;
-		walls = wallsTemp;
+		this.c = c;
+		originalColor = c;
+		this.index = index;
+		this.mapWidth = mapWidth;
+		this.mapHeight = mapHeight;
+
+		try {
+			wallLine = ImageIO.read(new File("src/img/wall.png"));
+			wallEdge = ImageIO.read(new File("src/img/edge.png"));
+			chainLine = ImageIO.read(new File("src/img/chain.png"));
+			chainEdge = ImageIO.read(new File("src/img/chain-edge.png"));
+		} catch (IOException e) {}
+		
+		nearestRectToCenter = getNearestRectangleToCenter(squareWidth, squareHeight);
 	}
 
-	private void setXandYCoors(int[] xCoors, int[] yCoors, int[] points) {
+	public Rectangle getNearestRectToCenter() {
+		return nearestRectToCenter;
+	}
+
+	private void setEdges() {
 		int currentX = 0;
 		int currentY = 0;
-		int i = 0;
+		int UP = 0;
+		int DOWN = 1;
+		int LEFT = 2;
+		int RIGHT = 3;
 
-		for (int p : points) {
-			xCoors[i] = currentX;
-			yCoors[i] = currentY;
-			if (p == UP) {
+		int[] directions = new int[points.size() - 1];
+
+		for (int i = 0; i < points.size() - 1; i++) {
+			if (points.get(i).x > points.get(i + 1).x) {
+				directions[i] = LEFT;
+			} else if (points.get(i).x < points.get(i + 1).x) {
+				directions[i] = RIGHT;
+			} else if (points.get(i).y > points.get(i + 1).y) {
+				directions[i] = UP;
+			} else if (points.get(i).y < points.get(i + 1).y) {
+				directions[i] = DOWN;
+			}
+		}
+
+		for (int i = 0; i < points.size() - 2; i++) {
+			if (directions[i] == UP) {
 				currentY--;
-			} else if (p == DOWN) {
+			} else if (directions[i] == DOWN) {
 				currentY++;
-			} else if (p == LEFT) {
+			} else if (directions[i] == LEFT) {
 				currentX--;
-			} else if (p == RIGHT) {
+			} else if (directions[i] == RIGHT) {
 				currentX++;
 			}
-			i++;
+			edgesX[i] = currentX;
+			edgesY[i] = currentY;
 		}
-		xCoors[i] = currentX;
-		yCoors[i] = currentY;
 	}
 
-	private void updateWallContainers() {
-		for (int i = 0; i < walls.length; i++) {
-			walls[i].setWallContainer(
-					new Rectangle(initialXShift + squareWidth * i + (mapWidth - walls.length) * (squareWidth - 2) / 2,
-							initialYShift + squareHeight * (mapLength + 1), squareWidth, squareHeight));
-			walls[i].setRectangles();
-		}
-
-	}
-
-	private Color getColor(int index) {
-		Color c = new Color(225, 128, 8).darker().darker();
-
-		for (; index > 0; index--) {
-			c = c.brighter();
-		}
+	Color getColor() {
 		return c;
 	}
 
-	public WallOrChain[] getWalls() {
-		return walls;
+	abstract void draw(Graphics g, int initialXShift, int initialYShift, int squareHeight, int squareWidth, int shift);
+
+	void turnRight() {
+		for (Point p : points) {
+			int px = p.x;
+			int py = p.y;
+
+			p.x = -py;
+			p.y = px;
+		}
+
+		turn++;
+		turn = turn % 4;
+		
+		if(turn < 0)
+			turn = turn + 4;
+
+		double centX = centerX;
+		double centY = centerY;
+		centerX = -centY;
+		centerY = centX;
+
+		Point newInd = rotateAroundPoint(new Point(xInd, yInd), new Point((int) centX + xInd, (int) centY + yInd), 1);
+		xInd = newInd.x;
+		yInd = newInd.y;
+		setEdges();
+		setRectangles();
 	}
 
-	public ArrayList<Soldier> getSoldiers() {
-		return soldiers;
+	void turnLeft() {
+		for (Point p : points) {
+			int px = p.x;
+			int py = p.y;
+
+			p.x = py;
+			p.y = -px;
+		}
+
+		turn--;
+		turn = turn % 4;
+
+		if(turn < 0)
+			turn = turn + 4;
+		
+		double centX = centerX;
+		double centY = centerY;
+		centerX = centY;
+		centerY = -centX;
+
+		Point newInd = rotateAroundPoint(new Point(xInd, yInd), new Point((int) centX + xInd, (int) centY + yInd), 0);
+		xInd = newInd.x;
+		yInd = newInd.y;
+		setEdges();
+		setRectangles();
 	}
 
-	public Castle getCastle() {
-		return castle;
+	public Point rotateAroundPoint(Point p, Point c, int turn) {
+		int angle = -90;
+		if (turn == 1)
+			angle = 90;
+		Point newxy = new Point(p.x, p.y);
+		p.x -= c.x;
+		p.y -= c.y;
+
+		newxy.x = (int) (p.x * cos(angle) - p.y * sin(angle));
+		newxy.y = (int) (p.x * sin(angle) + p.y * cos(angle));
+
+		p.x = newxy.x + c.x;
+		p.y = newxy.y + c.y;
+
+		return p;
 	}
 
-	public GameObject[][] getMap() {
-		return gameObjects;
+	private double cos(int angle) {
+		return Math.cos(Math.toRadians(angle));
 	}
 
-	public int getSquareHeight() {
-		return squareHeight;
+	private double sin(int angle) {
+		return Math.sin(Math.toRadians(angle));
 	}
 
-	public int getSquareWidth() {
-		return squareWidth;
-	}
+	void setRectangles() {
 
-	public int getInitialXShift() {
-		return initialXShift;
-	}
+		int nextXCoor = (int) (wallContainer.getCenterX() - (centerX) * squareWidthOnBar);
+		int nextYCoor = (int) (wallContainer.getCenterY() - (centerY) * squareHeightOnBar);
 
-	public int getInitialYShift() {
-		return initialYShift;
-	}
+		int line = (lineWidthOnBar) / 2;
 
-	public void setInitialXShift(int xShift) {
-		initialXShift = xShift;
-	}
+		areaForSquare = new Area();
 
-	public void setInitialYShift(int yShift) {
-		initialYShift = yShift;
-	}
-
-	public int getMapWidth() {
-		return mapWidth;
-	}
-
-	public int getMapLength() {
-		return mapLength;
-	}
-
-	void setSizesOfObjects() {
-		for (int i = 0; i < walls.length; i++) {
-			Rectangle r = new Rectangle(
-					initialXShift + squareWidth * i + (mapWidth - walls.length) * (squareWidth - 2) / 2,
-					initialYShift + squareHeight * (mapLength + 1), squareWidth, squareHeight);
-			walls[i].setWallContainer(r);
-			walls[i].setRectangles();
-		}
-	}
-
-	void rearrangeWalls() {
-		for (int i = 0; i < walls.length; i++) {
-			walls[i].setThePositionAgainByIndex(initialXShift, initialYShift, squareHeight, squareWidth);
-		}
-	}
-
-	int getBarShift() {
-		return barShift;
-	}
-
-	public void addGameObject(int i, int j, GameObject gmo) {
-		gameObjects[i][j] = gmo;
-	}
-
-	public void addLake(int i, int j) {
-		if (gameObjects[i][j] != null)
-			return;
-		gameObjects[i][j] = new Lake(i, j);
-		map[2 * i + 1][2 * j + 1] = LAKE;
-
-		boolean up = false;
-		boolean down = false;
-		boolean right = false;
-		boolean left = false;
-
-		map[2 * i + 1][2 * j] = EDGE_OF_LAKE;
-		map[2 * i + 1][2 * j + 2] = EDGE_OF_LAKE;
-		map[2 * i][2 * j + 1] = EDGE_OF_LAKE;
-		map[2 * i + 2][2 * j + 1] = EDGE_OF_LAKE;
-
-		if (i != 0) {
-			left = map[2 * i - 1][2 * j + 1] == LAKE || map[2 * i - 1][2 * j + 1] == ENEMY_ARMADA
-					|| map[2 * i - 1][2 * j + 1] == ALLY_ARMADA;
-		}
-		if (i < mapWidth - 1) {
-			right = map[2 * i + 3][2 * j + 1] == LAKE || map[2 * i + 3][2 * j + 1] == ENEMY_ARMADA
-					|| map[2 * i + 3][2 * j + 1] == ALLY_ARMADA;
+		for (int i = 0; i < points.size() - 1; i++) {
+			if (points.get(i).x < points.get(i + 1).x) { // Right
+				rectsOnBar.get(i).setBounds(nextXCoor + lineWidthOnBar / 2, nextYCoor - lineWidthOnBar / 2,
+						squareWidthOnBar - lineWidthOnBar, lineWidthOnBar);
+				nextXCoor = nextXCoor + squareWidthOnBar;
+			} else if (points.get(i).y < points.get(i + 1).y) { // Down
+				rectsOnBar.get(i).setBounds(nextXCoor - lineWidthOnBar / 2, nextYCoor + lineWidthOnBar / 2,
+						lineWidthOnBar, squareHeightOnBar - lineWidthOnBar);
+				nextYCoor = nextYCoor + squareHeightOnBar;
+			} else if (points.get(i).x > points.get(i + 1).x) { // Left
+				rectsOnBar.get(i).setBounds(nextXCoor - squareWidthOnBar + lineWidthOnBar / 2,
+						nextYCoor - lineWidthOnBar / 2, squareHeightOnBar - lineWidthOnBar, lineWidthOnBar);
+				nextXCoor = nextXCoor - squareWidthOnBar;
+			} else if (points.get(i).y > points.get(i + 1).y) { // Up
+				rectsOnBar.get(i).setBounds(nextXCoor - lineWidthOnBar / 2,
+						nextYCoor - squareHeightOnBar + lineWidthOnBar / 2, lineWidthOnBar,
+						squareHeightOnBar - lineWidthOnBar);
+				nextYCoor = nextYCoor - squareHeightOnBar;
+			}
+			areaForSquare.add(new Area(rectsOnBar.get(i)));
 		}
 
-		if (j != 0) {
-			up = map[2 * i + 1][2 * j - 1] == LAKE || map[2 * i + 1][2 * j - 1] == ENEMY_ARMADA
-					|| map[2 * i + 1][2 * j - 1] == ALLY_ARMADA;
-		}
-		if (j < mapLength - 1) {
-			down = map[2 * i + 1][2 * j + 3] == LAKE || map[2 * i + 1][2 * j + 3] == ENEMY_ARMADA
-					|| map[2 * i + 1][2 * j + 3] == ALLY_ARMADA;
-		}
-
-		if (up) {
-			map[2 * i + 1][2 * j] = VALID_FOR_CHAIN;
-		}
-
-		if (down) {
-			map[2 * i + 1][2 * j + 2] = VALID_FOR_CHAIN;
-		}
-
-		if (left) {
-			map[2 * i][2 * j + 1] = VALID_FOR_CHAIN;
-		}
-
-		if (right) {
-			map[2 * i + 2][2 * j + 1] = VALID_FOR_CHAIN;
-		}
-	}
-
-	public void addAllyArmada(int i, int j, boolean movable, ArrayList<Integer> route) {
-		if (gameObjects[i][j] != null)
-			return;
-
-		gameObjects[i][j] = new AllyArmada(movable, i, j, route);
-		map[2 * i + 1][2 * j + 1] = ALLY_ARMADA;
-
-		if (movable) {
-			movables.add((Soldier) gameObjects[i][j]);
-			((Soldier) gameObjects[i][j])
-					.addActionListener(new MovableTimerActionListener((Soldier) gameObjects[i][j], route));
-		}
-		soldiers.add((Soldier) gameObjects[i][j]);
-
-		boolean up = false;
-		boolean down = false;
-		boolean right = false;
-		boolean left = false;
-
-		map[2 * i + 1][2 * j] = EDGE_OF_LAKE;
-		map[2 * i + 1][2 * j + 2] = EDGE_OF_LAKE;
-		map[2 * i][2 * j + 1] = EDGE_OF_LAKE;
-		map[2 * i + 2][2 * j + 1] = EDGE_OF_LAKE;
-
-		if (i != 0) {
-			left = map[2 * i - 1][2 * j + 1] == LAKE || map[2 * i - 1][2 * j + 1] == ALLY_ARMADA
-					|| map[2 * i - 1][2 * j + 1] == ENEMY_ARMADA;
-		}
-		if (i < mapWidth - 1) {
-			right = map[2 * i + 3][2 * j + 1] == LAKE || map[2 * i + 3][2 * j + 1] == ALLY_ARMADA
-					|| map[2 * i + 3][2 * j + 1] == ENEMY_ARMADA;
-		}
-
-		if (j != 0) {
-			up = map[2 * i + 1][2 * j - 1] == LAKE || map[2 * i + 1][2 * j - 1] == ALLY_ARMADA
-					|| map[2 * i + 1][2 * j - 1] == ENEMY_ARMADA;
-		}
-		if (j < mapLength - 1) {
-			down = map[2 * i + 1][2 * j + 3] == LAKE || map[2 * i + 1][2 * j + 3] == ALLY_ARMADA
-					|| map[2 * i + 1][2 * j + 3] == ENEMY_ARMADA;
-		}
-
-		if (up) {
-			map[2 * i + 1][2 * j] = VALID_FOR_CHAIN;
-		}
-
-		if (down) {
-			map[2 * i + 1][2 * j + 2] = VALID_FOR_CHAIN;
-		}
-
-		if (left) {
-			map[2 * i][2 * j + 1] = VALID_FOR_CHAIN;
-		}
-
-		if (right) {
-			map[2 * i + 2][2 * j + 1] = VALID_FOR_CHAIN;
-		}
-	}
-
-	public void addEnemyArmada(int i, int j, boolean movable, ArrayList<Integer> route) {
-		if (gameObjects[i][j] != null)
-			return;
-		gameObjects[i][j] = new EnemyArmada(movable, i, j, route);
-		noOfEnemies++;
-		map[2 * i + 1][2 * j + 1] = ENEMY_ARMADA;
-
-		if (movable) {
-			movables.add((Soldier) gameObjects[i][j]);
-			((Soldier) gameObjects[i][j])
-					.addActionListener(new MovableTimerActionListener((Soldier) gameObjects[i][j], route));
-		}
-		soldiers.add((Soldier) gameObjects[i][j]);
-
-		boolean up = false;
-		boolean down = false;
-		boolean right = false;
-		boolean left = false;
-
-		map[2 * i + 1][2 * j] = EDGE_OF_LAKE;
-		map[2 * i + 1][2 * j + 2] = EDGE_OF_LAKE;
-		map[2 * i][2 * j + 1] = EDGE_OF_LAKE;
-		map[2 * i + 2][2 * j + 1] = EDGE_OF_LAKE;
-
-		if (i != 0) {
-			left = map[2 * i - 1][2 * j + 1] == LAKE || map[2 * i - 1][2 * j + 1] == ALLY_ARMADA
-					|| map[2 * i - 1][2 * j + 1] == ENEMY_ARMADA;
-		}
-		if (i < mapWidth - 1) {
-			right = map[2 * i + 3][2 * j + 1] == LAKE || map[2 * i + 3][2 * j + 1] == ALLY_ARMADA
-					|| map[2 * i + 3][2 * j + 1] == ENEMY_ARMADA;
-		}
-
-		if (j != 0) {
-			up = map[2 * i + 1][2 * j - 1] == LAKE || map[2 * i + 1][2 * j - 1] == ALLY_ARMADA
-					|| map[2 * i + 1][2 * j - 1] == ENEMY_ARMADA;
-		}
-		if (j < mapLength - 1) {
-			down = map[2 * i + 1][2 * j + 3] == LAKE || map[2 * i + 1][2 * j + 3] == ALLY_ARMADA
-					|| map[2 * i + 1][2 * j + 3] == ENEMY_ARMADA;
-		}
-
-		if (up) {
-			map[2 * i + 1][2 * j] = VALID_FOR_CHAIN;
-		}
-
-		if (down) {
-			map[2 * i + 1][2 * j + 2] = VALID_FOR_CHAIN;
-		}
-
-		if (left) {
-			map[2 * i][2 * j + 1] = VALID_FOR_CHAIN;
-		}
-
-		if (right) {
-			map[2 * i + 2][2 * j + 1] = VALID_FOR_CHAIN;
-		}
-	}
-
-	public void addForest(int i, int j) {
-		if (gameObjects[i][j] != null)
-			return;
-		gameObjects[i][j] = new Forest(i, j);
-		map[2 * i + 1][2 * j + 1] = FOREST;
-
-		boolean up = false;
-		boolean down = false;
-		boolean right = false;
-		boolean left = false;
-
-		if (map[2 * i + 1][2 * j] != EDGE_OF_LAKE)
-			map[2 * i + 1][2 * j] = VALID_FOR_WALL;
-		if (map[2 * i + 1][2 * j + 2] != EDGE_OF_LAKE)
-			map[2 * i + 1][2 * j + 2] = VALID_FOR_WALL;
-		if (map[2 * i][2 * j + 1] != EDGE_OF_LAKE)
-			map[2 * i][2 * j + 1] = VALID_FOR_WALL;
-		if (map[2 * i + 2][2 * j + 1] != EDGE_OF_LAKE)
-			map[2 * i + 2][2 * j + 1] = VALID_FOR_WALL;
-
-		if (i != 0) {
-			left = map[2 * i - 1][2 * j + 1] == FOREST;
-		}
-		if (i < mapWidth - 1) {
-			right = map[2 * i + 3][2 * j + 1] == FOREST;
-		}
-
-		if (j != 0) {
-			up = map[2 * i + 1][2 * j - 1] == FOREST;
-		}
-		if (j < mapLength - 1) {
-			down = map[2 * i + 1][2 * j + 3] == FOREST;
-		}
-
-		if (up) {
-			map[2 * i + 1][2 * j] = FOREST;
-		}
-
-		if (down) {
-			map[2 * i + 1][2 * j + 2] = FOREST;
-		}
-
-		if (left) {
-			map[2 * i][2 * j + 1] = FOREST;
-		}
-
-		if (right) {
-			map[2 * i + 2][2 * j + 1] = FOREST;
-		}
-	}
-
-	public void setValues(int width, int height) {
-		squareWidth = width / (mapWidth + 4);
-		squareHeight = (height - barShift) / (mapLength + 3);
-
-		if (squareWidth < squareHeight)
-			squareHeight = squareWidth;
-		else {
-			squareWidth = squareHeight;
-		}
-		if (squareWidth / 10 != 0)
-			lineWidth = (squareWidth + squareHeight) / 10;
-		else
-			lineWidth = 1;
-
-		if (lineWidth % 2 != 0)
-			lineWidth++;
-
-		for (WallOrChain w : walls) {
-			w.setLineWidthOnBar((lineWidth / 2) % 2 == 0 ? lineWidth / 2 : lineWidth / 2 - 1);
-			w.setSquareHeightOnBar(squareHeight / 4);
-			w.setSquareWidthOnBar(squareWidth / 4);
-			w.lineWidth = lineWidth;
+		for (int i = 0; i < edgesX.length; i++) {
+			int xEdgeCoor = (int) (wallContainer.getCenterX() - (centerX) * squareWidthOnBar)
+					+ squareWidthOnBar * (edgesX[i]) - lineWidthOnBar / 2;
+			int yEdgeCoor = (int) (wallContainer.getCenterY() - (centerY) * squareHeightOnBar)
+					+ squareHeightOnBar * (edgesY[i]) - lineWidthOnBar / 2;
+			areaForSquare.add(new Area(new Rectangle(xEdgeCoor, yEdgeCoor, lineWidthOnBar, lineWidthOnBar)));
 		}
 
 	}
-
-	public void centerTheGame(int width, int height) {
-		int gameWidth = getSquareWidth() * (getMapWidth());
-		int gameHeight = (getSquareHeight()) * (getMapLength() + 2);
-
-		setInitialXShift((width - gameWidth) / 2);
-
-		if ((height - gameHeight) / 2 > getBarShift()) {
-			setInitialYShift((height - gameHeight) / 2);
+	
+	void setThePositionAgain(int initialXShift, int initialYShift, int squareHeight, int squareWidth) {
+		if ((xCoor - initialXShift) % squareWidth < squareWidth / 2) {
+			xCoor -= (xCoor - initialXShift) % squareWidth;
 		} else {
-			setInitialYShift(getBarShift());
+			xCoor += squareWidth - ((xCoor - initialXShift) % squareWidth);
 		}
-
-		setSizesOfObjects();
-		rearrangeWalls();
-	}
-
-	public void stopTimers() {
-		for (Soldier m : movables) {
-			if (m.t.isRunning())
-				m.stop();
-		}
-	}
-
-	public void startTimers() {
-		for (Soldier m : movables) {
-			if (isAvailable(m, m.nextDir == 1 ? m.route.get(m.nextPos)
-					: (1 - m.route.get(m.nextPos)) + 4 * (m.route.get(m.nextPos) / 2)))
-				m.start();
-		}
-	}
-
-	public void rearrangeTimers() {
-		for (Soldier m : movables) {
-			if (thereIsWallNearBy(m) != -1) {
-				if (m.t.isRunning())
-					m.stop();
-				continue;
-			}
-			if (isAvailable(m, m.nextDir == 1 ? m.route.get(m.nextPos)
-					: (1 - m.route.get(m.nextPos)) + 4 * (m.route.get(m.nextPos) / 2))) {
-				if (!m.t.isRunning())
-					m.start();
-			} else {
-				if (m.t.isRunning())
-					m.stop();
-			}
-		}
-	}
-
-	public void startTimer(Soldier s) {
-		s.start();
-	}
-
-	public void stopTimer(Soldier s) {
-		s.stop();
-	}
-
-	private boolean canMove(Soldier s) {
-		boolean up = isAvailable(s, Model.UP);
-		boolean down = isAvailable(s, Model.DOWN);
-		boolean left = isAvailable(s, Model.LEFT);
-		boolean right = isAvailable(s, Model.RIGHT);
-
-		return up || down || left || right;
-	}
-
-	private void move(Soldier s, int dir) {
-		if (s instanceof AllyArmada || s instanceof EnemyArmada) {
-			gameObjects[s.getX()][s.getY()] = new Lake(s.getX(), s.getY());
-			map[2 * s.getX() + 1][2 * s.getY() + 1] = LAKE;
+		if ((yCoor - initialYShift) % squareHeight < squareHeight / 2) {
+			yCoor -= (yCoor - initialYShift) % squareHeight;
 		} else {
-			gameObjects[s.getX()][s.getY()] = null;
-			map[2 * s.getX() + 1][2 * s.getY() + 1] = EMPTY;
+			yCoor += squareHeight - ((yCoor - initialYShift) % squareHeight);
 		}
 
-		if (dir == UP)
-			s.y--;
-		else if (dir == DOWN)
-			s.y++;
-		else if (dir == LEFT)
-			s.x--;
-		else if (dir == RIGHT)
-			s.x++;
-		gameObjects[s.getX()][s.getY()] = s;
-		map[2 * s.getX() + 1][2 * s.getY() + 1] = s.getWholeMapIndex();
+		xInd = (xCoor - initialXShift) / squareWidth;
+		yInd = (yCoor - initialYShift) / squareHeight;
 	}
 
-	private boolean isAvailable(Soldier s, int dir) {
-		int nextX = s.getX();
-		int nextY = s.getY();
-		int mapX = 0;
-		int mapY = 0;
-		if (dir == LEFT) {
-			mapX = 2 * nextX;
-			mapY = 2 * nextY + 1;
-			nextX--;
-		}
-		if (dir == RIGHT) {
-			mapX = 2 * nextX + 2;
-			mapY = 2 * nextY + 1;
-			nextX++;
-		}
-		if (dir == UP) {
-			mapX = 2 * nextX + 1;
-			mapY = 2 * nextY;
-			nextY--;
-		}
-		if (dir == DOWN) {
-			mapX = 2 * nextX + 1;
-			mapY = 2 * nextY + 2;
-			nextY++;
-		}
-
-		if (!outOfScreen(nextX, nextY) && map[mapX][mapY] != WALL && map[mapX][mapY] != CHAIN) {
-			if (s instanceof AllyArmada || s instanceof EnemyArmada)
-				return gameObjects[nextX][nextY] instanceof Lake;
-			else
-				return gameObjects[nextX][nextY] == null;
-		}
-		return false;
+	void setCoordinates(int initialXShift, int initialYShift, int squareHeight, int squareWidth) {
+		xInd = (xCoor - initialXShift) / squareWidth;
+		yInd = (yCoor - initialYShift) / squareHeight;
 	}
 
-	private boolean outOfScreen(int x, int y) {
-		if (x == 0 && y == 0)
-			return true;
-		if (x == mapWidth - 1 && y == 0)
-			return true;
-		if (x == 0 && y == mapLength - 1)
-			return true;
-		if (x == mapWidth - 1 && y == mapLength - 1)
-			return true;
-		return !(x >= 0 && x < mapWidth && y >= 0 && y < mapLength);
+	void setThePositionAgainByIndex(int initialXShift, int initialYShift, int squareHeight, int squareWidth) {
+		xCoor = xInd * squareWidth + initialXShift;
+		yCoor = yInd * squareHeight + initialYShift;
 	}
 
-	private boolean outOfScreenMap(int x, int y) {
-		return !(x >= 0 && x < map.length && y >= 0 && y < map[0].length);
-	}
+	void setTheRectanglePoints(int squareHeight, int squareWidth, int shiftY) {
+		int nextXCoor = xCoor;
+		int nextYCoor = yCoor + shiftY;
 
-	class MovableTimerActionListener implements ActionListener {
-		Soldier s;
-		ArrayList<Integer> route;
-		int pos = 0, dir = 1;
-		int xShift = 0;
-		int yShift = 0;
-		boolean move = false;
-		boolean first = true;
-		int prev = 0;
-		int i = 0;
+		int line = (lineWidth) / 2;
 
-		public MovableTimerActionListener(Soldier s, ArrayList<Integer> route) {
-			this.s = s;
-			this.route = route;
-		}
+		area = new Area();
+		for (int i = 0; i < points.size() - 1; i++) {
 
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			// ArrayList<Integer> dirs = new ArrayList<Integer>();
-			// dirs.add(-1);
-			// if (isAvailable(s, Model.UP)) {
-			// dirs.add(Model.UP);
-			// }
-			// if (isAvailable(s, Model.DOWN)) {
-			// dirs.add(Model.DOWN);
-			// }
-			// if (isAvailable(s, Model.LEFT)) {
-			// dirs.add(Model.LEFT);
-			// }
-			// if (isAvailable(s, Model.RIGHT)) {
-			// dirs.add(Model.RIGHT);
-			// }
-
-			// int dir = (int) (Math.random() * dirs.size());
-
-			// if dir == 1 => route[pos], if dir == 0 => (1-route[pos]) + 4 * (route[pos]/2)
-			int w = s.width;
-			int h = s.height;
-			int period = 70;
-
-			if (move) {
-				int direction = dir == 1 ? route.get(pos) : (1 - route.get(pos)) + 4 * (route.get(pos) / 2);
-				move = false;
-
-				if (direction == Model.UP) {
-					yShift += period;
-				}
-				if (direction == Model.DOWN) {
-					yShift -= period;
-				}
-				if (direction == Model.LEFT) {
-					xShift += period;
-				}
-				if (direction == Model.RIGHT) {
-					xShift -= period;
-				}
-				if (dir == 1) {
-					if (s.nextPos == route.size() - 1) {
-						s.nextDir = 1 - s.nextDir;
-					} else {
-						s.nextPos = s.nextPos + 1;
-					}
-				} else {
-					if (pos == 0) {
-						s.nextDir = 1 - s.nextDir;
-					} else {
-						s.nextPos = s.nextPos - 1;
-					}
-				}
-				move(s, dir == 1 ? route.get(pos) : (1 - route.get(pos)) + 4 * (route.get(pos) / 2));
+			if (points.get(i).x < points.get(i + 1).x) { // Right
+				rects.get(i).setBounds(nextXCoor + lineWidth / 2, nextYCoor - lineWidth / 2, squareWidth - lineWidth,
+						lineWidth);
+				nextXCoor = nextXCoor + squareWidth;
+			} else if (points.get(i).y < points.get(i + 1).y) { // Down
+				rects.get(i).setBounds(nextXCoor - lineWidth / 2, nextYCoor + lineWidth / 2, lineWidth,
+						squareHeight - lineWidth);
+				nextYCoor = nextYCoor + squareHeight;
+			} else if (points.get(i).x > points.get(i + 1).x) { // Left
+				rects.get(i).setBounds(nextXCoor - squareWidth + lineWidth / 2, nextYCoor - lineWidth / 2,
+						squareWidth - lineWidth, lineWidth);
+				nextXCoor = nextXCoor - squareWidth;
+			} else if (points.get(i).y > points.get(i + 1).y) { // Up
+				rects.get(i).setBounds(nextXCoor - lineWidth / 2, nextYCoor - squareHeight + lineWidth / 2, lineWidth,
+						squareHeight - lineWidth);
+				nextYCoor = nextYCoor - squareHeight;
 			}
+			area.add(new Area(rects.get(i)));
+		}
+		for (int i = 0; i < edgesX.length; i++) {
+			int xEdgeCoor = xCoor + squareWidth * (edgesX[i]) - lineWidth / 2;
+			int yEdgeCoor = yCoor + shiftY + squareHeight * (edgesY[i]) - lineWidth / 2;
 
-			i++;
-			i = i % period;
-
-			if (i == 0) {
-				dir = s.nextDir;
-				pos = s.nextPos;
-			}
-
-			int direction = dir == 1 ? route.get(pos) : (1 - route.get(pos)) + 4 * (route.get(pos) / 2);
-			if (direction == Model.UP) {
-				xShift = 0;
-				yShift--;
-			} else if (direction == Model.DOWN) {
-				xShift = 0;
-				yShift++;
-			} else if (direction == Model.LEFT) {
-				xShift--;
-				yShift = 0;
-			} else if (direction == Model.RIGHT) {
-				xShift++;
-				yShift = 0;
-			}
-
-			s.setXShift((int) (squareWidth * xShift / ((double) period)));
-			s.setYShift((int) (squareHeight * yShift / ((double) period)));
-
-			if (direction == Model.UP) {
-				if (s.yShift < -(squareHeight / 2 + h / 2)) {
-					if (prev != 1) {
-						move = true;
-						map[s.getX() * 2 + 1][s.getY() * 2] = s.isArmada() ? VALID_FOR_CHAIN : VALID_FOR_WALL;
-					}
-					first = prev != 1;
-					prev = 1;
-				} else if (s.yShift < -(squareHeight / 2 - h / 2)) {
-					map[s.getX() * 2 + 1][s.getY() * 2] = s.getWholeMapIndex();
-					first = prev != 2;
-					prev = 2;
-				} else {
-					// map[s.getX() * 2 + 1][s.getY() * 2] = s.isArmada() ? VALID_FOR_CHAIN :
-					// VALID_FOR_WALL;
-					first = prev != 3;
-					prev = 3;
-				}
-			} else if (direction == Model.DOWN) {
-				if (s.yShift > (squareHeight / 2 + h / 2)) {
-					if (prev != 4) {
-						move = true;
-						map[s.getX() * 2 + 1][s.getY() * 2 + 2] = s.isArmada() ? VALID_FOR_CHAIN : VALID_FOR_WALL;
-					}
-					first = prev != 4;
-					prev = 4;
-				} else if (s.yShift > (squareHeight / 2 - h / 2)) {
-					first = prev != 5;
-					map[s.getX() * 2 + 1][s.getY() * 2 + 2] = s.getWholeMapIndex();
-					prev = 5;
-				} else {
-					// map[s.getX() * 2 + 1][s.getY() * 2 + 2] = s.isArmada() ? VALID_FOR_CHAIN :
-					// VALID_FOR_WALL;
-					first = prev != 6;
-					prev = 6;
-				}
-			} else if (direction == Model.LEFT) {
-				if (s.xShift < -(squareWidth / 2 + w / 2)) {
-					if (prev != 7) {
-						move = true;
-						map[s.getX() * 2][s.getY() * 2 + 1] = s.isArmada() ? VALID_FOR_CHAIN : VALID_FOR_WALL;
-					}
-					first = prev != 7;
-					prev = 7;
-				} else if (s.xShift < -(squareWidth / 2 - w / 2)) {
-					first = prev != 8;
-					map[s.getX() * 2][s.getY() * 2 + 1] = s.getWholeMapIndex();
-					prev = 8;
-				} else {
-					first = prev != 9;
-					// map[s.getX() * 2][s.getY() * 2 + 1] = s.isArmada() ? VALID_FOR_CHAIN :
-					// VALID_FOR_WALL;
-					prev = 9;
-				}
-			} else if (direction == Model.RIGHT) {
-				if (s.xShift > (squareWidth / 2 + w / 2)) {
-					if (prev != 10) {
-						move = true;
-						map[s.getX() * 2 + 2][s.getY() * 2 + 1] = s.isArmada() ? VALID_FOR_CHAIN : VALID_FOR_WALL;
-					}
-					first = prev != 10;
-					prev = 10;
-				} else if (s.xShift > (squareWidth / 2 - w / 2)) {
-					map[s.getX() * 2 + 2][s.getY() * 2 + 1] = s.getWholeMapIndex();
-					first = prev != 11;
-					prev = 11;
-				} else {
-					// map[s.getX() * 2 + 2][s.getY() * 2 + 1] = s.isArmada() ? VALID_FOR_CHAIN :
-					// VALID_FOR_WALL;
-					first = prev != 12;
-					prev = 12;
-				}
-			}
+			area.add(new Area(new Rectangle(xEdgeCoor, yEdgeCoor, lineWidth, lineWidth)));
 		}
 	}
 
-	public int update() {
-		int result = updateHealthes();
-		rearrangeTimers();
-		return result;
+	void remove() {
+		visible = false;
+		setColorToOriginal();
+		updateColor();
+		setIndexes(-10, -10);
 	}
 
-	private int updateHealthes() {
-		for (Soldier s : soldiers) {
-			if (s instanceof Enemy) {
-				int dir = thereIsWallNearBy(s);
-				if (dir != -1) {
-					WallOrChain w = wallNearBy(s, dir);
-					int health = w.damaged(s.power);
+	void appear() {
+		visible = true;
+	}
 
-					if (health <= 0) {
-						w.collapsed = true;
-						removeFromLines(w);
-						w.remove();
-						return -1;
-					}
-					if (Math.abs(4 * health - w.initialHealth ) < 5 && !w.messageShown) {
-						w.messageShow();
-						return 1;
-					} else {
-						w.updateColor();
-					}
+	boolean contains(int x, int y) {
+		return area.contains(x, y);
+	}
 
-				}
-			}
+	boolean containsLine(Soldier s, int dir) {
+		Point p1 = null;
+		Point p2 = null;
+
+		if (dir == Model.UP) {
+			p1 = new Point(s.getX(), s.getY());
+			p2 = new Point(s.getX() + 1, s.getY());
+		} else if (dir == Model.DOWN) {
+			p1 = new Point(s.getX(), s.getY() + 1);
+			p2 = new Point(s.getX() + 1, s.getY() + 1);
+		} else if (dir == Model.LEFT) {
+			p1 = new Point(s.getX(), s.getY());
+			p2 = new Point(s.getX(), s.getY() + 1);
+		} else if (dir == Model.RIGHT) {
+			p1 = new Point(s.getX() + 1, s.getY());
+			p2 = new Point(s.getX() + 1, s.getY() + 1);
 		}
-		return 0;
-	}
 
-	private WallOrChain wallNearBy(Soldier s, int dir) {
-		for (WallOrChain w : walls) {
-			if (isNextTo(w, s, dir))
-				return w;
-		}
-		return null;
-	}
-
-	private boolean isNextTo(WallOrChain w, Soldier s, int dir) {
-		if (w.visible) {
-			if (w.containsLine(s, dir))
+		for (int i = 0; i < points.size() - 1; i++) {
+			Point thisLine1 = new Point(this.xInd + points.get(i).x, this.yInd + points.get(i).y);
+			Point thisLine2 = new Point(this.xInd + points.get(i + 1).x, this.yInd + points.get(i + 1).y);
+			if (p1.equals(thisLine1) && p2.equals(thisLine2) || p2.equals(thisLine1) && p1.equals(thisLine2)) {
 				return true;
+			}
 		}
 		return false;
 	}
 
-	private int thereIsWallNearBy(Soldier s) {
-		int mapX = s.getX() * 2 + 1;
-		int mapY = s.getY() * 2 + 1;
-
-		if (!outOfScreenMap(mapX + 1, mapY) && map[mapX + 1][mapY] == WALL)
-			return Model.RIGHT;
-		if (!outOfScreenMap(mapX - 1, mapY) && map[mapX - 1][mapY] == WALL)
-			return Model.LEFT;
-		if (!outOfScreenMap(mapX, mapY + 1) && map[mapX][mapY + 1] == WALL)
-			return Model.DOWN;
-		if (!outOfScreenMap(mapX, mapY - 1) && map[mapX][mapY - 1] == WALL)
-			return Model.UP;
-		return -1;
+	void setWallContainer(Rectangle r) {
+		wallContainer = r;
 	}
 
-	public void pause() {
-		stopTimers();
+	void reset(int initialXShift, int initialYShift, int squareHeight, int squareWidth, int lineWidth) {
+		collapsed = false;
+		messageShown = false;
+		health = initialHealth;
+		this.lineWidth = lineWidth;
+
+		setTurn(0);
+		remove();
+
+		setRectangles();
+		setTheRectanglePoints(squareHeight, squareWidth, 0);
 	}
 
-	public void resume() {
-		startTimers();
+	public int getLineWidthOnBar() {
+		return lineWidthOnBar;
 	}
+
+	public void setLineWidthOnBar(int lineWidthOnBar) {
+		if (lineWidthOnBar > 0)
+			this.lineWidthOnBar = lineWidthOnBar;
+		else
+			this.lineWidthOnBar = 1;
+	}
+
+	public int getSquareWidthOnBar() {
+		return squareWidthOnBar;
+	}
+
+	public void setSquareWidthOnBar(int squareWidthOnBar) {
+		this.squareWidthOnBar = squareWidthOnBar;
+	}
+
+	public int getSquareHeightOnBar() {
+		return squareHeightOnBar;
+	}
+
+	public void setSquareHeightOnBar(int squareHeightOnBar) {
+		this.squareHeightOnBar = squareHeightOnBar;
+	}
+
+	public abstract int getWholeMapIndex();
+
+	public void setColor(Color color) {
+		c = color;
+		updateColor();
+	}
+
+	public void setColorToOriginal() {
+		c = originalColor;
+		updateColor();
+	}
+
+	public void goLeft() {
+		if (xInd > -2)
+			xInd--;
+	}
+
+	public void goRight() {
+		if (xInd < mapWidth + 1)
+			xInd++;
+	}
+
+	public void goUp() {
+		if (yInd > -1)
+			yInd--;
+	}
+
+	public void goDown() {
+		if (yInd < mapHeight + 1)
+			yInd++;
+	}
+
+	public void setTurn(int turnStart) {
+		for (; turn != turnStart;)
+			turnLeft();
+	}
+
+	public void setIndexes(int x, int y) {
+		xInd = x;
+		yInd = y;
+	}
+
+	public int damaged(int damageAmount) {
+		health -= damageAmount;
+		return health;
+	}
+
+	public void updateColor() {
+		int r = c.getRed();
+		int g = c.getGreen();
+		int b = c.getBlue();
+		int alpha = (int) (MIN_ALPHA + (255 - MIN_ALPHA) * (health * 1.0 / initialHealth));
+		if (alpha > 0)
+			c = new Color(r, g, b, alpha);
+	}
+
+	private Rectangle getNearestRectangleToCenter(int squareWidth, int squareHeight) {
+		double min = calculateDistanceBetweenPoints(xCoor + centerX * squareWidth, yCoor + centerY * squareHeight,
+				rects.get(0).getCenterX(), rects.get(0).getCenterY());
+		Rectangle nearest = rects.get(0);
+		for (int i = 1; i < rects.size(); i++) {
+			double length = calculateDistanceBetweenPoints(xCoor + centerX * squareWidth,
+					yCoor + centerY * squareHeight, rects.get(i).getCenterX(), rects.get(i).getCenterY());
+			if (min > length) {
+				min = length;
+				nearest = rects.get(i);
+			}
+		}
+		return nearest;
+	}
+
+	public double calculateDistanceBetweenPoints(double x1, double y1, double x2, double y2) {
+		return Math.sqrt((y2 - y1) * (y2 - y1) + (x2 - x1) * (x2 - x1));
+	}
+
+	public void messageShow() {
+		messageShown = true;
+	}
+
 }
