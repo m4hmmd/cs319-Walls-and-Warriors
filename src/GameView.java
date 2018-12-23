@@ -111,7 +111,7 @@ public class GameView extends JFrame implements ActionListener {
 
 	private void createCreditsPanel() throws IOException {
 
-		GamaPanel creditsPanel = new GamaPanel("Credits", "src/img/img1.jpeg");
+		GamePanel creditsPanel = new GamePanel("Credits", "src/img/img1.jpeg");
 		JLabel credits = new JLabel(
 				"Creators:\nAhmet Malal\nHuseyn Allahyarov\nIbrahim Mammadov\n Mahammad Shirinov\n Samet Demir");
 		credits.setFont(new Font("Times", 1, 30));
@@ -133,7 +133,7 @@ public class GameView extends JFrame implements ActionListener {
 	}
 
 	private void createHowToPanel() throws IOException {
-		GamaPanel howToPanel = new GamaPanel("How To Play", "src/img/img1.jpeg");
+		GamePanel howToPanel = new GamePanel("How To Play", "src/img/img1.jpeg");
 
 		JLabel howToPlay = new JLabel(
 				"<html><center><h1>HOW TO PLAY</h1></center><br>" + "<u><h2>Description of the Game</h2></u><br>"
@@ -166,7 +166,7 @@ public class GameView extends JFrame implements ActionListener {
 		try {
 
 			GameButton back = new GameButton("Back", "Game Menu", btnSizeS, btnSizeScaledS, this);
-			GamaPanel levelMenu = new GamaPanel("Game Menu", "src/img/img1.jpeg");
+			GamePanel levelMenu = new GamePanel("Game Menu", "src/img/img1.jpeg");
 
 			for (int i = 0; i < levelButtons.length; i++) {
 				levelMenu.addButton(levelButtons[i]);
@@ -237,7 +237,7 @@ public class GameView extends JFrame implements ActionListener {
 			GameButton credits = new GameButton("Credits", "Credits", btnSizeL, btnSizeScaledL, this);
 			GameButton quit = new GameButton("Quit", "Quit", btnSizeL, btnSizeScaledL, this);
 
-			GamaPanel gameMenu = new GamaPanel("Game Menu", "src/img/img1.jpeg");
+			GamePanel gameMenu = new GamePanel("Game Menu", "src/img/img1.jpeg");
 
 			// gameMenu.addButton(play);
 			gameMenu.addButton(play);
@@ -287,7 +287,7 @@ public class GameView extends JFrame implements ActionListener {
 	}
 
 	private void createSettingsMenu() throws IOException {
-		GamaPanel settingsMenu = new GamaPanel("Settings", "src/img/img1.jpeg");
+		GamePanel settingsMenu = new GamePanel("Settings", "src/img/img1.jpeg");
 
 		GameButton back = new GameButton("Back", "Game Menu", btnSizeS, btnSizeScaledS, this);
 
@@ -335,7 +335,7 @@ public class GameView extends JFrame implements ActionListener {
 	}
 
 	private void createPauseMenu() throws IOException {
-		GamaPanel pauseMenu = new GamaPanel("Pause", "src/img/img1.jpeg");
+		GamePanel pauseMenu = new GamePanel("Pause", "src/img/img1.jpeg");
 
 		GameButton restart = new GameButton("Restart", "Level " + currentLevelIndex, btnSizeM, btnSizeScaledM, this);
 		GameButton resume = new GameButton("Resume", "Level " + currentLevelIndex, btnSizeM, btnSizeScaledM, this);
