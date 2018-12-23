@@ -861,7 +861,8 @@ public class Model {
 
 	public void startTimers() {
 		for (Soldier m : movables) {
-			if (isAvailable(m, m.nextDir == 1 ? m.route.get( m.nextPos) : (1 - m.route.get(m.nextPos)) + 4 * (m.route.get(m.nextPos) / 2)))
+			if (isAvailable(m, m.nextDir == 1 ? m.route.get(m.nextPos)
+					: (1 - m.route.get(m.nextPos)) + 4 * (m.route.get(m.nextPos) / 2)))
 				m.start();
 		}
 	}
@@ -873,7 +874,8 @@ public class Model {
 					m.stop();
 				continue;
 			}
-			if (isAvailable(m, m.nextDir == 1 ? m.route.get( m.nextPos) : (1 - m.route.get(m.nextPos)) + 4 * (m.route.get(m.nextPos) / 2))) {
+			if (isAvailable(m, m.nextDir == 1 ? m.route.get(m.nextPos)
+					: (1 - m.route.get(m.nextPos)) + 4 * (m.route.get(m.nextPos) / 2))) {
 				if (!m.t.isRunning())
 					m.start();
 			} else {
@@ -1012,7 +1014,7 @@ public class Model {
 			int h = s.height;
 			int period = 70;
 
-			if ( move ) {
+			if (move) {
 				int direction = dir == 1 ? route.get(pos) : (1 - route.get(pos)) + 4 * (route.get(pos) / 2);
 				move = false;
 
@@ -1083,7 +1085,8 @@ public class Model {
 					first = prev != 2;
 					prev = 2;
 				} else {
-					//map[s.getX() * 2 + 1][s.getY() * 2] = s.isArmada() ? VALID_FOR_CHAIN : VALID_FOR_WALL;
+					// map[s.getX() * 2 + 1][s.getY() * 2] = s.isArmada() ? VALID_FOR_CHAIN :
+					// VALID_FOR_WALL;
 					first = prev != 3;
 					prev = 3;
 				}
@@ -1100,7 +1103,8 @@ public class Model {
 					map[s.getX() * 2 + 1][s.getY() * 2 + 2] = s.getWholeMapIndex();
 					prev = 5;
 				} else {
-					//map[s.getX() * 2 + 1][s.getY() * 2 + 2] = s.isArmada() ? VALID_FOR_CHAIN : VALID_FOR_WALL;
+					// map[s.getX() * 2 + 1][s.getY() * 2 + 2] = s.isArmada() ? VALID_FOR_CHAIN :
+					// VALID_FOR_WALL;
 					first = prev != 6;
 					prev = 6;
 				}
@@ -1118,7 +1122,8 @@ public class Model {
 					prev = 8;
 				} else {
 					first = prev != 9;
-					//map[s.getX() * 2][s.getY() * 2 + 1] = s.isArmada() ? VALID_FOR_CHAIN : VALID_FOR_WALL;
+					// map[s.getX() * 2][s.getY() * 2 + 1] = s.isArmada() ? VALID_FOR_CHAIN :
+					// VALID_FOR_WALL;
 					prev = 9;
 				}
 			} else if (direction == Model.RIGHT) {
@@ -1134,7 +1139,8 @@ public class Model {
 					first = prev != 11;
 					prev = 11;
 				} else {
-					//map[s.getX() * 2 + 2][s.getY() * 2 + 1] = s.isArmada() ? VALID_FOR_CHAIN : VALID_FOR_WALL;
+					// map[s.getX() * 2 + 2][s.getY() * 2 + 1] = s.isArmada() ? VALID_FOR_CHAIN :
+					// VALID_FOR_WALL;
 					first = prev != 12;
 					prev = 12;
 				}
@@ -1142,13 +1148,13 @@ public class Model {
 		}
 	}
 
-	public boolean update() {
-		boolean result = updateHealthes();
+	public int update() {
+		int result = updateHealthes();
 		rearrangeTimers();
 		return result;
 	}
 
-	private boolean updateHealthes() {
+	private int updateHealthes() {
 		for (Soldier s : soldiers) {
 			if (s instanceof Enemy) {
 				int dir = thereIsWallNearBy(s);
@@ -1160,13 +1166,18 @@ public class Model {
 						w.collapsed = true;
 						removeFromLines(w);
 						w.remove();
-						return false;
-					} else
+						return -1;
+					}
+					if (5 * health == w.initialHealth) {
+						return 1;
+					} else {
 						w.updateColor();
+					}
+
 				}
 			}
 		}
-		return true;
+		return 0;
 	}
 
 	private WallOrChain wallNearBy(Soldier s, int dir) {
