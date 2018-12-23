@@ -76,7 +76,7 @@ public class GamaPanel extends JPanel implements MouseMotionListener, MouseListe
 			buttons.get(i).setBounds(buttonWidth / 2, 3 * buttonH * i + 2 * buttonH, buttonWidth, buttonHeight);
 		}
 		if (backButton != null) {
-			backButton.setBounds(0, (int) (getHeight() / 10 * 8), buttonWidth / 2, getHeight() / 5);
+			backButton.setBounds(0, (int) (getHeight() / 10 * 0.5), getWidth() / 5, getHeight() / 10);
 		}
 	}
 
@@ -114,7 +114,7 @@ public class GamaPanel extends JPanel implements MouseMotionListener, MouseListe
 	public void addBackButton(GameButton back) {
 		if (backButton == null) {
 			backButton = back;
-			backButton.setBounds(0, (int) (getHeight() / 10 * 8), buttonWidth / 2, getHeight() / 5);
+			backButton.setBounds(0, (int) (getHeight() / 10 * 0.5), getWidth() / 5, getHeight() / 10);
 			add(back);
 		}
 	}
