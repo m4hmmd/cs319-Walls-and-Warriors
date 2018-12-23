@@ -81,7 +81,7 @@ public class LevelView extends JComponent {
 
 		// backButton = new JButton("Home");
 
-		backButton = new GameButton("Level Menu", "Level Menu", 30, 40, new ActionListener() {
+		backButton = new GameButton("Back", "Level Menu", 30, 40, new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
