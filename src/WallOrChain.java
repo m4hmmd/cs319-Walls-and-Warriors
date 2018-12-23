@@ -42,7 +42,7 @@ public abstract class WallOrChain {
 	boolean messageShown = false;
 	public WallOrChain(int x_Ind, int y_Ind, int[] xCoors, int[] yCoors, Color c, int index, int initialXShift,
 			int initialYShift, int squareHeight, int squareWidth, int mapHeight, int mapWidth) {
-		initialHealth = 500;
+		initialHealth = 2000;
 		health = initialHealth;
 		initialXCoors = new int[xCoors.length];
 		for (int i = 0; i < xCoors.length; i++)
