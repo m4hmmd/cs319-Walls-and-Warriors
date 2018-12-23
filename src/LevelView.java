@@ -55,9 +55,18 @@ public class LevelView extends JComponent {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				if (model.update())
+				int update = model.update();
+				if (update == 0)
 					repaint();
-				else {
+				else if (update == 1) {
+					if (selectedMouse != null)
+						selectedMouse.remove();
+					Object[] options = { "Close" };
+
+					int n = JOptionPane.showOptionDialog(null, "Wall or Chain is under the attacking of enemies. ",
+							"Hurry Up!", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options,
+							options[0]);
+				} else if (update == -1) {
 					pause();
 					repaint();
 					Object[] options = { "Return Level Menu", "Restart" };
