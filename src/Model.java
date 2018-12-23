@@ -1168,7 +1168,7 @@ public class Model {
 						w.remove();
 						return -1;
 					}
-					if (5 * health == w.initialHealth) {
+					if (4 * health == w.initialHealth) {
 						return 1;
 					} else {
 						w.updateColor();
