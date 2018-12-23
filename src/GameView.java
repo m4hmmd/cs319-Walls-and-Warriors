@@ -502,14 +502,11 @@ public class GameView extends JFrame implements ActionListener {
 		if (levelNo == 2) {
 			repaint();
 			Object[] options = { "Close" };
-			int n1 = JOptionPane.showOptionDialog(null, "Be careful! Some enemies are moving", "Level 2",
+			int n1 = JOptionPane.showOptionDialog(null, "- Be careful! Some enemies are moving\n"
+					+ "- Use chains to protect your ships in the lake!\n"
+					+ "- You cannot place a wall or a chain on the edge of the lake\n"
+					+ "- Walls also cannot cut through forests!", "Level 2",
 					JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
-			int n2 = JOptionPane.showOptionDialog(null, "Use chains to protect your ships in the lake!", "Level 2", JOptionPane.YES_NO_OPTION,
-					JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
-			int n3 = JOptionPane.showOptionDialog(null,
-					"You cannot place a wall or a chain on the edge of the lake\n"
-							+ "Walls also cannot cut through forests!",
-					"Level 2", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
 		}
 		if (levelNo == 3) {
 			repaint();
