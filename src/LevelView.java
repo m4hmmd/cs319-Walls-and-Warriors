@@ -6,17 +6,14 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionAdapter;
 import java.awt.event.MouseMotionListener;
 import java.io.*;
-import java.util.ArrayList;
 import java.util.Scanner;
 
 @SuppressWarnings("serial")
-public class MyComponents extends JComponent {
+public class LevelView extends JComponent {
 
 	private Image mapTile;
 
@@ -42,7 +39,7 @@ public class MyComponents extends JComponent {
 	protected static int wallPlace = KeyEvent.VK_ENTER;
 	protected static int wallPrevLocation = KeyEvent.VK_Z;
 
-	public MyComponents(GameView gv, Model model, CardLayout cardLayout, JPanel card, int levelNo) {
+	public LevelView(GameView gv, Model model, CardLayout cardLayout, JPanel card, int levelNo) {
 		try {
 			File file = new File("src/img/grass.png");
 			mapTile = ImageIO.read(file);
@@ -84,7 +81,7 @@ public class MyComponents extends JComponent {
 
 		// backButton = new JButton("Home");
 
-		backButton = new MyButton("Level Menu", "Level Menu", 30, 40, new ActionListener() {
+		backButton = new GameButton("Level Menu", "Level Menu", 30, 40, new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -93,7 +90,7 @@ public class MyComponents extends JComponent {
 			}
 		});
 
-		hintButton = new MyButton("Hint", "Level " + levelNo, 30, 40, new ActionListener() {
+		hintButton = new GameButton("Hint", "Level " + levelNo, 30, 40, new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -125,7 +122,7 @@ public class MyComponents extends JComponent {
 			}
 		});
 
-		pauseButton = new MyButton("Pause", "Level " + levelNo, 30, 40, new ActionListener() {
+		pauseButton = new GameButton("Pause", "Level " + levelNo, 30, 40, new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -135,7 +132,7 @@ public class MyComponents extends JComponent {
 			}
 		});
 
-		// back = new MyButton("Back", "Game Menu", btnSizeS, btnSizeScaledS,this);
+		// back = new GameButton("Back", "Game Menu", btnSizeS, btnSizeScaledS,this);
 
 		// backButton.setForeground(Color.WHITE);
 		// backButton.setFont(new Font("Arial", Font.PLAIN, 30));

@@ -13,15 +13,15 @@ import javax.imageio.ImageIO;
 import javax.swing.*;
 
 @SuppressWarnings("serial")
-public class MyPanel extends JPanel implements MouseMotionListener, MouseListener {
+public class GamaPanel extends JPanel implements MouseMotionListener, MouseListener {
 	String path;
 	String name;
 	JLabel label;
 	Image image;
 
-	ArrayList<MyButton> buttons = new ArrayList<MyButton>();
+	ArrayList<GameButton> buttons = new ArrayList<GameButton>();
 	ArrayList<JLabel> labels = new ArrayList<JLabel>();
-	MyButton backButton = null;
+	GameButton backButton = null;
 	boolean one = false;
 	int buttonHeight;
 	int buttonWidth;
@@ -29,7 +29,7 @@ public class MyPanel extends JPanel implements MouseMotionListener, MouseListene
 	int buttonScaledSize = 25;
 
 
-	public MyPanel(String name, String path) throws IOException {
+	public GamaPanel(String name, String path) throws IOException {
 		setLayout(null);
 		this.path = path;
 		this.name = name;
@@ -42,7 +42,7 @@ public class MyPanel extends JPanel implements MouseMotionListener, MouseListene
 		return name;
 	}
 
-	public ArrayList<MyButton> getButtons() {
+	public ArrayList<GameButton> getButtons() {
 		return buttons;
 	}
 
@@ -80,7 +80,7 @@ public class MyPanel extends JPanel implements MouseMotionListener, MouseListene
 		}
 	}
 
-	public void addButton(MyButton btn) {
+	public void addButton(GameButton btn) {
 		buttons.add(btn);
 		setSizesOfButtons(getGraphics());
 		add(btn);
@@ -111,7 +111,7 @@ public class MyPanel extends JPanel implements MouseMotionListener, MouseListene
 		add(label);
 	}
 
-	public void addBackButton(MyButton back) {
+	public void addBackButton(GameButton back) {
 		if (backButton == null) {
 			backButton = back;
 			backButton.setBounds(0, (int) (getHeight() / 10 * 8), buttonWidth / 2, getHeight() / 5);
@@ -125,9 +125,9 @@ public class MyPanel extends JPanel implements MouseMotionListener, MouseListene
 
 	@Override
 	public void mouseMoved(MouseEvent e) {
-		if (e.getSource() instanceof MyButton)
-			if (((MyButton) (e.getSource())).isEnabled())
-				((MyButton) (e.getSource())).setFont(new Font("Arial", Font.PLAIN, ((MyButton) e.getSource()).getSizeScaledize()));
+		if (e.getSource() instanceof GameButton)
+			if (((GameButton) (e.getSource())).isEnabled())
+				((GameButton) (e.getSource())).setFont(new Font("Arial", Font.PLAIN, ((GameButton) e.getSource()).getSizeScaledize()));
 //			else if (e.getSource() instanceof JLabel)
 //				((JLabel) (e.getSource())).setFont(new Font("Arial", Font.PLAIN, 50));
 	}
@@ -138,14 +138,14 @@ public class MyPanel extends JPanel implements MouseMotionListener, MouseListene
 
 	@Override
 	public void mouseEntered(MouseEvent e) {
-		if ((e.getSource() instanceof MyButton) && ((MyButton) (e.getSource())).isEnabled())
+		if ((e.getSource() instanceof GameButton) && ((GameButton) (e.getSource())).isEnabled())
 			SoundManager.mouseOver();
 	}
 
 	@Override
 	public void mouseExited(MouseEvent e) {
-		if (e.getSource() instanceof MyButton)
-			((MyButton) (e.getSource())).setFont(new Font("Arial", Font.PLAIN, ((MyButton) e.getSource()).getDefaultSize()));
+		if (e.getSource() instanceof GameButton)
+			((GameButton) (e.getSource())).setFont(new Font("Arial", Font.PLAIN, ((GameButton) e.getSource()).getDefaultSize()));
 //		else if (e.getSource() instanceof JLabel)
 //			((JLabel) (e.getSource())).setFont(new Font("Arial", Font.PLAIN, 40));
 	}

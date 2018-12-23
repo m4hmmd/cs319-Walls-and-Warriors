@@ -3,7 +3,6 @@ import java.awt.Color;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import javax.swing.*;
 import javax.swing.JPanel;
 
 /**
@@ -12,7 +11,7 @@ import javax.swing.JPanel;
  */
 public class GameManager {
 
-	private MyComponents myComponents;
+	private LevelView levelView;
 	private Model model;
 	private CardLayout cardLayout;
 	private JPanel card;
@@ -93,7 +92,7 @@ public class GameManager {
 		}
 		fileSystem.resetSize();
 
-		myComponents = new MyComponents(gv, model, cardLayout, card, levelNo);
+		levelView = new LevelView(gv, model, cardLayout, card, levelNo);
 
 //		Castle castle = new Castle(3, 3, 2, 3, Color.green);
 //		if (levelNo == 1) {
@@ -147,7 +146,7 @@ public class GameManager {
 //				model.addForest(numberOfWalls, 7);
 //			}
 //
-//			myComponents = new MyComponents(gv, model, cardLayout, card, levelNo);
+//			levelView = new LevelView(gv, model, cardLayout, card, levelNo);
 //
 //			model.addWallOrChain(true, Model.RIGHT, Model.DOWN, Model.RIGHT, Model.DOWN);
 //			model.addWallOrChain(true, Model.DOWN, Model.RIGHT, Model.UP, Model.RIGHT, Model.UP);
@@ -186,13 +185,13 @@ public class GameManager {
 //			model.addWallOrChain(false, Model.DOWN, Model.RIGHT, Model.DOWN, Model.RIGHT);
 //			model.addWallOrChain(false, Model.LEFT, Model.UP, Model.RIGHT, Model.UP, Model.LEFT, Model.UP);
 //
-//			myComponents = new MyComponents(gv, model, cardLayout, card, levelNo);
+//			levelView = new LevelView(gv, model, cardLayout, card, levelNo);
 //
 //		}
 	}
 
-	public MyComponents getPanel() {
-		return myComponents;
+	public LevelView getPanel() {
+		return levelView;
 	}
 
 	public int getInitialXShift() {
@@ -225,11 +224,11 @@ public class GameManager {
 
 	public void startTimers() {
 		model.startTimers();
-		myComponents.startTimer();
+		levelView.startTimer();
 	}
 
 	public void stopTimers() {
-		myComponents.stopTimer();
+		levelView.stopTimer();
 		model.stopTimers();
 	}
 }

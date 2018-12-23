@@ -16,32 +16,6 @@ public class Chain extends WallOrChain {
 	}
 
 	void draw(Graphics g, int initialXShift, int initialYShift, int squareHeight, int squareWidth, int shiftY) {
-//		drawWallOption(g, initialXShift, initialYShift, squareHeight, squareWidth);
-//		setTheRectanglePoints(squareHeight, squareWidth, shiftY);
-//		g.setColor(getColor());
-//
-//		if (visible) {
-//			Graphics2D g2 = (Graphics2D) g;
-//			g2.draw(area);
-//
-//			g2.setColor(Color.WHITE);
-//			g2.draw(areaForSquare);
-//		} else {
-//			Graphics2D g2 = (Graphics2D) g;
-//			g2.draw(areaForSquare);
-//		}
-//
-//		if (collapsed) {
-//			g.setColor(Color.GRAY);
-//			Graphics2D g2 = (Graphics2D) g;
-//			g2.setStroke(new BasicStroke(2));
-//			g2.drawLine(wallContainer.x, wallContainer.y, wallContainer.x + wallContainer.width,
-//					wallContainer.y + wallContainer.height);
-//			g2.drawLine(wallContainer.x + wallContainer.width, wallContainer.y, wallContainer.x,
-//					wallContainer.y + wallContainer.height);
-//			g2.setStroke(new BasicStroke(1));
-//		}
-
 		drawWallOption(g, initialXShift, initialYShift, squareHeight, squareWidth);
 		setTheRectanglePoints(squareHeight, squareWidth, shiftY);
 		g.setColor(getColor());

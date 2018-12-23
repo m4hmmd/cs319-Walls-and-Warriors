@@ -1,16 +1,11 @@
 import javax.imageio.ImageIO;
 import javax.swing.*;
 
-import javax.swing.table.*;
-import javax.swing.text.JTextComponent;
-
 //import com.sun.org.glassfish.gmbal.GmbalMBeanNOPImpl;
 
 import java.awt.*;
 import java.awt.event.*;
-import java.awt.image.BufferedImage;
 import java.io.*;
-import java.util.ArrayList;
 import java.util.Scanner;
 
 public class GameView extends JFrame implements ActionListener {
@@ -28,27 +23,27 @@ public class GameView extends JFrame implements ActionListener {
 	CardLayout cardLayout;
 	JPanel card = new JPanel();
 	GameManager managers[] = new GameManager[5];
-	MyButton[] levelButtons = { new MyButton("Level 1", "Level 1", btnSizeL, btnSizeScaledL, this),
-			new MyButton("Level 2", "Level 2", btnSizeL, btnSizeScaledL, this),
-			new MyButton("Level 3", "Level 3", btnSizeL, btnSizeScaledL, this),
-			new MyButton("Level 4", "Level 4", btnSizeL, btnSizeScaledL, this),
-			new MyButton("Level 5", "Level 5", btnSizeL, btnSizeScaledL, this) };
-	MyButton music = new MyButton("Music: " + (SoundManager.playing ? "ON" : "OFF"), "Settings", btnSizeM,
+	GameButton[] levelButtons = { new GameButton("Level 1", "Level 1", btnSizeL, btnSizeScaledL, this),
+			new GameButton("Level 2", "Level 2", btnSizeL, btnSizeScaledL, this),
+			new GameButton("Level 3", "Level 3", btnSizeL, btnSizeScaledL, this),
+			new GameButton("Level 4", "Level 4", btnSizeL, btnSizeScaledL, this),
+			new GameButton("Level 5", "Level 5", btnSizeL, btnSizeScaledL, this) };
+	GameButton music = new GameButton("Music: " + (SoundManager.playing ? "ON" : "OFF"), "Settings", btnSizeM,
 			btnSizeScaledM, this);
-	MyButton sound = new MyButton("Sound: " + (SoundManager.sound ? "ON" : "OFF"), "Settings", btnSizeM, btnSizeScaledM,
+	GameButton sound = new GameButton("Sound: " + (SoundManager.sound ? "ON" : "OFF"), "Settings", btnSizeM, btnSizeScaledM,
 			this);
-	MyButton setRotationAnticlockwise = new MyButton(
-			"Left Rotation: \t" + KeyEvent.getKeyText(MyComponents.wallLeftRotation), "Settings", btnSizeM,
+	GameButton setRotationAnticlockwise = new GameButton(
+			"Left Rotation: \t" + KeyEvent.getKeyText(LevelView.wallLeftRotation), "Settings", btnSizeM,
 			btnSizeScaledM, this);
-	MyButton setRotationClockwise = new MyButton(
-			"Right Rotation: \t" + KeyEvent.getKeyText(MyComponents.wallRightRotation), "Settings", btnSizeM,
+	GameButton setRotationClockwise = new GameButton(
+			"Right Rotation: \t" + KeyEvent.getKeyText(LevelView.wallRightRotation), "Settings", btnSizeM,
 			btnSizeScaledM, this);
-	MyButton setDrop = new MyButton("Wall Drop: \t" + KeyEvent.getKeyText(MyComponents.wallDrop), "Settings", btnSizeM,
+	GameButton setDrop = new GameButton("Wall Drop: \t" + KeyEvent.getKeyText(LevelView.wallDrop), "Settings", btnSizeM,
 			btnSizeScaledM, this);
-	MyButton setPlace = new MyButton("Wall Place: \t" + KeyEvent.getKeyText(MyComponents.wallPlace), "Settings",
+	GameButton setPlace = new GameButton("Wall Place: \t" + KeyEvent.getKeyText(LevelView.wallPlace), "Settings",
 			btnSizeM, btnSizeScaledM, this);
-	MyButton setPrevLocation = new MyButton(
-			"Wall Previous Location: \t" + KeyEvent.getKeyText(MyComponents.wallPrevLocation), "Settings", btnSizeM,
+	GameButton setPrevLocation = new GameButton(
+			"Wall Previous Location: \t" + KeyEvent.getKeyText(LevelView.wallPrevLocation), "Settings", btnSizeM,
 			btnSizeScaledM, this);
 
 	boolean listenKey;
@@ -88,11 +83,11 @@ public class GameView extends JFrame implements ActionListener {
 		loadGame();
 		music.setText("Music: " + (SoundManager.playing ? "ON" : "OFF"));
 		sound.setText("Sound: " + (SoundManager.sound ? "ON" : "OFF"));
-		setRotationAnticlockwise.setText("Left Rotation: \t" + KeyEvent.getKeyText(MyComponents.wallLeftRotation));
-		setRotationClockwise.setText("Right Rotation: \t" + KeyEvent.getKeyText(MyComponents.wallRightRotation));
-		setDrop.setText("Wall Drop: \t" + KeyEvent.getKeyText(MyComponents.wallDrop));
-		setPlace.setText("Wall Place: \t" + KeyEvent.getKeyText(MyComponents.wallPlace));
-		setPrevLocation.setText("Wall Previous Location: \t" + KeyEvent.getKeyText(MyComponents.wallPrevLocation));
+		setRotationAnticlockwise.setText("Left Rotation: \t" + KeyEvent.getKeyText(LevelView.wallLeftRotation));
+		setRotationClockwise.setText("Right Rotation: \t" + KeyEvent.getKeyText(LevelView.wallRightRotation));
+		setDrop.setText("Wall Drop: \t" + KeyEvent.getKeyText(LevelView.wallDrop));
+		setPlace.setText("Wall Place: \t" + KeyEvent.getKeyText(LevelView.wallPlace));
+		setPrevLocation.setText("Wall Previous Location: \t" + KeyEvent.getKeyText(LevelView.wallPrevLocation));
 		SoundManager.start();
 	}
 
@@ -116,7 +111,7 @@ public class GameView extends JFrame implements ActionListener {
 
 	private void createCreditsPanel() throws IOException {
 
-		MyPanel creditsPanel = new MyPanel("Credits", "src/img/img1.jpeg");
+		GamaPanel creditsPanel = new GamaPanel("Credits", "src/img/img1.jpeg");
 		JLabel credits = new JLabel(
 				"Creators:\nAhmet Malal\nHuseyn Allahyarov\nIbrahim Mammadov\n Mahammad Shirinov\n Samet Demir");
 		credits.setFont(new Font("Times", 1, 30));
@@ -131,14 +126,14 @@ public class GameView extends JFrame implements ActionListener {
 		creditsPanel.addLabel(new JLabel("Mahammad Shirinov"));
 		creditsPanel.addLabel(new JLabel("Samet Demir"));
 
-		MyButton back = new MyButton("Back", "Game Menu", btnSizeS, btnSizeScaledS, this);
+		GameButton back = new GameButton("Back", "Game Menu", btnSizeS, btnSizeScaledS, this);
 		creditsPanel.addBackButton(back);
 
 		card.add("Credits", creditsPanel);
 	}
 
 	private void createHowToPanel() throws IOException {
-		MyPanel howToPanel = new MyPanel("How To Play", "src/img/img1.jpeg");
+		GamaPanel howToPanel = new GamaPanel("How To Play", "src/img/img1.jpeg");
 
 		JLabel howToPlay = new JLabel(
 				"<html><center><h1>HOW TO PLAY</h1></center><br>" + "<u><h2>Description of the Game</h2></u><br>"
@@ -157,7 +152,7 @@ public class GameView extends JFrame implements ActionListener {
 		howToPlay.setVisible(true);
 		howToPanel.addOnlyOneLabel(howToPlay);
 
-		MyButton back = new MyButton("Back", "Game Menu", btnSizeS, btnSizeScaledS, this);
+		GameButton back = new GameButton("Back", "Game Menu", btnSizeS, btnSizeScaledS, this);
 
 		// back.setPreferredSize(new Dimension(20, 20));
 
@@ -170,8 +165,8 @@ public class GameView extends JFrame implements ActionListener {
 	private void createLevelMenu() {
 		try {
 
-			MyButton back = new MyButton("Back", "Game Menu", btnSizeS, btnSizeScaledS, this);
-			MyPanel levelMenu = new MyPanel("Game Menu", "src/img/img1.jpeg");
+			GameButton back = new GameButton("Back", "Game Menu", btnSizeS, btnSizeScaledS, this);
+			GamaPanel levelMenu = new GamaPanel("Game Menu", "src/img/img1.jpeg");
 
 			for (int i = 0; i < levelButtons.length; i++) {
 				levelMenu.addButton(levelButtons[i]);
@@ -188,7 +183,7 @@ public class GameView extends JFrame implements ActionListener {
 	private void createGameMenu() {
 		try {
 			/*
-			 * MyButton play = new MyButton("New Game", "Level Menu", btnSizeL,
+			 * GameButton play = new GameButton("New Game", "Level Menu", btnSizeL,
 			 * btnSizeScaledL, this); play.addActionListener(new ActionListener() {
 			 * 
 			 * @Override public void actionPerformed(ActionEvent e) {
@@ -203,7 +198,7 @@ public class GameView extends JFrame implements ActionListener {
 			 * 
 			 * .out.println(ex); } } } });
 			 */
-			MyButton play = new MyButton("Play", "Level Menu", btnSizeL, btnSizeScaledL, this);
+			GameButton play = new GameButton("Play", "Level Menu", btnSizeL, btnSizeScaledL, this);
 			play.addActionListener(new ActionListener() {
 
 				@Override
@@ -237,12 +232,12 @@ public class GameView extends JFrame implements ActionListener {
 				}
 			});
 
-			MyButton settings = new MyButton("Settings", "Settings", btnSizeL, btnSizeScaledL, this);
-			MyButton howToPlay = new MyButton("How To Play", "How To Play", btnSizeL, btnSizeScaledL, this);
-			MyButton credits = new MyButton("Credits", "Credits", btnSizeL, btnSizeScaledL, this);
-			MyButton quit = new MyButton("Quit", "Quit", btnSizeL, btnSizeScaledL, this);
+			GameButton settings = new GameButton("Settings", "Settings", btnSizeL, btnSizeScaledL, this);
+			GameButton howToPlay = new GameButton("How To Play", "How To Play", btnSizeL, btnSizeScaledL, this);
+			GameButton credits = new GameButton("Credits", "Credits", btnSizeL, btnSizeScaledL, this);
+			GameButton quit = new GameButton("Quit", "Quit", btnSizeL, btnSizeScaledL, this);
 
-			MyPanel gameMenu = new MyPanel("Game Menu", "src/img/img1.jpeg");
+			GamaPanel gameMenu = new GamaPanel("Game Menu", "src/img/img1.jpeg");
 
 			// gameMenu.addButton(play);
 			gameMenu.addButton(play);
@@ -263,11 +258,11 @@ public class GameView extends JFrame implements ActionListener {
 		ObjectOutputStream out = new ObjectOutputStream(fileOut);
 		out.writeObject(SoundManager.playing);
 		out.writeObject(SoundManager.sound);
-		out.writeObject(MyComponents.wallDrop);
-		out.writeObject(MyComponents.wallLeftRotation);
-		out.writeObject(MyComponents.wallPlace);
-		out.writeObject(MyComponents.wallPrevLocation);
-		out.writeObject(MyComponents.wallRightRotation);
+		out.writeObject(LevelView.wallDrop);
+		out.writeObject(LevelView.wallLeftRotation);
+		out.writeObject(LevelView.wallPlace);
+		out.writeObject(LevelView.wallPrevLocation);
+		out.writeObject(LevelView.wallRightRotation);
 		out.close();
 	}
 
@@ -277,11 +272,11 @@ public class GameView extends JFrame implements ActionListener {
 			ObjectInputStream in = new ObjectInputStream(fileIn);
 			SoundManager.playing = ((Boolean) in.readObject());
 			SoundManager.sound = ((Boolean) in.readObject());
-			MyComponents.wallDrop = ((Integer) in.readObject());
-			MyComponents.wallLeftRotation = ((Integer) in.readObject());
-			MyComponents.wallPlace = ((Integer) in.readObject());
-			MyComponents.wallPrevLocation = ((Integer) in.readObject());
-			MyComponents.wallRightRotation = ((Integer) in.readObject());
+			LevelView.wallDrop = ((Integer) in.readObject());
+			LevelView.wallLeftRotation = ((Integer) in.readObject());
+			LevelView.wallPlace = ((Integer) in.readObject());
+			LevelView.wallPrevLocation = ((Integer) in.readObject());
+			LevelView.wallRightRotation = ((Integer) in.readObject());
 			in.close();
 			fileIn.close();
 		} catch (ClassNotFoundException e1) {
@@ -292,9 +287,9 @@ public class GameView extends JFrame implements ActionListener {
 	}
 
 	private void createSettingsMenu() throws IOException {
-		MyPanel settingsMenu = new MyPanel("Settings", "src/img/img1.jpeg");
+		GamaPanel settingsMenu = new GamaPanel("Settings", "src/img/img1.jpeg");
 
-		MyButton back = new MyButton("Back", "Game Menu", btnSizeS, btnSizeScaledS, this);
+		GameButton back = new GameButton("Back", "Game Menu", btnSizeS, btnSizeScaledS, this);
 
 		setRotationAnticlockwise.addActionListener(new CustomizeRotationAnticlockwiseButton());
 		setRotationClockwise.addActionListener(new CustomizeRotationClockwiseButton());
@@ -340,11 +335,11 @@ public class GameView extends JFrame implements ActionListener {
 	}
 
 	private void createPauseMenu() throws IOException {
-		MyPanel pauseMenu = new MyPanel("Pause", "src/img/img1.jpeg");
+		GamaPanel pauseMenu = new GamaPanel("Pause", "src/img/img1.jpeg");
 
-		MyButton restart = new MyButton("Restart", "Level " + currentLevelIndex, btnSizeM, btnSizeScaledM, this);
-		MyButton resume = new MyButton("Resume", "Level " + currentLevelIndex, btnSizeM, btnSizeScaledM, this);
-		MyButton returnLevelMenu = new MyButton("Return Level Menu", "Level Menu", btnSizeM, btnSizeScaledM, this);
+		GameButton restart = new GameButton("Restart", "Level " + currentLevelIndex, btnSizeM, btnSizeScaledM, this);
+		GameButton resume = new GameButton("Resume", "Level " + currentLevelIndex, btnSizeM, btnSizeScaledM, this);
+		GameButton returnLevelMenu = new GameButton("Return Level Menu", "Level Menu", btnSizeM, btnSizeScaledM, this);
 
 		restart.addActionListener(new ActionListener() {
 
@@ -383,13 +378,13 @@ public class GameView extends JFrame implements ActionListener {
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		if (((MyButton) e.getSource()).getNextPanelName().equals("Quit")) {
+		if (((GameButton) e.getSource()).getNextPanelName().equals("Quit")) {
 			System.exit(0);
 		}
-		cardLayout.show(card, ((MyButton) e.getSource()).getNextPanelName());
+		cardLayout.show(card, ((GameButton) e.getSource()).getNextPanelName());
 
 		for (int i = 0; i < managers.length; i++) {
-			if (((MyButton) e.getSource()).getNextPanelName().equals("Level " + (i + 1))) {
+			if (((GameButton) e.getSource()).getNextPanelName().equals("Level " + (i + 1))) {
 				managers[i].getPanel().requestFocusInWindow();
 				managers[i].startTimers();
 				currentLevelIndex = i + 1;
@@ -465,23 +460,23 @@ public class GameView extends JFrame implements ActionListener {
 
 			newKey = e.getKeyCode();
 			if (clicked == 1) {
-				MyComponents.wallLeftRotation = newKey;
+				LevelView.wallLeftRotation = newKey;
 				setRotationAnticlockwise
-						.setText("Left Rotation: \t" + KeyEvent.getKeyText(MyComponents.wallLeftRotation));
+						.setText("Left Rotation: \t" + KeyEvent.getKeyText(LevelView.wallLeftRotation));
 			} else if (clicked == 2) {
-				MyComponents.wallRightRotation = newKey;
+				LevelView.wallRightRotation = newKey;
 				setRotationClockwise
-						.setText("Right Rotation: \t" + KeyEvent.getKeyText(MyComponents.wallRightRotation));
+						.setText("Right Rotation: \t" + KeyEvent.getKeyText(LevelView.wallRightRotation));
 			} else if (clicked == 3) {
-				MyComponents.wallDrop = newKey;
-				setDrop.setText("Wall Drop: \t" + KeyEvent.getKeyText(MyComponents.wallDrop));
+				LevelView.wallDrop = newKey;
+				setDrop.setText("Wall Drop: \t" + KeyEvent.getKeyText(LevelView.wallDrop));
 			} else if (clicked == 4) {
-				MyComponents.wallPlace = newKey;
-				setPlace.setText("Wall Place: \t" + KeyEvent.getKeyText(MyComponents.wallPlace));
+				LevelView.wallPlace = newKey;
+				setPlace.setText("Wall Place: \t" + KeyEvent.getKeyText(LevelView.wallPlace));
 			} else if (clicked == 5) {
-				MyComponents.wallPrevLocation = newKey;
+				LevelView.wallPrevLocation = newKey;
 				setPrevLocation
-						.setText("Wall Previous Location: \t" + KeyEvent.getKeyText(MyComponents.wallPrevLocation));
+						.setText("Wall Previous Location: \t" + KeyEvent.getKeyText(LevelView.wallPrevLocation));
 			}
 			listenKey = false;
 			clicked = 0;
@@ -500,9 +495,9 @@ public class GameView extends JFrame implements ActionListener {
 		public boolean checkKey(KeyEvent e) {
 			int pressed = e.getKeyCode();
 
-			if (pressed == MyComponents.wallLeftRotation || pressed == MyComponents.wallRightRotation
-					|| pressed == MyComponents.wallDrop || pressed == MyComponents.wallPlace
-					|| pressed == MyComponents.wallPrevLocation || pressed == KeyEvent.VK_1 || pressed == KeyEvent.VK_2
+			if (pressed == LevelView.wallLeftRotation || pressed == LevelView.wallRightRotation
+					|| pressed == LevelView.wallDrop || pressed == LevelView.wallPlace
+					|| pressed == LevelView.wallPrevLocation || pressed == KeyEvent.VK_1 || pressed == KeyEvent.VK_2
 					|| pressed == KeyEvent.VK_3 || pressed == KeyEvent.VK_4 || pressed == KeyEvent.VK_5
 					|| pressed == KeyEvent.VK_6 || pressed == KeyEvent.VK_7 || pressed == KeyEvent.VK_8
 					|| pressed == KeyEvent.VK_9 || pressed == KeyEvent.VK_NUMPAD1 || pressed == KeyEvent.VK_NUMPAD2
