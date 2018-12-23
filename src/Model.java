@@ -1168,7 +1168,8 @@ public class Model {
 						w.remove();
 						return -1;
 					}
-					if (4 * health == w.initialHealth) {
+					if (Math.abs(4 * health - w.initialHealth ) < 5 && !w.messageShown) {
+						w.messageShow();
 						return 1;
 					} else {
 						w.updateColor();
