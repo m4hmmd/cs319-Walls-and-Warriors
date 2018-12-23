@@ -62,10 +62,11 @@ public class LevelView extends JComponent {
 					if (selectedMouse != null)
 						selectedMouse.remove();
 					Object[] options = { "Close" };
-
+					pause();
 					int n = JOptionPane.showOptionDialog(null, "Wall or Chain is under the attacking of enemies. ",
 							"Hurry Up!", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options,
 							options[0]);
+					resume();
 				} else if (update == -1) {
 					pause();
 					repaint();
@@ -90,7 +91,7 @@ public class LevelView extends JComponent {
 
 		// backButton = new JButton("Home");
 
-		backButton = new GameButton("Back", "Level Menu", 30, 40, new ActionListener() {
+		backButton = new GameButton("Level Menu", "Level Menu", 30, 40, new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -289,7 +290,7 @@ public class LevelView extends JComponent {
 		backButton.setBounds(0, (int) (getHeight() / 10 * 0.5), getWidth() / 5, getHeight() / 10);
 		pauseButton.setBounds((int) (getWidth() / 10 * 7.5), (int) (getHeight() / 10 * 0.5), getWidth() / 4,
 				getHeight() / 10);
-		hintButton.setBounds((int) (getWidth() / 10 * 7.5), (int) 8*(getHeight() / 10 ), getWidth() / 5, getHeight() / 10);
+		hintButton.setBounds(0, (int) (getHeight() / 10 * 0.5) + getHeight() / 10, getWidth() / 5, getHeight() / 10);
 		pWidth = getWidth();
 		pHeight = getHeight();
 	}
