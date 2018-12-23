@@ -10,7 +10,6 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.io.*;
-import java.util.Scanner;
 
 @SuppressWarnings("serial")
 public class LevelView extends JComponent {
@@ -87,10 +86,6 @@ public class LevelView extends JComponent {
 			}
 		});
 
-		// backButton = new JButton("Home");
-
-		// backButton = new JButton("Home");
-
 		backButton = new GameButton("Back", "Level Menu", 30, 40, new ActionListener() {
 
 			@Override
@@ -111,10 +106,10 @@ public class LevelView extends JComponent {
 				// random 1
 				int randomWallIndex = (levelNo -1) % model.getWalls().length ;
 
-
-				int hintXCoor = hintX_Y_Turn(randomWallIndex)[0];
-				int hintYCoor = hintX_Y_Turn(randomWallIndex)[1];
-				int hintTurn = hintX_Y_Turn(randomWallIndex)[2];
+				FileSystem fs = new FileSystem();
+				int hintXCoor = fs.getHintShape(randomWallIndex, levelNo)[0];
+				int hintYCoor = fs.getHintShape(randomWallIndex, levelNo)[1];
+				int hintTurn = fs.getHintShape(randomWallIndex, levelNo)[2];
 				model.getWalls()[randomWallIndex].appear();
 				model.getWalls()[randomWallIndex].setTurn(hintTurn);
 				model.getWalls()[randomWallIndex].setIndexes(hintXCoor, hintYCoor);
@@ -127,8 +122,6 @@ public class LevelView extends JComponent {
 				resume();
 				hintButton.setEnabled(false);
 				repaint();
-				// model.getWalls()[2].setThePositionAgainByIndex();
-				// hintButton.setEnabled(false);
 
 			}
 		});
@@ -152,50 +145,6 @@ public class LevelView extends JComponent {
 		addMouseMotionListener(listener);
 		setMinimumSize(new Dimension(300, model.getBarShift() + 50));
 		setFocusable(true);
-	}
-
-	public int[] hintX_Y_Turn(int wallNumber) {
-
-		int[] xYturn = new int[3];
-		FileReader f = null;
-		try {
-			f = new FileReader("solution.txt");
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		}
-		Scanner scan = new Scanner(f);
-		scan.useDelimiter(", *");
-		int x, y, t;
-		String level, wall;
-		scan.nextLine();
-		while (scan.hasNext()) {
-			if (scan.hasNext()) {
-				level = scan.next();
-				if (level.equalsIgnoreCase("Level " + levelNo)) {
-					while (scan.hasNext()) {
-						wall = scan.next();
-						int temp = wallNumber + 1;
-						if (level.equalsIgnoreCase("Level " + levelNo) && wall.equalsIgnoreCase("Wall " + temp)) {
-							xYturn[0] = Integer.parseInt(scan.next());
-							xYturn[1] = Integer.parseInt(scan.next());
-							xYturn[2] = Integer.parseInt(scan.next());
-							scan.close();
-							return xYturn;
-						} else {
-							scan.nextLine();
-							level = scan.next();
-						}
-
-					}
-				} else
-					scan.nextLine();
-			} else {
-				break;
-			}
-			// scan.nextLine();
-		}
-		scan.close();
-		return null;
 	}
 
 	public void restart() {
@@ -289,7 +238,6 @@ public class LevelView extends JComponent {
 	}
 
 	void drawGrid(Graphics g) {
-		// g.setColor(Color.gray);
 		g.setColor(new Color(102, 59, 22));
 		g.fillRect(model.initialXShift + model.squareWidth - model.lineWidth / 2,
 				model.initialYShift - model.lineWidth / 2, model.squareWidth * (model.mapWidth - 2) + model.lineWidth,
@@ -306,11 +254,6 @@ public class LevelView extends JComponent {
 				} else if (i == 0 && j == model.mapLength - 1) {
 				} else if (i == model.mapWidth - 1 && j == model.mapLength - 1) {
 				} else {
-					// g.setColor(Color.gray.brighter());
-					// g.fillRect(model.initialXShift + model.squareWidth * i + model.lineWidth / 2,
-					// model.initialYShift + model.squareHeight * j + model.lineWidth / 2,
-					// model.squareWidth - model.lineWidth + 1, model.squareHeight - model.lineWidth
-					// + 1);
 					float alpha = 0.7f;
 					Graphics2D g2d = (Graphics2D) g;
 					AlphaComposite acomp = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, alpha);
@@ -502,50 +445,6 @@ public class LevelView extends JComponent {
 			if (SwingUtilities.isRightMouseButton(e)) {
 				return;
 			}
-			// if (selectedMouse != null) {
-			// selectedMouse.setColorToOriginal();
-			// selectedMouse.setThePositionAgain(model.getInitialXShift(),
-			// model.getInitialYShift(),
-			// model.getSquareHeight(), model.getSquareWidth());
-			//
-			// if (model.outOfScreen(selectedMouse)) {
-			// selectedMouse.remove();
-			// selectedMouse.setRectangles();
-			// } else {
-			// if (!model.onAvailablePlace(selectedMouse)) {
-			// if (wasInvisible_MOUSE) {
-			// selectedMouse.remove();
-			// selectedMouse.setRectangles();
-			//
-			// } else {
-			// if (model.isAvailablePlaceFor(selectedMouse, wallStartXInd_MOUSE,
-			// wallStartYInd_MOUSE)) {
-			// selectedMouse.xCoor = wallStartX_MOUSE;
-			// selectedMouse.yCoor = wallStartY_MOUSE;
-			// selectedMouse.setThePositionAgain(model.getInitialXShift(),
-			// model.getInitialYShift(),
-			// model.getSquareHeight(), model.getSquareWidth());
-			// model.addToLines(selectedMouse);
-			// } else {
-			// selectedMouse.remove();
-			// }
-			// }
-			//
-			// } else {
-			// selectedMouse.setThePositionAgain(model.getInitialXShift(),
-			// model.getInitialYShift(),
-			// model.getSquareHeight(), model.getSquareWidth());
-			// model.addToLines(selectedMouse);
-			// SoundManager.wallPlaced();
-			//
-			// if (model.isGameFinished()) {
-			// gameFinished();
-			// }
-			// }
-			// }
-			// }
-			// wasInvisible_MOUSE = false;
-			// selectedMouse = null;
 			if (selectedMouse != null) {
 				selectedMouse.setColorToOriginal();
 				selectedMouse.setThePositionAgain(model.getInitialXShift(), model.getInitialYShift(),
@@ -657,12 +556,6 @@ public class LevelView extends JComponent {
 		}
 
 		private void gameFinished() {
-			// for (int i = 0; i < model.getWalls().length; i++) {
-			// System.out.println("Wall " + (i + 1) + " ( " + model.getWalls()[i].xInd + ",
-			// "
-			// + model.getWalls()[i].yInd + ", " + model.getWalls()[i].turn + ") ");
-			//
-			// }
 			selectedKey = null;
 			repaint();
 			model.gameFinished = true;
@@ -704,16 +597,9 @@ public class LevelView extends JComponent {
 				selectedKey = null;
 				selectedMouse = null;
 			}
-			try {
 
-				Writer wr = new FileWriter("savedLevelNo.txt");
-				wr.write(GameView.lastCompletedLevel + ""); // write string
-				wr.flush();
-				wr.close();
-
-			} catch (Exception ea) {
-			}
-
+			FileSystem fs = new FileSystem();
+			fs.writeSavedLevelNo(GameView.lastCompletedLevel);
 		}
 
 		public void mouseExited(MouseEvent e) {

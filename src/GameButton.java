@@ -47,8 +47,6 @@ public class GameButton extends JButton {
 			public void mouseExited(MouseEvent e) {
 				if (e.getSource() instanceof GameButton)
 					((GameButton) (e.getSource())).setFont(new Font("Arial", Font.PLAIN, ((GameButton) e.getSource()).getDefaultSize()));
-				// else if (e.getSource() instanceof JLabel)
-				// ((JLabel) (e.getSource())).setFont(new Font("Arial", Font.PLAIN, 40));
 			}
 		});
 		addMouseMotionListener(new MouseMotionListener() {
@@ -62,8 +60,6 @@ public class GameButton extends JButton {
 				if (e.getSource() instanceof GameButton)
 					if (((GameButton) (e.getSource())).isEnabled())
 						((GameButton) (e.getSource())).setFont(new Font("Arial", Font.PLAIN, ((GameButton) e.getSource()).getSizeScaledize()));
-				// else if (e.getSource() instanceof JLabel)
-				// ((JLabel) (e.getSource())).setFont(new Font("Arial", Font.PLAIN, 50));
 			}
 		});
 

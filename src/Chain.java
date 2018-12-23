@@ -195,9 +195,6 @@ public class Chain extends WallOrChain {
 			g2d.setTransform(backup);
 		}
 
-		// g2d.setColor(Color.gray.brighter().brighter().brighter());
-		// g2d.fill(areaForSquare);
-
 		if (collapsed) {
 			g.setColor(Color.GRAY);
 			Graphics2D g2 = (Graphics2D) g;

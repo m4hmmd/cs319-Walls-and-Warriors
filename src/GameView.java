@@ -182,37 +182,13 @@ public class GameView extends JFrame implements ActionListener {
 
 	private void createGameMenu() {
 		try {
-			/*
-			 * GameButton play = new GameButton("New Game", "Level Menu", btnSizeL,
-			 * btnSizeScaledL, this); play.addActionListener(new ActionListener() {
-			 * 
-			 * @Override public void actionPerformed(ActionEvent e) {
-			 * 
-			 * for (int i = 1; i < levelButtons.length; i++) {
-			 * levelButtons[i].setEnabled(false); try { Image img = ImageIO.read(new
-			 * File("src/img/locked.png")); Image newimg = img.getScaledInstance(50, 50,
-			 * Image.SCALE_SMOOTH); // scale it the smooth way levelButtons[i].setIcon(new
-			 * ImageIcon(newimg)); Writer wr = new FileWriter("savedLevelNo.txt");
-			 * lastCompletedLevel = 0; wr.write(GameView.lastCompletedLevel + ""); // write
-			 * string wr.flush(); wr.close(); } catch (Exception ex) {
-			 * 
-			 * .out.println(ex); } } } });
-			 */
 			GameButton play = new GameButton("Play", "Level Menu", btnSizeL, btnSizeScaledL, this);
 			play.addActionListener(new ActionListener() {
 
 				@Override
 				public void actionPerformed(ActionEvent e) {
-					int last = 0;
-					try {
-						// code loads the game
-						File f = new File("savedLevelNo.txt");
-						Scanner s = new Scanner(f);
-						last = (Integer) s.nextInt();
-
-					} catch (IOException e1) {
-						e1.printStackTrace();
-					}
+					FileSystem savedFs = new FileSystem();
+					int last = savedFs.getSavedLevelNo();
 
 					for (int i = 0; i < (last + 1 < levelButtons.length ? last + 1 : last); i++) {
 						levelButtons[i].setIcon(null);
@@ -537,30 +513,12 @@ public class GameView extends JFrame implements ActionListener {
 		}
 		if (levelNo == 3) {
 			repaint();
-			// Object[] options = { "Close" };
-			// int n = JOptionPane.showOptionDialog(null, "Description of game objects",
-			// "Level 3",
-			// JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options,
-			// options[0]);
-
 		}
 		if (levelNo == 4) {
 			repaint();
-			// Object[] options = { "Close" };
-			// int n = JOptionPane.showOptionDialog(null, "Description of game objects",
-			// "Level 4",
-			// JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options,
-			// options[0]);
-
 		}
 		if (levelNo == 5) {
 			repaint();
-			// Object[] options = { "Close" };
-			// int n = JOptionPane.showOptionDialog(null, "Description of game objects",
-			// "Level 5",
-			// JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options,
-			// options[0]);
-
 		}
 
 		currentLevelIndex = levelNo;

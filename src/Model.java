@@ -992,22 +992,6 @@ public class Model {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			// ArrayList<Integer> dirs = new ArrayList<Integer>();
-			// dirs.add(-1);
-			// if (isAvailable(s, Model.UP)) {
-			// dirs.add(Model.UP);
-			// }
-			// if (isAvailable(s, Model.DOWN)) {
-			// dirs.add(Model.DOWN);
-			// }
-			// if (isAvailable(s, Model.LEFT)) {
-			// dirs.add(Model.LEFT);
-			// }
-			// if (isAvailable(s, Model.RIGHT)) {
-			// dirs.add(Model.RIGHT);
-			// }
-
-			// int dir = (int) (Math.random() * dirs.size());
 
 			// if dir == 1 => route[pos], if dir == 0 => (1-route[pos]) + 4 * (route[pos]/2)
 			int w = s.width;
@@ -1085,8 +1069,6 @@ public class Model {
 					first = prev != 2;
 					prev = 2;
 				} else {
-					// map[s.getX() * 2 + 1][s.getY() * 2] = s.isArmada() ? VALID_FOR_CHAIN :
-					// VALID_FOR_WALL;
 					first = prev != 3;
 					prev = 3;
 				}
@@ -1103,8 +1085,6 @@ public class Model {
 					map[s.getX() * 2 + 1][s.getY() * 2 + 2] = s.getWholeMapIndex();
 					prev = 5;
 				} else {
-					// map[s.getX() * 2 + 1][s.getY() * 2 + 2] = s.isArmada() ? VALID_FOR_CHAIN :
-					// VALID_FOR_WALL;
 					first = prev != 6;
 					prev = 6;
 				}
@@ -1122,8 +1102,6 @@ public class Model {
 					prev = 8;
 				} else {
 					first = prev != 9;
-					// map[s.getX() * 2][s.getY() * 2 + 1] = s.isArmada() ? VALID_FOR_CHAIN :
-					// VALID_FOR_WALL;
 					prev = 9;
 				}
 			} else if (direction == Model.RIGHT) {
@@ -1139,8 +1117,6 @@ public class Model {
 					first = prev != 11;
 					prev = 11;
 				} else {
-					// map[s.getX() * 2 + 2][s.getY() * 2 + 1] = s.isArmada() ? VALID_FOR_CHAIN :
-					// VALID_FOR_WALL;
 					first = prev != 12;
 					prev = 12;
 				}

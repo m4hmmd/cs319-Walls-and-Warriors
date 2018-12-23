@@ -26,7 +26,6 @@ public class GameManager {
 	private int mapWidth;
 	private int mapLength;
 	private int size_of_soldiers;
-	private ArrayList <Integer> shape = new ArrayList <>();
 
 	public GameManager(GameView gv, int levelNo, CardLayout cardLayout, JPanel card)throws IOException {
 		this.cardLayout = cardLayout;
@@ -37,6 +36,7 @@ public class GameManager {
 	}
 
 	public void run()throws IOException {
+		fileSystem.decryptMapFile();
 			
 		fileSystem.createLevel(levelNo);
 		castle = fileSystem.getCastle();
@@ -91,103 +91,9 @@ public class GameManager {
 			fileSystem.incrementSize();
 		}
 		fileSystem.resetSize();
+		fileSystem.deleteMapFile();
 
 		levelView = new LevelView(gv, model, cardLayout, card, levelNo);
-
-//		Castle castle = new Castle(3, 3, 2, 3, Color.green);
-//		if (levelNo == 1) {
-//			// Castle castle = new Castle(1, 2, 1, 3, Color.green);
-//			int mapWidth = 8;
-//			int mapLength = 8;
-//			model = new Model(mapWidth, mapLength, castle, levelNo);
-//
-//			// Allies
-//			model.addSoldier(true, false, 0, 3, null);
-//			model.addSoldier(true, false, 2, 4, null);
-//			model.addSoldier(true, false, 4, 5, null);
-//
-//			// Enemies
-//			model.addSoldier(false, false, 1, 1, null);
-//			model.addSoldier(false, false, 3, 2, null); // TODO make this movable
-//			model.addSoldier(false, false, 3, 5, null); // TODO make this movable
-//
-//			model.addLake(4, 0);
-//			model.addLake(5, 0);
-//			model.addLake(6, 0);
-//			model.addLake(4, 1);
-//			model.addLake(6, 1);
-//			model.addLake(7, 1);
-//			model.addLake(5, 2);
-//			model.addLake(6, 2);
-//			model.addLake(7, 2);
-//			model.addLake(4, 3);
-//			model.addLake(5, 3);
-//			model.addLake(7, 3);
-//
-//			model.addAllyArmada(4, 2, false, null);
-//
-//			model.addEnemyArmada(5, 1, false, null);
-//			model.addEnemyArmada(6, 3, false, null); // TODO make this movable
-//
-//			model.addForest(1, 2);
-//			model.addForest(1, 3);
-//			model.addForest(2, 2);
-//			model.addForest(1, 3);
-//			model.addForest(2, 2);
-//			model.addForest(2, 3);
-//			model.addForest(6, 5);
-//			model.addForest(5, 6);
-//			model.addForest(6, 6);
-//			model.addForest(7, 4);
-//			model.addForest(7, 5);
-//			model.addForest(7, 6);
-//
-//			for (int numberOfWalls = 1; numberOfWalls < model.mapWidth - 1; numberOfWalls++) {
-//				model.addForest(numberOfWalls, 7);
-//			}
-//
-//			levelView = new LevelView(gv, model, cardLayout, card, levelNo);
-//
-//			model.addWallOrChain(true, Model.RIGHT, Model.DOWN, Model.RIGHT, Model.DOWN);
-//			model.addWallOrChain(true, Model.DOWN, Model.RIGHT, Model.UP, Model.RIGHT, Model.UP);
-//			model.addWallOrChain(true, Model.DOWN, Model.RIGHT, Model.UP, Model.RIGHT, Model.UP);
-//			model.addWallOrChain(true, Model.DOWN, Model.RIGHT, Model.UP, Model.RIGHT, Model.UP);
-//			model.addWallOrChain(true, Model.UP, Model.RIGHT);
-//			model.addWallOrChain(true, Model.LEFT, Model.UP, Model.RIGHT, Model.UP);
-//			model.addWallOrChain(false, Model.LEFT);
-//			model.addWallOrChain(false, Model.RIGHT, Model.DOWN, Model.RIGHT, Model.DOWN);
-//		}
-//		//
-//		if (levelNo == 2) {
-//
-//			castle = new Castle(1, 1, 2, 1, Color.green);
-//
-//			int mapWidth = 5;
-//			int mapLength = 4;
-//			model = new Model(mapWidth, mapLength, castle, levelNo);
-//
-//			// Allies
-//			model.addSoldier(true, false, 2, 0, null);
-//			model.addSoldier(true, false, 2, 3, null);
-//			model.addSoldier(true, false, 3, 2, null);
-//
-//			// Enemies
-//			model.addSoldier(false, false, 1, 2, null);
-//			model.addSoldier(false, false, 1, 3, null);
-//			model.addSoldier(false, false, 3, 0, null);
-//			model.addSoldier(false, false, 4, 2, null);
-//			// 5, 4
-//
-//			model.addWallOrChain(true, Model.UP, Model.RIGHT, Model.DOWN, Model.RIGHT, Model.DOWN);
-//			model.addWallOrChain(true, Model.UP, Model.RIGHT, Model.DOWN);
-//			model.addWallOrChain(true, Model.DOWN, Model.RIGHT, Model.DOWN, Model.RIGHT);
-//			model.addWallOrChain(true, Model.LEFT, Model.UP, Model.RIGHT, Model.UP, Model.LEFT, Model.UP);
-//			model.addWallOrChain(false, Model.DOWN, Model.RIGHT, Model.DOWN, Model.RIGHT);
-//			model.addWallOrChain(false, Model.LEFT, Model.UP, Model.RIGHT, Model.UP, Model.LEFT, Model.UP);
-//
-//			levelView = new LevelView(gv, model, cardLayout, card, levelNo);
-//
-//		}
 	}
 
 	public LevelView getPanel() {

@@ -1,5 +1,14 @@
+import javax.crypto.BadPaddingException;
+import javax.crypto.Cipher;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
+import javax.crypto.spec.SecretKeySpec;
 import java.io.*;
+import java.security.InvalidKeyException;
+import java.security.Key;
+import java.security.NoSuchAlgorithmException;
 import java.util.*;
+
 public class FileSystem 
 {	
 	private int castle [] = new int [4];
@@ -15,24 +24,6 @@ public class FileSystem
 	int sizeX = 0;
 	int numberOfWalls;
 	private ArrayList<Integer>[] walls;
-	
-	public void setState(int level)throws IOException
-	{
-		PrintWriter write = new PrintWriter("GameState.txt");
-		write.println(level);
-		write.close();
-	}
-	
-	public int getState()throws IOException
-	{
-		Scanner scan = new Scanner(System.in);
-		
-		File read = new File("GameState.txt");
-		Scanner in = new Scanner(read);
-		
-		String level = in.next();
-		return Integer.parseInt(level);
-	}
 	
 	public FileDataStructure getDataStructure()
 	{
@@ -217,5 +208,165 @@ public class FileSystem
 			}
 			i++;
 		}
+	}
+
+	public void decryptMapFile() {
+		decryptFile("Map.encrypted", "Map.txt");
+	}
+
+	public void decryptFile(String filePath, String temp)
+	{
+		String key = "This is a secret";
+		File encryptedFile = new File(filePath);
+		File decryptedFile = new File(temp);
+
+		try {
+			Key secretKey = new SecretKeySpec(key.getBytes(), "AES");
+			Cipher cipher = Cipher.getInstance("AES");
+			cipher.init(Cipher.DECRYPT_MODE, secretKey);
+
+			FileInputStream inputStream = new FileInputStream(encryptedFile);
+			byte[] inputBytes = new byte[(int) encryptedFile.length()];
+			inputStream.read(inputBytes);
+
+			byte[] outputBytes = cipher.doFinal(inputBytes);
+
+			FileOutputStream outputStream = new FileOutputStream(decryptedFile);
+			outputStream.write(outputBytes);
+
+			inputStream.close();
+			outputStream.close();
+
+		}
+		catch (NoSuchPaddingException | NoSuchAlgorithmException
+				| InvalidKeyException | BadPaddingException
+				| IllegalBlockSizeException | IOException e)
+		{
+			e.printStackTrace();
+		}
+	}
+
+	public void encryptFile(String filePath, String encrypted)
+	{
+		String key = "This is a secret";
+		File inputFile = new File(filePath);
+		File encryptedFile = new File(encrypted);
+
+		try {
+			Key secretKey = new SecretKeySpec(key.getBytes(), "AES");
+			Cipher cipher = Cipher.getInstance("AES");
+			cipher.init(Cipher.ENCRYPT_MODE, secretKey);
+
+			FileInputStream inputStream = new FileInputStream(inputFile);
+			byte[] inputBytes = new byte[(int) inputFile.length()];
+			inputStream.read(inputBytes);
+
+			byte[] outputBytes = cipher.doFinal(inputBytes);
+
+			FileOutputStream outputStream = new FileOutputStream(encryptedFile);
+			outputStream.write(outputBytes);
+
+			inputStream.close();
+			outputStream.close();
+
+		}
+		catch (NoSuchPaddingException | NoSuchAlgorithmException
+				| InvalidKeyException | BadPaddingException
+				| IllegalBlockSizeException | IOException e)
+		{
+			e.printStackTrace();
+		}
+	}
+
+	public void deleteMapFile()
+	{
+		deleteFile("Map.txt");
+	}
+
+	public void deleteFile(String fileName)
+	{
+		File file = new File(fileName);
+		file.delete();
+	}
+
+
+	public int[] getHintShape(int wallNumber, int levelNo) {
+		decryptFile("solutions.encrypted", "hint.txt");
+
+		int[] xYturn = new int[3];
+		FileReader f = null;
+		try {
+			f = new FileReader("hint.txt");
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+		Scanner scan = new Scanner(f);
+		scan.useDelimiter(", *");
+		int x, y, t;
+		String level, wall;
+		scan.nextLine();
+		while (scan.hasNext()) {
+			if (scan.hasNext()) {
+				level = scan.next();
+				if (level.equalsIgnoreCase("Level " + levelNo)) {
+					while (scan.hasNext()) {
+						wall = scan.next();
+						int temp = wallNumber + 1;
+						if (level.equalsIgnoreCase("Level " + levelNo) && wall.equalsIgnoreCase("Wall " + temp)) {
+							xYturn[0] = Integer.parseInt(scan.next());
+							xYturn[1] = Integer.parseInt(scan.next());
+							xYturn[2] = Integer.parseInt(scan.next());
+							scan.close();
+							deleteFile("hint.txt");
+							return xYturn;
+						} else {
+							scan.nextLine();
+							level = scan.next();
+						}
+
+					}
+				} else
+					scan.nextLine();
+			} else {
+				break;
+			}
+			// scan.nextLine();
+		}
+		scan.close();
+
+		deleteFile("hint.txt");
+
+		return null;
+	}
+
+	public int getSavedLevelNo() {
+		int last = 0;
+		decryptFile("savedLevelNo.encrypted", "no.txt");
+		try {
+			// code loads the game
+			File f = new File("no.txt");
+			Scanner s = new Scanner(f);
+			last = (Integer) s.nextInt();
+
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		}
+		deleteFile("no.txt");
+		return last;
+	}
+
+	public void writeSavedLevelNo(int levelNo) {
+		decryptFile("savedLevelNo.encrypted", "level.txt");
+		try {
+
+			Writer wr = new FileWriter("level.txt");
+			wr.write(levelNo + ""); // write string
+			wr.flush();
+			wr.close();
+		} catch (Exception ea) {
+			System.out.println("exception");
+		}
+		encryptFile("level.txt", "savedLevelNo.encrypted");
+		deleteFile("level.txt");
 	}
 }
