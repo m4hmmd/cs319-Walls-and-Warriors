@@ -524,7 +524,7 @@ public class GameView extends JFrame implements ActionListener {
 		if (levelNo == 1) {
 			repaint();
 			Object[] options = { "Close" };
-			int n = JOptionPane.showOptionDialog(null, "Try to surround your soldiers with the walls", "Level 1",
+			int n = JOptionPane.showOptionDialog(null, "Surround your knights and castle with the walls", "Level 1",
 					JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
 
 		}
@@ -533,11 +533,11 @@ public class GameView extends JFrame implements ActionListener {
 			Object[] options = { "Close" };
 			int n1 = JOptionPane.showOptionDialog(null, "Be careful! Some enemies are moving", "Level 2",
 					JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
-			int n2 = JOptionPane.showOptionDialog(null, "Use chain for the lake", "Level 2", JOptionPane.YES_NO_OPTION,
+			int n2 = JOptionPane.showOptionDialog(null, "Use chains to protect your ships in the lake!", "Level 2", JOptionPane.YES_NO_OPTION,
 					JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
 			int n3 = JOptionPane.showOptionDialog(null,
-					"You cannot place wall or chain on edge of lake\n"
-							+ "However you can place wall next to forests but not inside!",
+					"You cannot place a wall or a chain on the edge of the lake\n"
+							+ "Walls also cannot cut through forests!",
 					"Level 2", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
 		}
 		if (levelNo == 3) {
