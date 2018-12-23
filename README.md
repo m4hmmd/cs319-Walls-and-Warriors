@@ -59,13 +59,11 @@ This is a desktop implementation of the Walls and Warriors game using Java in. I
 
 * Open a **Command Prompt** in the main folder.
 
-+ You can do it by `Shift + Right Click` -> Open **PowerShell** window here.
+    + You can do it by `Shift + Right Click` -> Open **PowerShell** window here.
 
-+ Or you can do it by `Windows + R` -> Search for **cmd**, then change the directory to the main folder you are in with **cd** command.
+    + Or you can do it by `Windows + R` -> Search for **cmd**, then change the directory to the main folder you are in with **cd** command.
 
-  
-
-*\*Main folder is the extracted folder **cs319-Walls-and-Warriors-master***
+    \*Main folder is the extracted folder **cs319-Walls-and-Warriors-master***
 
 * Run **mkdir bin**
 
@@ -89,31 +87,29 @@ If **javac** or **jar** commands do not work for you or return an error message 
 
 * Copy the file path that is as follows:
 
-+ **[Disk]:\Program Files\Java\jdkX.X.X_X\bin**
+    + **[Disk]:\Program Files\Java\jdkX.X.X_X\bin**
 
-(*for ex.* C:\Program Files\Java\jdk1.8.0_191\bin)
+    (*for ex.* C:\Program Files\Java\jdk1.8.0_191\bin)
 
 * Run the commands as follows:
 
-+ Run **“FilePath/javac.exe” -d bin src/\*.java**
+    + Run **“FilePath/javac.exe” -d bin src/\*.java**
 
-(*for ex.* “C:\Program Files\Java\jdk1.8.0_191\bin\javac.exe” -d bin src/*.java)
+    (*for ex.* “C:\Program Files\Java\jdk1.8.0_191\bin\javac.exe” -d bin src/*.java)
 
-+ Run **“FilePath/jar.exe” cvfm Walls^&Warriors.jar Manifest.txt -C bin .**
+    + Run **“FilePath/jar.exe” cvfm Walls^&Warriors.jar Manifest.txt -C bin .**
 
-(*for ex.* “C:\Program Files\Java\jdk1.8.0_191\bin\jar.exe” cvfm Walls^&Warriors.jar Manifest.txt -C bin .)
+    (*for ex.* “C:\Program Files\Java\jdk1.8.0_191\bin\jar.exe” cvfm Walls^&Warriors.jar Manifest.txt -C bin .)
 
 ## Mac & Linux:
 
 * Open a terminal in the main folder.
 
-+ You can do it by `Command + Space` and search for terminal and press enter and then change the directory to the main folder with **cd** command.
+    + You can do it by `Command + Space` and search for terminal and press enter and then change the directory to the main folder with **cd** command.
 
-*\*Main folder is the extracted folder cs319-Walls-and-Warriors-master*
+    \*Main folder is the extracted folder cs319-Walls-and-Warriors-master*
 
-  
-
-+ In some distributions of Linux, you can right click in the folder and choose **Open in Terminal** option.
+    + In some distributions of Linux, you can right click in the folder and choose **Open in Terminal** option.
 
 * Run **mkdir bin**
 
