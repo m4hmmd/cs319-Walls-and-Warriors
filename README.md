@@ -60,7 +60,7 @@ This is a desktop implementation of the Walls and Warriors game using Java in. I
 
         + In some distributions of Linux, you can right click in the folder and choose **Open in Terminal** option.
     * Run **mkdir bin**
-    * Run **javac -d bin src/*.java**
+    * Run **javac -d bin src/\*.java**
     * Run **jar cvfm Walls\&Warriors.jar Manifest.txt -C bin .**
 
 ### References
