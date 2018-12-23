@@ -288,7 +288,7 @@ public class LevelView extends JComponent {
 		drawWalls(g);
 
 		backButton.setBounds(0, (int) (getHeight() / 10 * 0.5), getWidth() / 5, getHeight() / 10);
-		pauseButton.setBounds((int) (getWidth() / 10 * 7.5), (int) (getHeight() / 10 * 0.5), getWidth() / 4,
+		pauseButton.setBounds((int) (getWidth() / 10 * 7.5), (int) (getHeight() / 10 * 0.5), getWidth() / 5,
 				getHeight() / 10);
 		hintButton.setBounds((int) (getWidth() / 10 * 7.5), (int) 8*(getHeight() / 10 ), getWidth() / 5, getHeight() / 10);
 		pWidth = getWidth();
