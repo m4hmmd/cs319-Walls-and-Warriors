@@ -47,8 +47,8 @@ public abstract class Soldier extends GameObject {
 		width = 5*squareWidth/8;
 		height = 5*squareHeight/8;
 		if (soldierImg != null) {
-			g.drawImage(soldierImg, initialXShift + squareWidth * getX() + squareWidth / 8 + (movable ? xShift : 0),
-					initialYShift + squareHeight * getY() + squareHeight / 8 + (movable ? yShift : 0), width,
+			g.drawImage(soldierImg, initialXShift + squareWidth * getX() + squareWidth / 16*3 + (movable ? xShift : 0),
+					initialYShift + squareHeight * getY() + squareHeight  / 16*3 + (movable ? yShift : 0), width,
 					height, null);
 		}
 	}
