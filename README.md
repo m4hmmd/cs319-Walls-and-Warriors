@@ -218,5 +218,5 @@ If **javac** or **jar** commands do not work for you or return an error message 
 
 ### References
 
-Game Rules - https://www.youtube.com/watch?v=kXX4OP38hYU
-Trailer - https://www.youtube.com/watch?v=g3x0b1MU4yY
+[Game Rules](https://www.youtube.com/watch?v=kXX4OP38hYU)
+[Trailer](https://www.youtube.com/watch?v=g3x0b1MU4yY)
