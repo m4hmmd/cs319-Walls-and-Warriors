@@ -115,7 +115,7 @@ If **javac** or **jar** commands do not work for you or return an error message 
 
 * Run **javac -d bin src/\*.java**
 
-* Run **jar cvfm Walls\&Warriors.jar Manifest.txt -C bin .**
+* Run **jar cvfm Walls\\&Warriors.jar Manifest.txt -C bin .**
 
   
 
